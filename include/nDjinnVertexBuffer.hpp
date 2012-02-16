@@ -11,13 +11,14 @@
 #ifndef NDJ_VERTEX_BUFFER_HPP_INCLUDED
 #define NDJ_VERTEX_BUFFER_HPP_INCLUDED
 
+#include "nDjinnNamespace.hpp"
 #include "nDjinnException.hpp"
 #include "nDjinnError.hpp"
 #include <gl/glew.h>
 
 // -----------------------------------------------------------------------------
 
-namespace ndj {
+BEGIN_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
@@ -258,7 +259,7 @@ private:        // Member variables.
 
 // -----------------------------------------------------------------------------
 
-}   // Namespace: ndj.
+END_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 

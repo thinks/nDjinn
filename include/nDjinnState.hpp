@@ -8,12 +8,13 @@
 #ifndef NDJ_STATE_HPP_INCLUDED
 #define NDJ_STATE_HPP_INCLUDED
 
+#include "nDjinnNamespace.hpp"
 #include "nDjinnError.hpp"
 #include <gl/glew.h>
 
 // -----------------------------------------------------------------------------
 
-namespace ndj {
+BEGIN_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
@@ -71,7 +72,7 @@ private:    // Enable/Disable.
     _enable(const GLenum cap)
     {
         glEnable(cap);
-        error::check("glEnable");
+        Error::check("glEnable");
     }
 
     // glDisable wrapper. May throw.
@@ -79,7 +80,7 @@ private:    // Enable/Disable.
     _disable(const GLenum cap)
     {
         glDisable(cap);
-        error::check("glDisable");
+        Error::check("glDisable");
     }
 
 private:    // Simple Queries.
@@ -89,7 +90,7 @@ private:    // Simple Queries.
     _getBooleanv(const GLenum pname, GLboolean *data)
     {
         glGetBooleanv(pname, data);
-        error::check("glGetBooleanv"); // May throw.
+        Error::check("glGetBooleanv"); // May throw.
     }
 
     //! glGetIntegerv wrapper. May throw.
@@ -97,7 +98,7 @@ private:    // Simple Queries.
     _getIntegerv(const GLenum pname, GLint *data)
     {
         glGetIntegerv(pname, data);
-        error::check("glGetIntegerv"); // May throw.
+        Error::check("glGetIntegerv"); // May throw.
     }
 
     //! glGetInteger64v wrapper. May throw.
@@ -105,7 +106,7 @@ private:    // Simple Queries.
     _getInteger64v(const GLenum pname, GLint64 *data)
     {
         glGetInteger64v(pname, data);
-        error::check("glGetInteger64v"); // May throw.
+        Error::check("glGetInteger64v"); // May throw.
     }
 
     //! glGetFloatv wrapper. May throw.
@@ -113,7 +114,7 @@ private:    // Simple Queries.
     _getFloatv(const GLenum pname, GLfloat *data)
     {
         glGetFloatv(pname, data);
-        error::check("glGetFloatv"); // May throw.
+        Error::check("glGetFloatv"); // May throw.
     }
 
     //! glGetDoublev wrapper. May throw.
@@ -121,7 +122,7 @@ private:    // Simple Queries.
     _getDoublev(const GLenum pname, GLdouble *data)
     {
         glGetDoublev(pname, data);
-        error::check("glGetDoublev"); // May throw.
+        Error::check("glGetDoublev"); // May throw.
     }
 
     // TODO: glGetBooleani_v
@@ -134,7 +135,7 @@ private:    // Simple Queries.
     _isEnabled(const GLenum cap)
     {
         const GLboolean enabled = glIsEnabled(cap);
-        error::check("glIsEnabled"); // May throw.
+        Error::check("glIsEnabled"); // May throw.
         return enabled;
     }
 
@@ -147,7 +148,7 @@ private:    // Pointer & String Queries.
     _getString(const GLenum name)
     {
         const GLubyte *str = glGetString(name);
-        error::check("glGetString");
+        Error::check("glGetString");
         return str;
     }
 
@@ -163,7 +164,7 @@ private:    // Disable all kinds of construction.
 
 // -----------------------------------------------------------------------------
 
-}   // Namespace: ndj.
+END_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 

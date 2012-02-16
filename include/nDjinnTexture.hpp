@@ -8,14 +8,15 @@
 #ifndef NDJ_TEXTURE_HPP_INCLUDED
 #define NDJ_TEXTURE_HPP_INCLUDED
 
-#include "nDjinnState.hpp"
+#include "nDjinnNamespace.hpp"
+//#include "nDjinnState.hpp"
 #include "nDjinnException.hpp"
 #include "nDjinnError.hpp"
 #include <gl/glew.h>
 
 //------------------------------------------------------------------------------
 
-namespace ndj {
+BEGIN_NDJINN_NAMESPACE
 
 //------------------------------------------------------------------------------
 
@@ -236,7 +237,7 @@ private:    // Misc.
     _activeTexture(const GLenum texture)
     {
         glActiveTexture(texture);
-        error::check(std::string("glActiveTexture")); // May throw.
+        Error::check(std::string("glActiveTexture")); // May throw.
     }
 
 private:    // Texture Objects.
@@ -246,7 +247,7 @@ private:    // Texture Objects.
     _genTextures(const GLsizei n, GLuint *textures)
     {
         glGenTextures(n, textures);
-        error::check(std::string("glGenTextures")); // May throw.
+        Error::check(std::string("glGenTextures")); // May throw.
     }
 
     //! glDeleteTextures wrapper. May throw.
@@ -254,7 +255,7 @@ private:    // Texture Objects.
     _deleteTextures(const GLsizei n, const GLuint *textures)
     {
         glDeleteTextures(n, textures);
-        error::check(std::string("glDeleteTextures"));  // May throw.
+        Error::check(std::string("glDeleteTextures"));  // May throw.
     }
 
     //! glBindTexture wrapper. May throw.
@@ -262,7 +263,7 @@ private:    // Texture Objects.
     _bindTexture(const GLenum target, const GLuint texture)
     { 
         glBindTexture(target, texture);
-        error::check(std::string("glBindTexture"));  // May throw.
+        Error::check(std::string("glBindTexture"));  // May throw.
     }
 
 private:    // Texture Parameters.
@@ -272,7 +273,7 @@ private:    // Texture Parameters.
     _texParameteri(const GLenum target, const GLenum pname, const GLint param)
     {
         glTexParameteri(target, pname, param);
-        error::check(std::string("glTexParameteri")); // May throw.
+        Error::check(std::string("glTexParameteri")); // May throw.
     }
 
     //! glTexParameterf wrapper. May throw.
@@ -280,7 +281,7 @@ private:    // Texture Parameters.
     _texParameterf(const GLenum target, const GLenum pname, const GLfloat param)
     {
         glTexParameterf(target, pname, param);
-        error::check(std::string("glTexParameterf")); // May throw.
+        Error::check(std::string("glTexParameterf")); // May throw.
     }
 
     //! glTexParameteriv wrapper. May throw.
@@ -288,7 +289,7 @@ private:    // Texture Parameters.
     _texParameteriv(const GLenum target, const GLenum pname,const GLint *params)
     {
         glTexParameteriv(target, pname, params);
-        error::check(std::string("glTexParameteriv")); // May throw.
+        Error::check(std::string("glTexParameteriv")); // May throw.
     }
 
     //! glTexParameterfv wrapper. May throw.
@@ -297,7 +298,7 @@ private:    // Texture Parameters.
                     const GLfloat *params)
     {
         glTexParameterfv(target, pname, params);
-        error::check(std::string("glTexParameterfv")); // May throw.
+        Error::check(std::string("glTexParameterfv")); // May throw.
     }
 
     //! glTexParameterIiv wrapper. May throw.
@@ -305,7 +306,7 @@ private:    // Texture Parameters.
     _texParameterIiv(const GLenum target,const GLenum pname,const GLint *params)
     {
         glTexParameterIiv(target, pname, params);
-        error::check(std::string("glTexParameterIiv")); // May throw.
+        Error::check(std::string("glTexParameterIiv")); // May throw.
     }
 
     //! glTexParameterIuiv wrapper. May throw.
@@ -314,7 +315,7 @@ private:    // Texture Parameters.
                       const GLuint *params)
     {
         glTexParameterIuiv(target, pname, params);
-        error::check(std::string("glTexParameterIuiv")); // May throw.
+        Error::check(std::string("glTexParameterIuiv")); // May throw.
     }
 
 private:    // Enumerated queries.
@@ -324,7 +325,7 @@ private:    // Enumerated queries.
     _getTexParameteriv(const GLenum target, const GLenum value, GLint *data)
     {
         glGetTexParameteriv(target, value, data);
-        error::check(std::string("glGetTexParameteriv")); // May throw.
+        Error::check(std::string("glGetTexParameteriv")); // May throw.
     }
 
     //! glGetTexParameterfv wrapper. May throw.
@@ -332,7 +333,7 @@ private:    // Enumerated queries.
     _getTexParameterfv(const GLenum target, const GLenum value, GLfloat *data)
     {
         glGetTexParameterfv(target, value, data);
-        error::check(std::string("glGetTexParameterfv")); // May throw.
+        Error::check(std::string("glGetTexParameterfv")); // May throw.
     }
 
     //! glGetTexParameterIiv wrapper. May throw.
@@ -340,7 +341,7 @@ private:    // Enumerated queries.
     _getTexParameterIiv(const GLenum target, const GLenum value, GLint *data)
     {
         glGetTexParameterIiv(target, value, data);
-        error::check(std::string("glGetTexParameterIiv")); // May throw.
+        Error::check(std::string("glGetTexParameterIiv")); // May throw.
     }
 
     //! glGetTexParameterIuiv wrapper. May throw.
@@ -348,7 +349,7 @@ private:    // Enumerated queries.
     _getTexParameterIuiv(const GLenum target, const GLenum value, GLuint *data)
     {
         glGetTexParameterIuiv(target, value, data);
-        error::check(std::string("glGetTexParameterIuiv")); // May throw.
+        Error::check(std::string("glGetTexParameterIuiv")); // May throw.
     }
 
     //! glGetTexLevelParameteriv wrapper. May throw.
@@ -357,7 +358,7 @@ private:    // Enumerated queries.
                             const GLenum value, GLint *data)
     {
         glGetTexLevelParameteriv(target, lod, value, data);
-        error::check(std::string("glGetTexLevelParameteriv")); // May throw.
+        Error::check(std::string("glGetTexLevelParameteriv")); // May throw.
     }
 
     //! glGetTexLevelParameterfv wrapper. May throw.
@@ -366,7 +367,7 @@ private:    // Enumerated queries.
                             const GLenum value, GLfloat *data)
     {
         glGetTexLevelParameterfv(target, lod, value, data);
-        error::check(std::string("glGetTexLevelParameterfv")); // May throw.
+        Error::check(std::string("glGetTexLevelParameterfv")); // May throw.
     }
 
 private:    // Texture Queries.
@@ -377,7 +378,7 @@ private:    // Texture Queries.
                  const GLenum type, GLvoid *img)
     {
         glGetTexImage(tex, lod, fmt, type, img);
-        error::check(std::string("glGetTexImage")); // May throw.
+        Error::check(std::string("glGetTexImage")); // May throw.
     }
 
     //! glGetCompressedTexImage wrapper. May throw.
@@ -385,7 +386,7 @@ private:    // Texture Queries.
     _getCompressedTexImage(const GLenum target, const GLint lod, GLvoid *img)
     {
         glGetCompressedTexImage(target, lod, img);
-        error::check(std::string("glGetCompressedTexImage")); // May throw. 
+        Error::check(std::string("glGetCompressedTexImage")); // May throw. 
     }
 
     //! glIsTexture wrapper. May throw.
@@ -393,7 +394,7 @@ private:    // Texture Queries.
     _isTexture(const GLuint texture)
     {
         const GLboolean result = glIsTexture(texture);
-        error::check(std::string("glIsTexture"));   // May throw.
+        Error::check(std::string("glIsTexture"));   // May throw.
         return result;
     }
 
@@ -491,7 +492,7 @@ private:    // 1D specific wrappers.
                 const GLenum type, const GLvoid *data)
     {
         glTexImage1D(target, level, intFmt, w, b, fmt, type, data);     
-        error::check("glTexImage1D"); // May throw;
+        Error::check("glTexImage1D"); // May throw;
     }
 
     //! glCopyTexImage1D wrapper. May throw.
@@ -501,7 +502,7 @@ private:    // 1D specific wrappers.
                     const GLsizei w, const GLint b)
     {
         glCopyTexImage1D(target, level, intFmt, x, y, w, b);
-        error::check("glCopyTexImage1D"); // May throw;
+        Error::check("glCopyTexImage1D"); // May throw;
     }
 
     //! glTexSubImage1D wrapper. May throw.
@@ -511,7 +512,7 @@ private:    // 1D specific wrappers.
                    const GLvoid *data)
     {
         glTexSubImage1D(target, level, x0, w, fmt, type, data);
-        error::check("glTexSubImage1D"); // May throw;
+        Error::check("glTexSubImage1D"); // May throw;
     }
 
     //! glCopyTexSubImage1D wrapper. May throw.
@@ -521,7 +522,7 @@ private:    // 1D specific wrappers.
                        const GLsizei w)
     {
         glCopyTexSubImage1D(target, level, x0, x, y, w);
-        error::check("glCopyTexImage1D"); // May throw;
+        Error::check("glCopyTexImage1D"); // May throw;
     }
 
     //! glCompressedTexImage1D wrapper. May throw.
@@ -531,7 +532,7 @@ private:    // 1D specific wrappers.
                           const GLsizei size, const GLvoid *data)
     {
         glCompressedTexImage1D(target, level, intFmt, w, b, size, data);
-        error::check("glCompressedTexImage1D"); // May throw;
+        Error::check("glCompressedTexImage1D"); // May throw;
     }
 
     //! glCompressedTexSubImage1D wrapper. May throw.
@@ -542,7 +543,7 @@ private:    // 1D specific wrappers.
                              const GLvoid *data)
     {
         glCompressedTexSubImage1D(target, level, x0, w, fmt, size, data);
-        error::check("glCompressedTexSubImage1D"); // May throw;
+        Error::check("glCompressedTexSubImage1D"); // May throw;
     }
 
 private:
@@ -658,7 +659,7 @@ private:    // Texture Image Specification.
                 const GLenum fmt, const GLenum type, const GLvoid *data)
     {
         glTexImage2D(target, level, intFmt, w, h, b, fmt, type, data);     
-        error::check("glTexImage2D"); // May throw;
+        Error::check("glTexImage2D"); // May throw;
     }
 
 private:    // Alternate Texture Image Specification.
@@ -670,7 +671,7 @@ private:    // Alternate Texture Image Specification.
                     const GLsizei w, const GLsizei h, const GLint b)
     {
         glCopyTexImage2D(target, level, intfmt, x, y, w, h, b);
-        error::check("glCopyTexImage2D"); // May throw;
+        Error::check("glCopyTexImage2D"); // May throw;
     }
 
     //! glTexSubImage2D wrapper. May throw.
@@ -680,7 +681,7 @@ private:    // Alternate Texture Image Specification.
                    const GLenum fmt, const GLenum type, const GLvoid *data)
     {
         glTexSubImage2D(target, level, x0, y0, w, h, fmt, type, data);
-        error::check("glTexSubImage2D"); // May throw;
+        Error::check("glTexSubImage2D"); // May throw;
     }
 
     //! glCopyTexSubImage2D wrapper. May throw.
@@ -691,7 +692,7 @@ private:    // Alternate Texture Image Specification.
                        const GLsizei w, const GLsizei h)
     {
         glCopyTexSubImage2D(target, level, x0, y0, x, y, w, h);
-        error::check("glCopyTexSubImage2D"); // May throw;
+        Error::check("glCopyTexSubImage2D"); // May throw;
     }
 
 private:    // Compressed Texture Image.
@@ -703,7 +704,7 @@ private:    // Compressed Texture Image.
                           const GLint b, const GLsizei size, const GLvoid *data)
     {
         glCompressedTexImage2D(target, level, intFmt, w, h, b, size, data);
-        error::check("glCompressedTexImage2D"); // May throw;
+        Error::check("glCompressedTexImage2D"); // May throw;
     }
 
     //! glCompressedTexSubImage2D wrapper. May throw.
@@ -715,7 +716,7 @@ private:    // Compressed Texture Image.
                              const GLvoid *data)
     {
         glCompressedTexSubImage2D(target,level,x0,y0,w,h,fmt,size,data);
-        error::check("glCompressedTexSubImage2D"); // May throw;
+        Error::check("glCompressedTexSubImage2D"); // May throw;
     }
 
 private:
@@ -809,7 +810,7 @@ private:    // Texture Image Specification.
                 const GLenum type, const GLvoid *data)
     {
         glTexImage3D(target, level, intFmt, w, h, d, b, fmt, type, data);     
-        error::check("glTexImage3D"); // May throw;
+        Error::check("glTexImage3D"); // May throw;
     }
 
 private:    // Alternate Texture Image Specification.
@@ -822,7 +823,7 @@ private:    // Alternate Texture Image Specification.
                    const GLenum fmt, const GLenum type, const GLvoid *data)
     {
         glTexSubImage3D(target, level, x0, y0, z0, w, h, d, fmt, type, data);
-        error::check("glTexSubImage3D"); // May throw;
+        Error::check("glTexSubImage3D"); // May throw;
     }
 
     //! glCopyTexSubImage3D wrapper. May throw.
@@ -833,7 +834,7 @@ private:    // Alternate Texture Image Specification.
                        const GLsizei w, const GLsizei h)
     {
         glCopyTexSubImage3D(target, level, x0, y0, z0, x, y, w, h);
-        error::check("glCopyTexSubImage3D"); // May throw;
+        Error::check("glCopyTexSubImage3D"); // May throw;
     }
 
 private:    // Compressed Texture Image.
@@ -846,7 +847,7 @@ private:    // Compressed Texture Image.
                           const GLvoid *data)
     {
         glCompressedTexImage3D(target, level, intFmt, w, h, d, b, size, data);
-        error::check("glCompressedTexImage3D"); // May throw;
+        Error::check("glCompressedTexImage3D"); // May throw;
     }
 
     //! glCompressedTexSubImage3D wrapper. May throw.
@@ -859,7 +860,7 @@ private:    // Compressed Texture Image.
     {
         glCompressedTexSubImage3D(target, level, x0, y0, z0, 
                                   w, h, d, fmt, size, data);
-        error::check("glCompressedTexSubImage3D"); // May throw;
+        Error::check("glCompressedTexSubImage3D"); // May throw;
     }
 
 private:
@@ -870,7 +871,7 @@ private:
 
 //------------------------------------------------------------------------------
 
-}   // Namespace: ndj.
+END_NDJINN_NAMESPACE
 
 //------------------------------------------------------------------------------
 

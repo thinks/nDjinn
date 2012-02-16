@@ -8,16 +8,15 @@
 #ifndef NDJ_ERROR_HPP_INCLUDED
 #define NDJ_ERROR_HPP_INCLUDED
 
+#include "nDjinnNamespace.hpp"
 #include "nDjinnException.hpp"
-//#include <windows.h>
-//#include <gl/GL.h>
-#include <gl/glext.h>
+#include <gl/glew.h>
 #include <sstream>
 #include <string>
 
 //------------------------------------------------------------------------------
 
-namespace ndj {
+BEGIN_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
@@ -82,7 +81,7 @@ private:
 
 // -----------------------------------------------------------------------------
 
-}   // Namespace: ndj.
+END_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 

@@ -8,6 +8,7 @@
 #ifndef NDJ_EXCEPTION_HPP_INCLUDED
 #define NDJ_EXCEPTION_HPP_INCLUDED
 
+#include "nDjinnNamespace.hpp"
 #include <sstream>
 #include <string>
 #include <exception>
@@ -21,7 +22,7 @@
 
 //------------------------------------------------------------------------------
 
-namespace ndj  {
+BEGIN_NDJINN_NAMESPACE
 
 //------------------------------------------------------------------------------
 
@@ -68,7 +69,7 @@ private:    // Member variables.
 
 //------------------------------------------------------------------------------
 
-}  // Namespace: ndj.
+END_NDJINN_NAMESPACE
 
 //------------------------------------------------------------------------------
 

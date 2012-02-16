@@ -8,12 +8,13 @@
 #ifndef NDJ_BUFFER_HPP_INCLUDED
 #define NDJ_BUFFER_HPP_INCLUDED
 
+#include "nDjinnNamespace.hpp"
 #include "nDjinnError.hpp"
 #include <gl/glew.h>
 
 // -----------------------------------------------------------------------------
 
-namespace ndj {
+BEGIN_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
@@ -122,7 +123,7 @@ private:    // Selecting a Buffer for Writing.
     _drawBuffer(const GLenum buf)
     {
         glDrawBuffer(buf);
-        error::check("glDrawBuffer"); // May throw.
+        Error::check("glDrawBuffer"); // May throw.
     }
 
     //! glDrawBuffers wrapper. May throw.
@@ -130,7 +131,7 @@ private:    // Selecting a Buffer for Writing.
     _drawBuffers(const GLsizei n, const GLenum *bufs)
     {
         glDrawBuffers(n, bufs);
-        error::check("glDrawBuffer"); // May throw.
+        Error::check("glDrawBuffer"); // May throw.
     }
 
 private:    // Fine Control of Buffer Updates.
@@ -141,7 +142,7 @@ private:    // Fine Control of Buffer Updates.
                const GLboolean b, const GLboolean a)
     {
         glColorMask(r, g, b, a);
-        error::check("glColorMask"); // May throw.
+        Error::check("glColorMask"); // May throw.
     }
 
     //! glColorMaski wrapper. May throw.
@@ -150,7 +151,7 @@ private:    // Fine Control of Buffer Updates.
                 const GLboolean b, const GLboolean a)
     {
         glColorMaski(buf, r, g, b, a);
-        error::check("glColorMaski"); // May throw.
+        Error::check("glColorMaski"); // May throw.
     }
 
     //! glDepthMask wrapper. May throw.
@@ -158,7 +159,7 @@ private:    // Fine Control of Buffer Updates.
     _depthMask(const GLboolean mask)
     {
         glDepthMask(mask);
-        error::check("glColorMask"); // May throw.
+        Error::check("glColorMask"); // May throw.
     }
 
     //! glStencilMask wrapper. May throw.
@@ -166,7 +167,7 @@ private:    // Fine Control of Buffer Updates.
     _stencilMask(const GLuint mask)
     {
         glStencilMask(mask);
-        error::check("glStencilMask"); // May throw.
+        Error::check("glStencilMask"); // May throw.
     }
 
     //! glStencilMaskSeparate wrapper. May throw.
@@ -174,7 +175,7 @@ private:    // Fine Control of Buffer Updates.
     _stencilMaskSeparate(const GLenum face, const GLuint mask)
     {
         glStencilMaskSeparate(face, mask);
-        error::check("glStencilMaskSeparate"); // May throw.
+        Error::check("glStencilMaskSeparate"); // May throw.
     }
 
 private:    // Clearing the Buffers.
@@ -184,7 +185,7 @@ private:    // Clearing the Buffers.
     _clear(const GLbitfield buf)
     {
         glClear(buf);
-        error::check("glClear"); // May throw.        
+        Error::check("glClear"); // May throw.        
     }
 
     //! glClearColor wrapper. May throw.
@@ -193,7 +194,7 @@ private:    // Clearing the Buffers.
                 const GLclampf b, const GLclampf a)
     {
         glClearColor(r, g, b, a);
-        error::check("glClearColor"); // May throw.        
+        Error::check("glClearColor"); // May throw.        
     }
 
     //! glClearDepth wrapper. May throw.
@@ -201,7 +202,7 @@ private:    // Clearing the Buffers.
     _clearDepth(const GLclampd d)
     {
         glClearDepth(d);
-        error::check("glClearDepth"); // May throw.        
+        Error::check("glClearDepth"); // May throw.        
     }
 
     //! glClearDepthf wrapper. May throw.
@@ -209,7 +210,7 @@ private:    // Clearing the Buffers.
     _clearDepthf(const GLclampf d)
     {
         glClearDepthf(d);
-        error::check("glClearDepthf"); // May throw.        
+        Error::check("glClearDepthf"); // May throw.        
     }
 
     //! glClearStencil wrapper. May throw.
@@ -217,7 +218,7 @@ private:    // Clearing the Buffers.
     _clearStencil(const GLint s)
     {
         glClearStencil(s);
-        error::check("glClearStencil"); // May throw.        
+        Error::check("glClearStencil"); // May throw.        
     }
 
     //! glClearBufferiv wrapper. May throw.
@@ -226,7 +227,7 @@ private:    // Clearing the Buffers.
                    const GLint *value)
     {
         glClearBufferiv(buffer, drawbuffer, value);
-        error::check("glClearBufferiv"); // May throw.        
+        Error::check("glClearBufferiv"); // May throw.        
     }
 
     //! glClearBufferfv wrapper. May throw.
@@ -235,7 +236,7 @@ private:    // Clearing the Buffers.
                    const GLfloat *value)
     {
         glClearBufferfv(buffer, drawbuffer, value);
-        error::check("glClearBufferfv"); // May throw.        
+        Error::check("glClearBufferfv"); // May throw.        
     }
 
     //! glClearBufferuiv wrapper. May throw.
@@ -244,7 +245,7 @@ private:    // Clearing the Buffers.
                     const GLuint *value)
     {
         glClearBufferuiv(buffer, drawbuffer, value);
-        error::check("glClearBufferuiv"); // May throw.        
+        Error::check("glClearBufferuiv"); // May throw.        
     }
 
     //! glClearBufferfi wrapper. May throw.
@@ -253,7 +254,7 @@ private:    // Clearing the Buffers.
                    const GLfloat depth, const GLint stencil)
     {
         glClearBufferfi(buffer, drawbuffer, depth, stencil);
-        error::check("glClearBufferfi"); // May throw.
+        Error::check("glClearBufferfi"); // May throw.
     }
 
 private:    // Disable all kinds of construction.
@@ -266,7 +267,7 @@ private:    // Disable all kinds of construction.
 
 // -----------------------------------------------------------------------------
 
-}   // Namespace: ndj.
+END_NDJINN_NAMESPACE
 
 // -----------------------------------------------------------------------------
 
