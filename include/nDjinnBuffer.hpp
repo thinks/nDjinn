@@ -16,8 +16,6 @@
 
 BEGIN_NDJINN_NAMESPACE
 
-// -----------------------------------------------------------------------------
-
 //! DOCS
 class Buffer
 {
@@ -259,13 +257,11 @@ private:    // Clearing the Buffers.
 
 private:    // Disable all kinds of construction.
 
-    Buffer();                         //! Disable empty CTOR.
-    ~Buffer();                        //! Disable DTOR.
-    Buffer(const Buffer&);            //! Disable copy.
-    Buffer& operator=(const Buffer&); //! Disabled assignment.
+    Buffer();                         //!< Disable CTOR.
+    ~Buffer();                        //!< Disable DTOR.
+    Buffer(const Buffer&);            //!< Disable copy.
+    Buffer& operator=(const Buffer&); //!< Disable assignment.
 };
-
-// -----------------------------------------------------------------------------
 
 END_NDJINN_NAMESPACE
 

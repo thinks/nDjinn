@@ -18,7 +18,6 @@
 
 BEGIN_NDJINN_NAMESPACE
 
-//------------------------------------------------------------------------------
 
 //! DOCS
 class Texture
@@ -868,8 +867,6 @@ private:
     Texture3D(const Texture3D&);              //!< Disabled copy.
     Texture3D& operator=(const Texture3D&);   //!< Disabled assign.
 };
-
-//------------------------------------------------------------------------------
 
 END_NDJINN_NAMESPACE
 

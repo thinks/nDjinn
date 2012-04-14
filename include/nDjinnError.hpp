@@ -18,8 +18,6 @@
 
 BEGIN_NDJINN_NAMESPACE
 
-// -----------------------------------------------------------------------------
-
 class Error
 {
 public:
@@ -32,14 +30,15 @@ public:
         GLenum err = _getError();      // May throw.
         while (_isError(err)) {
             ss << _errorString(err) << " ";
-            err = _getError();         // May throw.
+            err = _getError();         // May throw!?
         }
 
         const std::string errStr = ss.str();
         if (!errStr.empty()) {
             NDJINN_THROW(
-                "OpenGL error(s): " << (caller.empty() ? "" : (caller + ": "))
-                << err_str);
+                "OpenGL error(s): " 
+                << (caller.empty() ? "" : (caller + ": "))
+                << errStr);
         }
     }
 
@@ -78,8 +77,6 @@ private:
         return err; 
     }
 };
-
-// -----------------------------------------------------------------------------
 
 END_NDJINN_NAMESPACE
 

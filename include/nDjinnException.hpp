@@ -15,16 +15,13 @@
 
 //------------------------------------------------------------------------------
 
-// Useful macro.
-
+// Useful macro for throwing.
 #define NDJINN_THROW(MSG) \
 {std::stringstream ss; ss << "nDjinn: "; ss << MSG; throw ndj::base(ss.str());}
 
 //------------------------------------------------------------------------------
 
 BEGIN_NDJINN_NAMESPACE
-
-//------------------------------------------------------------------------------
 
 class base : public std::exception
 {
@@ -66,8 +63,6 @@ private:    // Member variables.
 
     std::string _msg;
 };
-
-//------------------------------------------------------------------------------
 
 END_NDJINN_NAMESPACE
 
