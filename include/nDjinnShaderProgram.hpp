@@ -76,7 +76,7 @@ public:
     const Uniform*
     queryActiveUniform(const std::string &name) const;
 
-    const attrib*
+    const Attrib*
     queryActiveAttrib(const std::string &name) const;
 
 private:
@@ -141,7 +141,7 @@ private:    // OpenGL wrappers.
 private:        // Member variables.
 
     GLuint      _handle;      //!< Resource handle.
-    std::string _info_log;
+    std::string _infoLog;
     AttribMap   _attribs;
     UniformMap  _uniforms;    
 };
@@ -170,11 +170,8 @@ ShaderProgram::ShaderProgram()
 inline
 ShaderProgram::~ShaderProgram()
 { 
-    try {
-        _deleteProgram(_handle);   // May throw.
-    }
-    catch (...) {
-    }
+    try { _deleteProgram(_handle); }
+    catch (...) {}
 }
 
 // -----------------------------------------------------------------------------
@@ -221,15 +218,15 @@ ShaderProgram::link()
     _getProgramiv(_handle, GL_LINK_STATUS, &linkStatus); // May throw.
     if (linkStatus == GL_FALSE) {
         NDJINN_THROW("Shader program link error: " 
-                        << _handle << ": " << _infoLog);
+                     << _handle << ": " << _infoLog);
     }
 
-    _validate_program(_handle);
+    _validateProgram(_handle);
     GLint validateStatus = GL_FALSE;
     _getProgramiv(_handle, GL_VALIDATE_STATUS, &validateStatus); 
     if (validateStatus == GL_FALSE) {
         NDJINN_THROW("Shader program validation error: " 
-                        << _handle << ": " << _info_log);
+                     << _handle << ": " << _infoLog);
     }
 
     // Successful link and validation. Now get some info about the shader.
@@ -243,7 +240,7 @@ ShaderProgram::link()
 inline const std::string&
 ShaderProgram::infoLog() const
 { 
-    return _info_log; 
+    return _infoLog; 
 }
 
 // -----------------------------------------------------------------------------
@@ -266,7 +263,7 @@ inline const ShaderProgram::Attrib*
 ShaderProgram::queryActiveAttrib(const std::string &name) const 
 {
     const Attrib *attr = 0;
-    const AttribMap_type::const_iterator iter = _attribs.find(name);
+    const AttribMap::const_iterator iter = _attribs.find(name);
     if (iter != _attribs.end()) {
         attr = &iter->second;
     }
@@ -281,7 +278,7 @@ ShaderProgram::_getActiveUniforms(const GLuint program, UniformMap &uniforms)
 {
     uniforms.clear();
     GLint activeUniforms = 0;
-    _getProgramiv(program, GL_ACTIVE_UNIFORMS, &active_uniforms);
+    _getProgramiv(program, GL_ACTIVE_UNIFORMS, &activeUniforms);
     GLint activeUniformMaxLength = 0; 
     _getProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, 
                     &activeUniformMaxLength);
@@ -353,7 +350,7 @@ ShaderProgram::_getInfoLog(const GLuint program, std::string &infoLog)
                             static_cast<GLsizei>(maxLength),
                             &logLength, // Excluding null-termination!
                             &infoLog[0]); // Null-terminated.
-        info_log.resize(log_length + 1);
+        infoLog.resize(logLength + 1);
     }
 }
 

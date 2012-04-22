@@ -39,12 +39,12 @@ public:
     //! Query depth range. May throw.
     static void
     getDepthRange(GLdouble dr[2])
-    { State::getDouble(GL_DEPTH_RANGE, dr); } // May throw.
+    { State::getDoublev(GL_DEPTH_RANGE, dr); } // May throw.
 
     //! Query viewport dimensions. May throw.
     static void
     getViewport(GLint vp[4])
-    { State::getInteger(GL_VIEWPORT, vp); } // May throw.
+    { State::getIntegerv(GL_VIEWPORT, vp); } // May throw.
 
 private:    // Controlling Viewport.
 

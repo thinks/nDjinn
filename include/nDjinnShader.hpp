@@ -83,7 +83,7 @@ private:
 private:    // Member variables.
 
     GLuint      _handle;    //!< Resource handle.
-    std::string _info_log;
+    std::string _infoLog;
 };
 
 // -----------------------------------------------------------------------------
@@ -175,15 +175,15 @@ Shader::_getInfoLog(const GLuint shader, std::string &infoLog)
 {
     GLint maxLength = 0;
     _getShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength); // May throw.
-    if (max_length > 0) { // Info exists. 
-        info_log.clear();
-        info_log.resize(maxLength);
+    if (maxLength > 0) { // Info exists. 
+        infoLog.clear();
+        infoLog.resize(maxLength);
         GLsizei logLength = 0;
         _getShaderInfoLog(shader, 
-                            static_cast<GLsizei>(maxLength),
-                            &logLength,   // Excluding null-termination.
-                            &infoLog[0]); // Null-terminated.
-        info_log.resize(logLength + 1); // Trim.
+                          static_cast<GLsizei>(maxLength),
+                          &logLength,   // Excluding null-termination.
+                          &infoLog[0]); // Null-terminated.
+        infoLog.resize(logLength + 1); // Trim.
     }
 }
 
