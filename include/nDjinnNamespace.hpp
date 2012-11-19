@@ -5,10 +5,10 @@
 //
 //------------------------------------------------------------------------------
 
-#ifndef NDJ_NAMESPACE_HPP_INCLUDED
-#define NDJ_NAMESPACE_HPP_INCLUDED
+#ifndef NDJINN_NAMESPACE_HPP_INCLUDED
+#define NDJINN_NAMESPACE_HPP_INCLUDED
 
-#define BEGIN_NDJINN_NAMESPACE namespace ndj {
-#define END_NDJINN_NAMESPACE   } 
+#define NDJINN_BEGIN_NAMESPACE namespace ndj {
+#define NDJINN_END_NAMESPACE   } 
 
-#endif  // NDJ_NAMESPACE_HPP_INCLUDED
+#endif  // NDJINN_NAMESPACE_HPP_INCLUDED

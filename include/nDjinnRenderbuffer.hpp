@@ -5,17 +5,21 @@
 //
 //------------------------------------------------------------------------------
 
-#ifndef NDJ_RENDERBUFFER_HPP_INCLUDED
-#define NDJ_RENDERBUFFER_HPP_INCLUDED
+#ifndef NDJINN_RENDERBUFFER_HPP_INCLUDED
+#define NDJINN_RENDERBUFFER_HPP_INCLUDED
 
-#include "ndj_exception.hpp"
-#include "ndj_error.hpp"
+#include "nDjinnException.hpp"
+#include "nDjinnError.hpp"
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-namespace ndj {
+NDJINN_BEGIN_NAMESPACE
 
-// -----------------------------------------------------------------------------
+namespace detail {
+
+}
+
+//------------------------------------------------------------------------------
 
 class framebuffer
 {

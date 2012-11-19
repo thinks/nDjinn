@@ -14,18 +14,96 @@
 #include <gl/glew.h>
 #include <string>
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-BEGIN_NDJINN_NAMESPACE
+NDJINN_BEGIN_NAMESPACE
+
+namespace detail {
+
+//! glCreateShader wrapper. May throw. 
+inline GLuint
+createShader(const GLenum type) {
+  const GLuint shader = glCreateShader(type);
+  checkError("glCreateShader");
+  return shader; 
+}
+
+//! glDeleteShader wrapper. May throw. 
+inline void
+deleteShader(const GLuint shader) { 
+  glDeleteShader(shader); 
+  checkError("glDeleteShader");
+}
+
+//! glIsShader wrapper. May throw.
+inline GLboolean
+isShader(const GLuint shader) {
+  const GLboolean isShader = glIsShader(shader);
+  checkError("glIsShader");
+  return isShader; 
+}
+
+//! glShaderSource wrapper. May throw.
+inline void
+shaderSource(const GLuint shader,
+             const GLsizei count, 
+             const GLchar **string, 
+             const GLint *length) { 
+  glShaderSource(shader, count, string, length); 
+  checkError("glShaderSource");
+}
+
+//! glCompileShader wrapper. May throw. 
+inline void
+compileShader(const GLuint shader) { 
+  glCompileShader(shader); 
+  checkError("glCompileShader");
+}
+
+//! glGetShaderInfoLog wrapper. May throw.
+inline void 
+getShaderInfoLog(const GLuint shader,
+                 const GLsizei bufSize, 
+                 GLsizei *length, 
+                 GLchar  *infoLog) { 
+  glGetShaderInfoLog(shader, bufSize, length, infoLog); 
+  checkError("glGetShaderInfoLog");
+}
+
+//! glGetShaderiv wrapper. May throw.
+inline void
+getShaderiv(const GLuint shader, const GLenum pname, GLint *params) { 
+  glGetShaderiv(shader, pname, params); 
+  checkError("glGetShaderiv"); 
+}
+
+//! Retrieve info log. May throw.
+inline void
+getShaderInfoLog(const GLuint shader, std::string &infoLog) {
+  GLint maxLength = 0;
+  getShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength); 
+  if (maxLength > 0) { // Info exists. 
+    infoLog.clear();
+    infoLog.resize(maxLength);
+    GLsizei logLength = 0;
+    getShaderInfoLog(shader, 
+                     static_cast<GLsizei>(maxLength),
+                     &logLength,   // Excluding null-termination.
+                     &infoLog[0]); // Null-terminated.
+    infoLog.resize(logLength + 1); // Trim.
+  }
+}
+
+} // Namespace: detail.
+
+//------------------------------------------------------------------------------
 
 //! DOCS
 class Shader
 {
 public:
 
-    explicit
-    Shader(GLenum type);
-
+    explicit Shader(GLenum type);
     ~Shader();
 
 public:
@@ -46,221 +124,79 @@ public:
     infoLog() const;
 
 private:
+  Shader(const Shader&);            //!< Disable copy CTOR.
+  Shader& operator=(const Shader&); //!< Disable assign.
 
-    static void
-    _getInfoLog(const GLuint shader, std::string &infoLog);
-
-private:    // OpenGL wrappers.
-
-    static GLuint
-    _createShader(GLenum type);
-
-    static void
-    _deleteShader(GLuint shader);
-
-    static GLboolean
-    _isShader(GLuint shader);
-
-    static void
-    _shaderSource(GLuint shader, GLsizei count, 
-                  const GLchar **string, const GLint *length);
-
-    static void
-    _compileShader(GLuint shader);
-
-    static void 
-    _getShaderInfoLog(GLuint shader, GLsizei bufSize, 
-                      GLsizei *length, GLchar *infoLog);
-
-    static void
-    _getShaderiv(GLuint shader, GLenum pname, GLint *params);
-
-private:
-
-    Shader(const Shader&);            //!< Disable copy CTOR.
-    Shader& operator=(const Shader&); //!< Disable assign.
-
-private:    // Member variables.
-
-    GLuint      _handle;    //!< Resource handle.
-    std::string _infoLog;
+private: // Member variables.
+  GLuint _handle; //!< Resource handle.
+  std::string _infoLog;
 };
 
 // -----------------------------------------------------------------------------
 
-//! CTOR.
+//! CTOR. May throw.
 inline
 Shader::Shader(const GLenum type)
-    : _handle(0)
+  : _handle(0)
 {
-    try {
-        _handle = _createShader(type); // May throw.
-        if (_handle == 0) {
-            NDJINN_THROW("Invalid shader handle");
-        }
-    }
-    catch (...) {
-        _deleteShader(_handle);        // TODO: May throw!?
-        throw;                          // Re-throw.
-    }
+  _handle = detail::createShader(type);
+  if (_handle == 0) {
+    NDJINN_THROW("Invalid shader handle");
+  }
 }
-
 
 //! DTOR. Free handle resource.
 inline 
-Shader::~Shader()
-{ 
-    try {
-        _deleteShader(_handle);    // May throw.
-    }
-    catch (...) {
-    }
+Shader::~Shader() { 
+  try {
+    detail::deleteShader(_handle);
+  }
+  catch (...) {
+  }
 }
 
 // -----------------------------------------------------------------------------
 
 //! DOCS
 inline GLuint 
-Shader::handle() const 
-{ 
-    return _handle; 
+Shader::handle() const { 
+  return _handle; 
 }
 
-
-//! DOCS
+//! DOCS. May throw.
 inline void
-Shader::source(const GLsizei count, const GLchar **string, const GLint *length)
-{ 
-    _shaderSource(_handle, count, string, length); // May throw.
+Shader::source(const GLsizei count, 
+               const GLchar **string, 
+               const GLint *length) { 
+  detail::shaderSource(_handle, count, string, length);
 } 
 
-
-//! Compile shader from previously set source.
+//! Compile shader from previously set source. May throw.
 inline void
-Shader::compile()
-{
-    _compileShader(_handle); // May throw.
-    _getInfoLog(_handle, _infoLog); // May throw.
-    GLint compileStatus = GL_FALSE;
-    _getShaderiv(_handle, GL_COMPILE_STATUS, &compileStatus); // May throw.
-    if (compileStatus != GL_TRUE) {                          
-        NDJINN_THROW("Shader compile error: " << 
-                        _handle << ": " << _infoLog);
-    }
+Shader::compile() {
+  detail::compileShader(_handle); 
+  detail::getShaderInfoLog(_handle, _infoLog); 
+  GLint compileStatus = GL_FALSE;
+  detail::getShaderiv(_handle, GL_COMPILE_STATUS, &compileStatus);
+  if (compileStatus != GL_TRUE) {                          
+    NDJINN_THROW("Shader compile error: " << _handle << ": " << _infoLog);
+  }
 }
-
 
 //! Shader type.
 inline GLenum
-Shader::type() const
-{ 
-    GLint params;
-    _getShaderiv(_handle, GL_SHADER_TYPE, &params);
-    return static_cast<GLenum>(params);
+Shader::type() const { 
+  GLint params;
+  detail::getShaderiv(_handle, GL_SHADER_TYPE, &params);
+  return static_cast<GLenum>(params);
 }
-
 
 //! Return info log. May be empty.
 inline const std::string&
-Shader::infoLog() const
-{ 
-    return _infoLog; 
+Shader::infoLog() const { 
+  return _infoLog; 
 }
 
-// -----------------------------------------------------------------------------
-
-//! Retrieve info log.
-inline void
-Shader::_getInfoLog(const GLuint shader, std::string &infoLog)
-{
-    GLint maxLength = 0;
-    _getShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength); // May throw.
-    if (maxLength > 0) { // Info exists. 
-        infoLog.clear();
-        infoLog.resize(maxLength);
-        GLsizei logLength = 0;
-        _getShaderInfoLog(shader, 
-                          static_cast<GLsizei>(maxLength),
-                          &logLength,   // Excluding null-termination.
-                          &infoLog[0]); // Null-terminated.
-        infoLog.resize(logLength + 1); // Trim.
-    }
-}
-
-// -----------------------------------------------------------------------------
-
-//! glCreateShader wrapper. May throw. [static]
-inline GLuint
-Shader::_createShader(const GLenum type)
-{
-    const GLuint shader = glCreateShader(type);
-    Error::check("glCreateShader"); // May throw;
-    return shader; 
-}
-
-
-//! glDeleteShader wrapper. May throw. [static]
-inline void
-Shader::_deleteShader(const GLuint shader)
-{ 
-    glDeleteShader(shader); 
-    Error::check("glDeleteShader"); // May throw;
-}
-
-
-//! glIsShader wrapper. May throw. [static]
-inline GLboolean
-Shader::_isShader(const GLuint shader)
-{
-    const GLboolean isShader = glIsShader(shader);
-    Error::check("glIsShader");    // May throw;
-    return isShader; 
-}
-
-
-//! glShaderSource wrapper. May throw. [static]
-inline void
-Shader::_shaderSource(const GLuint    shader,
-                      const GLsizei   count, 
-                      const GLchar  **string, 
-                      const GLint    *length)
-{ 
-    glShaderSource(shader, count, string, length); 
-    Error::check("glShaderSource"); // May throw;
-}
-
-
-//! glCompileShader wrapper. May throw. [static]
-inline void
-Shader::_compileShader(const GLuint shader)
-{ 
-    glCompileShader(shader); 
-    Error::check("glCompileShader"); // May throw;
-}
-
-
-//! glGetShaderInfoLog wrapper. May throw. [static]
-inline void 
-Shader::_getShaderInfoLog(const GLuint   shader,
-                          const GLsizei  bufSize, 
-                          GLsizei       *length, 
-                          GLchar        *infoLog)
-{ 
-    glGetShaderInfoLog(shader, bufSize, length, infoLog); 
-    Error::check("glGetShaderInfoLog"); // May throw;
-}
-
-
-//! glGetShaderiv wrapper. May throw. [static]
-inline void
-Shader::_getShaderiv(const GLuint shader, const GLenum pname, GLint *params)
-{ 
-    glGetShaderiv(shader, pname, params); 
-    Error::check("glGetShaderiv"); // May throw;
-}
-
-END_NDJINN_NAMESPACE
-
-// -----------------------------------------------------------------------------
+NDJINN_END_NAMESPACE
 
 #endif // NDJINN_SHADER_HPP_INCLUDED

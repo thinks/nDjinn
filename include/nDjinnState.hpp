@@ -12,150 +12,75 @@
 #include "nDjinnError.hpp"
 #include <gl/glew.h>
 
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-BEGIN_NDJINN_NAMESPACE
+NDJINN_BEGIN_NAMESPACE
 
-//! DOCS
-class State
-{
-public:     // Enable/Disable.
-
-    static void
-    enable(GLenum cap);
-
-    static void
-    disable(GLenum cap);
-
-public:     // Simple Queries.
-
-    static void
-    getBooleanv(GLenum pname, GLboolean *data);
-
-    static void
-    getIntegerv(GLenum pname, GLint *data);
-
-    static void
-    getInteger64v(GLenum pname, GLint64 *data);
-
-    static void
-    getFloatv(GLenum pname, GLfloat *data);
-
-    static void
-    getDoublev(GLenum pname, GLdouble *data);
-
-    static GLboolean
-    isEnabled(GLenum cap);
-
-    // TODO: glGetBooleani_v
-    // TODO: glGetIntegeri_v
-    // TODO: glGetFloati_v
-    // TODO: glGetInteger64i_v
-    // TODO: glIsEnabledi
-
-public:     // Pointer & String Queries.
-
-    static const GLubyte*
-    getString(GLenum name);
-
-    // TODO: glGetStringi
-
-private:    // Disable all kinds of construction.
-
-    State();                        //! Disable empty CTOR.
-    ~State();                       //! Disable DTOR.
-    State(const State&);            //! Disable copy.
-    State& operator=(const State&); //! Disabled assignment.
-};
-
-// -----------------------------------------------------------------------------
-
-// glEnable wrapper. May throw. [static]
+// glEnable wrapper. May throw.
 inline void
-State::enable(const GLenum cap)
-{
-    glEnable(cap);
-    Error::check("glEnable");
+enable(const GLenum cap) {
+  glEnable(cap);
+  checkError("glEnable");
 }
 
-
-// glDisable wrapper. May throw. [static]
+// glDisable wrapper. May throw.
 inline void
-State::disable(const GLenum cap)
-{
-    glDisable(cap);
-    Error::check("glDisable");
+disable(const GLenum cap) {
+  glDisable(cap);
+  checkError("glDisable");
 }
 
-// -----------------------------------------------------------------------------
-
-//! glGetBooleanv wrapper. May throw. [static]
+//! glGetBooleanv wrapper. May throw.
 inline void
-State::getBooleanv(const GLenum pname, GLboolean *data)
-{
-    glGetBooleanv(pname, data);
-    Error::check("glGetBooleanv"); // May throw.
+getBooleanv(const GLenum pname, GLboolean *data) {
+  glGetBooleanv(pname, data);
+  checkError("glGetBooleanv");
 }
 
-
-//! glGetIntegerv wrapper. May throw. [static]
+//! glGetIntegerv wrapper. May throw. 
 inline void
-State::getIntegerv(const GLenum pname, GLint *data)
-{
-    glGetIntegerv(pname, data);
-    Error::check("glGetIntegerv"); // May throw.
+getIntegerv(const GLenum pname, GLint *data) {
+  glGetIntegerv(pname, data);
+  checkError("glGetIntegerv");
 }
 
-
-//! glGetInteger64v wrapper. May throw. [static]
+//! glGetInteger64v wrapper. May throw.
 inline void
-State::getInteger64v(const GLenum pname, GLint64 *data)
-{
-    glGetInteger64v(pname, data);
-    Error::check("glGetInteger64v"); // May throw.
+getInteger64v(const GLenum pname, GLint64 *data) {
+  glGetInteger64v(pname, data);
+  checkError("glGetInteger64v");
 }
 
-
-//! glGetFloatv wrapper. May throw. [static]
+//! glGetFloatv wrapper. May throw. 
 inline void
-State::getFloatv(const GLenum pname, GLfloat *data)
-{
-    glGetFloatv(pname, data);
-    Error::check("glGetFloatv"); // May throw.
+getFloatv(const GLenum pname, GLfloat *data) {
+  glGetFloatv(pname, data);
+  checkError("glGetFloatv"); // May throw.
 }
 
-
-//! glGetDoublev wrapper. May throw. [static]
+//! glGetDoublev wrapper. May throw.
 inline void
-State::getDoublev(const GLenum pname, GLdouble *data)
-{
-    glGetDoublev(pname, data);
-    Error::check("glGetDoublev"); // May throw.
+getDoublev(const GLenum pname, GLdouble *data) {
+  glGetDoublev(pname, data);
+  checkError("glGetDoublev"); // May throw.
 }
 
-
-//! glIsEnabled wrapper. May throw. [static]
+//! glIsEnabled wrapper. May throw. 
 inline GLboolean
-State::isEnabled(const GLenum cap)
-{
-    const GLboolean enabled = glIsEnabled(cap);
-    Error::check("glIsEnabled"); // May throw.
-    return enabled;
+isEnabled(const GLenum cap) {
+  const GLboolean enabled = glIsEnabled(cap);
+  checkError("glIsEnabled"); // May throw.
+  return enabled;
 }
 
-// -----------------------------------------------------------------------------
-
-//! glGetString wrapper. May throw. [static]
+//! glGetString wrapper. May throw.
 inline const GLubyte*
-State::getString(const GLenum name)
-{
-    const GLubyte *str = glGetString(name);
-    Error::check("glGetString");
-    return str;
+getString(const GLenum name) {
+  const GLubyte *str = glGetString(name);
+  checkError("glGetString");
+  return str;
 }
 
-END_NDJINN_NAMESPACE
-
-// -----------------------------------------------------------------------------
+NDJINN_END_NAMESPACE
 
 #endif // NDJINN_STATE_HPP_INCLUDED

@@ -14,234 +14,134 @@
 
 // -----------------------------------------------------------------------------
 
-BEGIN_NDJINN_NAMESPACE
+NDJINN_BEGIN_NAMESPACE
 
-//! DOCS
-class Buffer
-{
-public:     // Selecting a Buffer for Writing.
-
-    static void
-    drawBuffer(GLenum buf);
-
-    static void
-    drawBuffers(GLsizei n, const GLenum *bufs);
-
-public:     // Fine Control of Buffer Updates.
-
-    static void 
-    colorMask(GLboolean r, GLboolean g, GLboolean b, GLboolean a);
-
-    static void 
-    colorMaski(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
-
-    static void 
-    depthMask(GLboolean mask);
-
-    static void 
-    stencilMask(GLuint mask);
-
-    static void 
-    stencilMaskSeparate(GLenum face, GLuint mask);
-
-public:     // Clearing the Buffers.
-
-    static void 
-    clear(GLbitfield buf);        
-
-    static void 
-    clearColor(GLclampf r, GLclampf g, GLclampf b, GLclampf a);    
-
-    static void 
-    clearDepth(GLclampd d);        
-
-    static void 
-    clearDepthf(GLclampf d);
-
-    static void 
-    clearStencil(GLint s);
-
-    static void 
-    clearBufferiv(GLenum buf, GLint drawbuffer, const GLint *value);
-
-    static void 
-    clearBufferfv(GLenum buf, GLint drawbuffer, const GLfloat *value);
-
-    static void 
-    clearBufferuiv(GLenum buf, GLint drawbuffer, const GLuint *value);
-
-    static void 
-    clearBufferfi(GLenum buf, GLint drawbuffer, GLfloat depth, GLint stencil);
-
-private:    // Disable all kinds of construction.
-
-    Buffer();                         //!< Disable CTOR.
-    ~Buffer();                        //!< Disable DTOR.
-    Buffer(const Buffer&);            //!< Disable copy.
-    Buffer& operator=(const Buffer&); //!< Disable assignment.
-};
-
-// -----------------------------------------------------------------------------
-
-//! glDrawBuffer wrapper. May throw. [static]
+//! glDrawBuffer wrapper. May throw.
 inline void
-Buffer::drawBuffer(const GLenum buf)
-{ 
-    glDrawBuffer(buf);
-    Error::check("glDrawBuffer"); // May throw.
+drawBuffer(const GLenum buf) { 
+  glDrawBuffer(buf);
+  checkError("glDrawBuffer");
 } 
 
-
-//! glDrawBuffers wrapper. May throw. [static]
+//! glDrawBuffers wrapper. May throw.
 inline void
-Buffer::drawBuffers(const GLsizei n, const GLenum *bufs)
-{ 
-    glDrawBuffers(n, bufs);
-    Error::check("glDrawBuffers"); // May throw.
+drawBuffers(const GLsizei n, const GLenum *bufs) { 
+  glDrawBuffers(n, bufs);
+  checkError("glDrawBuffers");
 } 
 
-// -----------------------------------------------------------------------------
-
-//! glColorMask wrapper. May throw. [static]
+//! glColorMask wrapper. May throw.
 inline void 
-Buffer::colorMask(const GLboolean r, const GLboolean g, 
-                  const GLboolean b, const GLboolean a)
-{
-    glColorMask(r, g, b, a);
-    Error::check("glColorMask"); // May throw.
+colorMask(const GLboolean r, 
+          const GLboolean g, 
+          const GLboolean b, 
+          const GLboolean a) {
+  glColorMask(r, g, b, a);
+  checkError("glColorMask");
 }
 
-
-//! glColorMaski wrapper. May throw. [static]
+//! glColorMaski wrapper. May throw.
 inline void 
-Buffer::colorMaski(const GLuint buf, const GLboolean r, const GLboolean g, 
-                   const GLboolean b, const GLboolean a)
-{
-    glColorMaski(buf, r, g, b, a);
-    Error::check("glColorMaski"); // May throw.
+colorMaski(const GLuint buf, 
+           const GLboolean r, 
+           const GLboolean g, 
+           const GLboolean b, 
+           const GLboolean a) {
+  glColorMaski(buf, r, g, b, a);
+  checkError("glColorMaski"); 
 }
 
-
-//! glDepthMask wrapper. May throw. [static]
+//! glDepthMask wrapper. May throw.
 inline void 
-Buffer::depthMask(const GLboolean mask)
-{
-    glDepthMask(mask);
-    Error::check("glColorMask"); // May throw.
+depthMask(const GLboolean mask) {
+  glDepthMask(mask);
+  checkError("glColorMask");
 }
 
-
-//! glStencilMask wrapper. May throw. [static]
+//! glStencilMask wrapper. May throw.
 inline void 
-Buffer::stencilMask(const GLuint mask)
+stencilMask(const GLuint mask)
 {
-    glStencilMask(mask);
-    Error::check("glStencilMask"); // May throw.
+  glStencilMask(mask);
+  checkError("glStencilMask");
 }
 
-
-//! glStencilMaskSeparate wrapper. May throw. [static]
+//! glStencilMaskSeparate wrapper. May throw.
 inline void 
-Buffer::stencilMaskSeparate(const GLenum face, const GLuint mask)
-{
-    glStencilMaskSeparate(face, mask);
-    Error::check("glStencilMaskSeparate"); // May throw.
+stencilMaskSeparate(const GLenum face, const GLuint mask) {
+  glStencilMaskSeparate(face, mask);
+  checkError("glStencilMaskSeparate");
 }
 
-// -----------------------------------------------------------------------------
-
-//! glClear wrapper. May throw. [static]
+//! glClear wrapper. May throw.
 inline void 
-Buffer::clear(const GLbitfield buf)
-{
-    glClear(buf);
-    Error::check("glClear"); // May throw.        
+clear(const GLbitfield buf) {
+  glClear(buf);
+  checkError("glClear");        
 }
 
-
-//! glClearColor wrapper. May throw. [static]
+//! glClearColor wrapper. May throw.
 inline void 
-Buffer::clearColor(const GLclampf r, const GLclampf g, 
-            const GLclampf b, const GLclampf a)
-{
-    glClearColor(r, g, b, a);
-    Error::check("glClearColor"); // May throw.        
+clearColor(const GLclampf r, 
+           const GLclampf g, 
+           const GLclampf b, 
+           const GLclampf a) {
+  glClearColor(r, g, b, a);
+  checkError("glClearColor");
 }
 
-
-//! glClearDepth wrapper. May throw. [static]
+//! glClearDepth wrapper. May throw.
 inline void 
-Buffer::clearDepth(const GLclampd d)
-{
-    glClearDepth(d);
-    Error::check("glClearDepth"); // May throw.        
+clearDepth(const GLclampd d) {
+  glClearDepth(d);
+  checkError("glClearDepth");
 }
 
-
-//! glClearDepthf wrapper. May throw. [static]
+//! glClearDepthf wrapper. May throw. 
 inline void 
-Buffer::clearDepthf(const GLclampf d)
-{
-    glClearDepthf(d);
-    Error::check("glClearDepthf"); // May throw.        
+clearDepthf(const GLclampf d) {
+  glClearDepthf(d);
+  checkError("glClearDepthf");
 }
 
-
-//! glClearStencil wrapper. May throw. [static]
+//! glClearStencil wrapper. May throw.
 inline void 
-Buffer::clearStencil(const GLint s)
-{
-    glClearStencil(s);
-    Error::check("glClearStencil"); // May throw.        
+clearStencil(const GLint s) {
+  glClearStencil(s);
+  checkError("glClearStencil");
 }
 
-
-//! glClearBufferiv wrapper. May throw. [static]
+//! glClearBufferiv wrapper. May throw.
 inline void 
-Buffer::clearBufferiv(const GLenum  buf, 
-                      const GLint   drawbuffer, 
-                      const GLint  *value)
-{
-    glClearBufferiv(buf, drawbuffer, value);
-    Error::check("glClearBufferiv"); // May throw.        
+clearBufferiv(const GLenum buf, const GLint drawbuffer, const GLint *value) {
+  glClearBufferiv(buf, drawbuffer, value);
+  checkError("glClearBufferiv"); // May throw.        
 }
 
-
-//! glClearBufferfv wrapper. May throw. [static]
+//! glClearBufferfv wrapper. May throw.
 inline void 
-Buffer::clearBufferfv(const GLenum   buf, 
-                      const GLint    drawbuffer, 
-                      const GLfloat *value)
-{
-    glClearBufferfv(buf, drawbuffer, value);
-    Error::check("glClearBufferfv"); // May throw.        
+clearBufferfv(const GLenum buf, const GLint drawbuffer, const GLfloat *value) {
+  glClearBufferfv(buf, drawbuffer, value);
+  checkError("glClearBufferfv"); // May throw.        
 }
 
-
-//! glClearBufferuiv wrapper. May throw. [static]
+//! glClearBufferuiv wrapper. May throw.
 inline void 
-Buffer::clearBufferuiv(const GLenum  buf, 
-                       const GLint   drawbuffer, 
-                       const GLuint *value)
-{
-    glClearBufferuiv(buf, drawbuffer, value);
-    Error::check("glClearBufferuiv"); // May throw.        
+clearBufferuiv(const GLenum buf, const GLint drawbuffer, const GLuint *value) {
+  glClearBufferuiv(buf, drawbuffer, value);
+  checkError("glClearBufferuiv"); // May throw.        
 }
 
-
-//! glClearBufferfi wrapper. May throw. [static]
+//! glClearBufferfi wrapper. May throw.
 inline void 
-Buffer::clearBufferfi(const GLenum  buf, 
-                      const GLint   drawbuffer, 
-                      const GLfloat depth, 
-                      const GLint   stencil)
-{
-    glClearBufferfi(buf, drawbuffer, depth, stencil);
-    Error::check("glClearBufferfi"); // May throw.
+clearBufferfi(const GLenum buf, 
+              const GLint drawbuffer, 
+              const GLfloat depth, 
+              const GLint stencil) {
+  glClearBufferfi(buf, drawbuffer, depth, stencil);
+  checkError("glClearBufferfi"); // May throw.
 }
 
-END_NDJINN_NAMESPACE
-
-// -----------------------------------------------------------------------------
+NDJINN_END_NAMESPACE
 
 #endif  // NDJINN_BUFFER_HPP_INCLUDED

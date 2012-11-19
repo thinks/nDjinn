@@ -5,8 +5,8 @@
 //
 //------------------------------------------------------------------------------
 
-#ifndef NDJ_EXCEPTION_HPP_INCLUDED
-#define NDJ_EXCEPTION_HPP_INCLUDED
+#ifndef NDJINN_EXCEPTION_HPP_INCLUDED
+#define NDJINN_EXCEPTION_HPP_INCLUDED
 
 #include "nDjinnNamespace.hpp"
 #include <sstream>
@@ -21,51 +21,49 @@
 
 //------------------------------------------------------------------------------
 
-BEGIN_NDJINN_NAMESPACE
+NDJINN_BEGIN_NAMESPACE
 
 class base : public std::exception
 {
 public:
 
-    //! CTOR.
-    explicit
-    base(const std::string &msg)
-        : std::exception()
-        , _msg(msg) 
-    {}
+  //! CTOR.
+  explicit
+  base(const std::string &msg)
+      : std::exception()
+      , _msg(msg) {
+  }
 
-    //! Copy CTOR.
-    base(const base &rhs)
-        : std::exception(rhs)
-        , _msg(rhs._msg)    // TODO: May throw?
-    {}
+  //! Copy CTOR.
+  base(const base &rhs)
+      : std::exception(rhs)
+      , _msg(rhs._msg) { // TODO: May throw?
+  }
 
-    //! Assign.
-    base&
-    operator=(const base &rhs)
-    {
-        std::exception::operator=(rhs);
-        _msg = rhs._msg;    // TODO: May throw?
-        return *this;
-    }
+  //! Assign.
+  base&
+  operator=(const base &rhs) {
+    std::exception::operator=(rhs);
+    _msg = rhs._msg;    // TODO: May throw?
+    return *this;
+  }
 
-    //! DTOR.
-    virtual 
-    ~base()
-    {}
+  //! DTOR.
+  virtual 
+  ~base() {
+  }
 
-    //! Exception message.
-    virtual const char* 
-    what() const
-    { return _msg.c_str(); }
+  //! Exception message.
+  virtual const char* 
+  what() const { 
+    return _msg.c_str(); 
+  }
 
 private:    // Member variables.
 
-    std::string _msg;
+  std::string _msg;
 };
 
-END_NDJINN_NAMESPACE
+NDJINN_END_NAMESPACE
 
-//------------------------------------------------------------------------------
-
-#endif	// NDJ_EXCEPTION_HPP_INCLUDED
+#endif	// NDJINN_EXCEPTION_HPP_INCLUDED
