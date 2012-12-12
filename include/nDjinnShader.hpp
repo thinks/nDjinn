@@ -64,10 +64,20 @@ compileShader(const GLuint shader) {
 inline void 
 getShaderInfoLog(const GLuint shader,
                  const GLsizei bufSize, 
-                 GLsizei *length, 
-                 GLchar  *infoLog) { 
+                 GLsizei* length, 
+                 GLchar* infoLog) { 
   glGetShaderInfoLog(shader, bufSize, length, infoLog); 
   checkError("glGetShaderInfoLog");
+}
+
+//! glGetShaderSource wrapper. May throw.
+inline void
+getShaderSource(const GLuint shader, 
+                const GLsizei bufSize,
+ 	              GLsizei* length,
+ 	              GLchar* source) {
+  glGetShaderSource(shader, bufSize, length, source);
+  checkError("glGetShaderSource"); 
 }
 
 //! glGetShaderiv wrapper. May throw.
@@ -80,10 +90,10 @@ getShaderiv(const GLuint shader, const GLenum pname, GLint *params) {
 //! Retrieve info log. May throw.
 inline void
 getShaderInfoLog(const GLuint shader, std::string &infoLog) {
+  infoLog.clear();
   GLint maxLength = 0;
   getShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength); 
   if (maxLength > 0) { // Info exists. 
-    infoLog.clear();
     infoLog.resize(maxLength);
     GLsizei logLength = 0;
     getShaderInfoLog(shader, 
@@ -94,34 +104,54 @@ getShaderInfoLog(const GLuint shader, std::string &infoLog) {
   }
 }
 
+//! Retrieve shader source. May throw.
+inline void
+getShaderSource(const GLuint shader, std::string& source) {
+  source.clear();
+  GLint maxLength = 0;
+  getShaderiv(shader, GL_SHADER_SOURCE_LENGTH, &maxLength);
+  if (maxLength > 0) {
+    source.resize(maxLength);
+    GLsizei sourceLength = 0;
+    getShaderSource(shader, 
+                    static_cast<GLsizei>(maxLength),
+                    &sourceLength, // Excluding null-termination.
+                    &source[0]);   // Null-terminated.
+    source.resize(sourceLength + 1); // Trim.
+  }
+}
+
 } // Namespace: detail.
 
 //------------------------------------------------------------------------------
 
 //! DOCS
-class Shader
-{
+class Shader {
 public:
-
-    explicit Shader(GLenum type);
-    ~Shader();
+  explicit Shader(GLenum type);
+  ~Shader();
 
 public:
+  GLuint 
+  handle() const;
 
-    GLuint 
-    handle() const;
+  void
+  setSource(GLsizei count, const GLchar **string, const GLint *length);
 
-    void
-    source(GLsizei count, const GLchar **string, const GLint *length);
+  void
+  setSource(std::string const& source);
 
-    void
-    compile();
+  void
+  compile();
 
-    GLenum
-    type() const;
+  GLenum
+  type() const;
 
-    const std::string&
-    infoLog() const;
+  std::string
+  source() const;
+
+  const std::string&
+  infoLog() const;
 
 private:
   Shader(const Shader&);            //!< Disable copy CTOR.
@@ -165,11 +195,19 @@ Shader::handle() const {
 
 //! DOCS. May throw.
 inline void
-Shader::source(const GLsizei count, 
-               const GLchar **string, 
-               const GLint *length) { 
+Shader::setSource(const GLsizei count, 
+                  const GLchar **string, 
+                  const GLint *length) { 
   detail::shaderSource(_handle, count, string, length);
 } 
+
+//! DOCS. May throw.
+void
+Shader::setSource(std::string const& source) {
+  const GLchar* src = static_cast<const GLchar*>(source.c_str());
+  const GLint length = static_cast<GLint>(source.size());
+  detail::shaderSource(_handle, 1, &src, &length);
+}
 
 //! Compile shader from previously set source. May throw.
 inline void
@@ -189,6 +227,14 @@ Shader::type() const {
   GLint params;
   detail::getShaderiv(_handle, GL_SHADER_TYPE, &params);
   return static_cast<GLenum>(params);
+}
+
+//! Shader source.
+inline std::string
+Shader::source() const {
+  std::string source;
+  detail::getShaderSource(_handle, source);
+  return source;
 }
 
 //! Return info log. May be empty.

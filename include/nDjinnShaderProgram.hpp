@@ -13,6 +13,7 @@
 #include "nDjinnError.hpp"
 #include "nDjinnShader.hpp"
 #include <gl/glew.h>
+#include <vector>
 #include <string>
 #include <map>
 
@@ -131,221 +132,303 @@ getProgramiv(const GLuint program,
   checkError("glGetProgramiv");
 }
 
-//! glUniform1i wrapper. May throw. 
 inline void
-uniform1i(const GLint location, const GLint v0) {
+getActiveUniformBlockiv(const GLuint program,
+                        const GLuint uniformBlockIndex,
+                        const GLenum pname,
+                        GLint* params) {
+  glGetActiveUniformBlockiv(program, uniformBlockIndex, pname, params);
+  checkError("glGetActiveUniformBlockiv");
+}
+
+inline void
+getActiveUniformBlockName(const GLuint program, 
+                          const GLuint uniformBlockIndex, 
+                          const GLsizei bufSize, 
+                          GLsizei* length, 
+                          GLchar* uniformBlockName) {
+  glGetActiveUniformBlockName(program, 
+                              uniformBlockIndex, 
+                              bufSize, 
+                              length, 
+                              uniformBlockName);
+  checkError("glGetActiveUniformBlockName");
+}
+
+inline void
+uniformBlockBinding(const GLuint program, 
+                    const GLuint uniformBlockIndex, 
+                    const GLuint uniformBlockBinding) {
+  glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
+  checkError("glUniformBlockBinding");
+}
+
+template<class T>
+void
+uniform1(const GLint location, T v0);
+
+//! glUniform1i wrapper. May throw. 
+template<>
+inline void
+uniform1<GLint>(const GLint location, const GLint v0) {
   glUniform1i(location, v0);
   checkError("glUniform1i");
 }
 
 //! glUniform1f wrapper. May throw.
+template<>
 inline void
-uniform1f(const GLint location, const GLfloat v0) {
+uniform1<GLfloat>(const GLint location, const GLfloat v0) {
   glUniform1f(location, v0);
   checkError("glUniform1f");
 }
 
+template<class T>
+void
+uniform2(const GLint location, T v0, T v1);
+
 //! glUniform2i wrapper. May throw.
+template<>
 inline void
-uniform2i(const GLint location, const GLint v0, const GLint v1) {
+uniform2<GLint>(const GLint location, const GLint v0, const GLint v1) {
   glUniform2i(location, v0, v1);
   checkError("glUniform2i");
 }
 
 //! glUniform2f wrapper. May throw.
+template<>
 inline void
-uniform2f(const GLint location, const GLfloat v0, const GLfloat v1) {
+uniform2<GLfloat>(const GLint location, const GLfloat v0, const GLfloat v1) {
   glUniform2f(location, v0, v1);
   checkError("glUniform2f");
 }
 
+template<class T>
+void
+uniform3(const GLint location, T v0, T v1, T v2);
+
 //! glUniform3i wrapper. May throw.
+template<>
 inline void
-uniform3i(const GLint location, 
-          const GLint v0, 
-          const GLint v1, 
-          const GLint v2) {
+uniform3<GLint>(const GLint location, 
+                const GLint v0, 
+                const GLint v1, 
+                const GLint v2) {
   glUniform3i(location, v0, v1, v2);
   checkError("glUniform3i");
 }
 
 //! glUniform3f wrapper. May throw.
+template<>
 inline void
-uniform3f(const GLint location, 
-          const GLfloat v0, 
-          const GLfloat v1, 
-          const GLfloat v2) {
+uniform3<GLfloat>(const GLint location, 
+                  const GLfloat v0, 
+                  const GLfloat v1, 
+                  const GLfloat v2) {
   glUniform3f(location, v0, v1, v2);
   checkError("glUniform3f");
 }
 
+template<class T>
+void
+uniform4(const GLint location, T v0, T v1, T v2, T v3);
+
 //! glUniform4i wrapper. May throw. 
+template<>
 inline void
-uniform4i(const GLint location, 
-          const GLint v0, 
-          const GLint v1, 
-          const GLint v2, 
-          const GLint v3) {
+uniform4<GLint>(const GLint location, 
+                const GLint v0, 
+                const GLint v1, 
+                const GLint v2, 
+                const GLint v3) {
   glUniform4i(location, v0, v1, v2, v3);
   checkError("glUniform4i");
 }
 
 //! glUniform4f wrapper. May throw.
+template<>
 inline void
-uniform4f(const GLint   location, 
-          const GLfloat v0, 
-          const GLfloat v1, 
-          const GLfloat v2, 
-          const GLfloat v3) {
+uniform4<GLfloat>(const GLint   location, 
+                  const GLfloat v0, 
+                  const GLfloat v1, 
+                  const GLfloat v2, 
+                  const GLfloat v3) {
   glUniform4f(location, v0, v1, v2, v3);
   checkError("glUniform4f"); 
 }
 
+template<int D, class T>
+void
+uniformv(const GLint location, const GLsizei count, const T *value);
+
 //! glUniform1fv wrapper. May throw. 
+template<>
 inline void
-uniform1fv(const GLint location, 
-           const GLsizei count, 
-           const GLfloat *value) {
+uniformv<1,GLfloat>(const GLint location, 
+                    const GLsizei count, 
+                    const GLfloat *value) {
   glUniform1fv(location, count, value);
   checkError("glUniform1fv");
 }
 
 //! glUniform2fv wrapper. May throw.
+template<>
 inline void
-uniform2fv(const GLint location, 
-           const GLsizei count,
-           const GLfloat *value) {
+uniformv<2,GLfloat>(const GLint location, 
+                    const GLsizei count,
+                    const GLfloat *value) {
   glUniform2fv(location, count, value);
   checkError("glUniform2fv");
 }
 
 //! glUniform3fv wrapper. May throw.
+template<>
 inline void
-uniform3fv(const GLint location, 
-           const GLsizei count,
-           const GLfloat *value) {
+uniformv<3,GLfloat>(const GLint location, 
+                    const GLsizei count,
+                    const GLfloat *value) {
   glUniform3fv(location, count, value);
   checkError("glUniform3fv"); 
 }
 
 //! glUniform4fv wrapper. May throw.
+template<>
 inline void
-uniform4fv(const GLint location, 
-           const GLsizei count, 
-           const GLfloat *value) {
+uniformv<4,GLfloat>(const GLint location, 
+                    const GLsizei count, 
+                    const GLfloat *value) {
   glUniform4fv(location, count, value);
   checkError("glUniform4fv");
 }
 
 //! glUniform1iv wrapper. May throw.
+template<>
 inline void
-uniform1iv(const GLint location, 
-           const GLsizei count, 
-           const GLint *value) {
+uniformv<1,GLint>(const GLint location, 
+                  const GLsizei count, 
+                  const GLint *value) {
   glUniform1iv(location, count, value);
   checkError("glUniform1iv"); 
 }
 
 //! glUniform2iv wrapper. May throw.
+template<>
 inline void
-uniform2iv(const GLint location, 
-           const GLsizei count, 
-           const GLint *value) {
+uniformv<2,GLint>(const GLint location, 
+                  const GLsizei count, 
+                  const GLint *value) {
   glUniform2iv(location, count, value);
   checkError("glUniform2iv");
 }
 
 //! glUniform3iv wrapper. May throw.
+template<>
 inline void
-uniform3iv(const GLint location, 
-           const GLsizei count, 
-           const GLint *value) {
+uniformv<3,GLint>(const GLint location, 
+                  const GLsizei count, 
+                  const GLint *value) {
   glUniform3iv(location, count, value);
   checkError("glUniform3iv");
 }
 
 //! glUniform4iv wrapper. May throw.
+template<>
 inline void
-uniform4iv(const GLint location, 
-           const GLsizei count, 
-           const GLint *value) {
+uniformv<4,GLint>(const GLint location, 
+                  const GLsizei count, 
+                  const GLint *value) {
   glUniform4iv(location, count, value);
   checkError("glUniform4iv");
 }
 
+template<int R, int C>
+void
+uniformMatrixfv(const GLint location,
+                const GLsizei count,
+                GLboolean transpose,
+                const GLfloat *value);
+
 //! glUniformMatrix2fv wrapper. May throw.
+template<>
 inline void
-uniformMatrix2fv(const GLint location,
-                 const GLsizei count,
-                 const GLboolean transpose,
-                 const GLfloat *value) {
+uniformMatrixfv<2,2>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix2fv(location, count, transpose, value);
   checkError("glUniformMatrix2fv");
 }
 
 //! glUniformMatrix3fv wrapper. May throw. 
+template<>
 inline void
-uniformMatrix3fv(const GLint location,
-                 const GLsizei count,
-                 const GLboolean transpose,
-                 const GLfloat *value) {
+uniformMatrixfv<3,3>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix3fv(location, count, transpose, value);
   checkError("glUniformMatrix3fv"); 
 }
 
 //! glUniformMatrix4fv wrapper. May throw.
+template<>
 inline void
-uniformMatrix4fv(const GLint location,
-                 const GLsizei count,
-                 const GLboolean transpose,
-                 const GLfloat *value) {
+uniformMatrixfv<4,4>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix4fv(location, count, transpose, value);
   checkError("glUniformMatrix4fv");
 }
 
 //! glUniformMatrix2x3fv wrapper. May throw.
+template<>
 inline void
-uniformMatrix2x3fv(const GLint location,
-                   const GLsizei count,
-                   const GLboolean transpose,
-                   const GLfloat *value) {
+uniformMatrixfv<2,3>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix2x3fv(location, count, transpose, value);
   checkError("glUniformMatrix2x3fv"); 
 }
 
 //! glUniformMatrix3x2fv wrapper. May throw.
+template<>
 inline void
-uniformMatrix3x2fv(const GLint location,
-                   const GLsizei count,
-                   const GLboolean transpose,
-                   const GLfloat *value) {
+uniformMatrixfv<3,2>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix3x2fv(location, count, transpose, value);
   checkError("glUniformMatrix3x2fv"); 
 }
 
 //! glUniformMatrix2x4fv wrapper. May throw.
+template<>
 inline void
-uniformMatrix2x4fv(const GLint location,
-                   const GLsizei count,
-                   const GLboolean transpose,
-                   const GLfloat *value) {
+uniformMatrixfv<2,4>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix2x4fv(location, count, transpose, value);
   checkError("glUniformMatrix2x4fv");
 }
 
 //! glUniformMatrix4x2fv wrapper. May throw.
+template<>
 inline void
-uniformMatrix4x2fv(const GLint location,
-                   const GLsizei count,
-                   const GLboolean transpose,
-                   const GLfloat *value) {
+uniformMatrixfv<4,2>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix4x2fv(location, count, transpose, value);
   checkError("glUniformMatrix4x2fv");
 }
 
 //! glUniformMatrix3x4fv wrapper. May throw. 
+template<>
 inline void
-uniformMatrixfv3x4fv(const GLint location,
+uniformMatrixfv<3,4>(const GLint location,
                      const GLsizei count,
                      const GLboolean transpose,
                      const GLfloat *value) {
@@ -354,11 +437,12 @@ uniformMatrixfv3x4fv(const GLint location,
 }
 
 //! glUniformMatrix4x3fv wrapper. May throw.
+template<>
 inline void
-UniformMatrix4x3fv(const GLint location,
-                   const GLsizei count,
-                   const GLboolean transpose,
-                   const GLfloat *value) {
+uniformMatrixfv<4,3>(const GLint location,
+                     const GLsizei count,
+                     const GLboolean transpose,
+                     const GLfloat *value) {
   glUniformMatrix4x3fv(location, count, transpose, value);
   checkError("glUniformMatrix4x3fv"); 
 }
@@ -397,36 +481,104 @@ getProgramInfoLog(const GLuint program, std::string &infoLog) {
 //------------------------------------------------------------------------------
 
 //! DOCS
-class ShaderProgram
-{
+class ShaderProgram {
 public:
 
   //! POD
-  struct Attrib
-  {
+  struct Attrib {
     GLenum type;
     GLint size;
     GLint location;
   };
 
   //! POD
-  struct Uniform
-  {
+  struct Uniform {
     GLenum type;
     GLint size;
     GLint location;
   };
 
-  typedef std::map<std::string, Attrib>  AttribMap;
+  class UniformBlock {
+  public:
+    explicit UniformBlock(const GLuint index, 
+                          const GLuint program)
+      : _index(index)
+      , _program(program) {
+    }
+
+    GLuint program() const {
+      return _program;
+    }
+
+    GLuint index() const {
+      return _index;
+    }
+
+    GLint 
+    dataSize() const {
+      GLint dataSize;
+      detail::getActiveUniformBlockiv(
+        _program, 
+        _index, 
+        GL_UNIFORM_BLOCK_DATA_SIZE,
+        &dataSize);
+      return dataSize;
+    }
+
+    //! Returns number of active uniforms in block.
+    GLint 
+    activeUniforms() const {
+      GLint activeUniforms;
+      detail::getActiveUniformBlockiv(
+        _program, 
+        _index, 
+        GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS,
+        &activeUniforms);
+      return activeUniforms;
+    }
+
+    void
+    bind(const GLuint uniformBlockBinding) const {
+      detail::uniformBlockBinding(_program, _index, uniformBlockBinding);
+    }
+
+    GLint 
+    binding() const {
+      GLint binding;
+      detail::getActiveUniformBlockiv(
+        _program, 
+        _index, 
+        GL_UNIFORM_BLOCK_BINDING,
+        &binding);
+      return binding;
+    }
+
+  private:
+    const GLuint _index;
+    const GLuint _program;
+  };
+
+  typedef std::map<std::string, Attrib> AttribMap;
   typedef std::map<std::string, Uniform> UniformMap;
+  typedef std::map<std::string, UniformBlock> UniformBlockMap;
+
+  static std::string
+  typeName(const Attrib& attrib);
+
+  static std::string
+  typeName(const Uniform& uniform);
+
+  static GLint
+  componentCount(const Attrib& attrib);
+
+  static GLenum
+  dataType(const Attrib& attrib);
 
 public:
-
   explicit ShaderProgram();
   ~ShaderProgram();
 
 public:
-
   void
   bind() const;
 
@@ -446,9 +598,11 @@ public:
   infoLog() const;
 
 public:
-
   const Uniform*
   queryActiveUniform(const std::string &name) const;
+
+  const UniformBlock*
+  queryActiveUniformBlock(const std::string &name) const;
 
   const Attrib*
   queryActiveAttrib(const std::string &name) const;
@@ -456,13 +610,45 @@ public:
   const Uniform&
   activeUniform(const std::string &name) const;
 
+  const UniformBlock&
+  activeUniformBlock(const std::string &name) const;
+
   const Attrib&
   activeAttrib(const std::string &name) const;
 
-private:
+public:
+  template<class T>
+  void
+  uniform1(const Uniform &uni, T v0);
 
+  template<class T>
+  void
+  uniform2(const Uniform &uni, T v0, T v1);
+
+  template<class T>
+  void
+  uniform3(const Uniform &uni, T v0, T v1, T v2);
+
+  template<class T>
+  void
+  uniform4(const Uniform &uni, T v0, T v1, T v2, T v3);
+
+  template<int D, class T>
+  void
+  uniformv(const Uniform &uni, const T *value);
+
+  template<int R, int C>
+  void
+  uniformMatrixfv(const Uniform &uni,
+                  GLboolean transpose,
+                  const GLfloat *value);
+
+private:
   void
   _updateActiveUniforms();
+
+  void
+  _updateActiveUniformBlocks();
 
   void
   _updateActiveAttribs();
@@ -472,16 +658,144 @@ private:  // Member variables.
   std::string _infoLog;
   AttribMap _attribs;
   UniformMap _uniforms;    
+  UniformBlockMap _uniformBlocks;
 };
+
+// -----------------------------------------------------------------------------
+
+//! DOCS [static]
+inline std::string
+ShaderProgram::typeName(const ShaderProgram::Attrib& attrib) {
+  using std::string;
+
+  switch (attrib.type) {
+  case GL_FLOAT:              return string("GL_FLOAT");
+  case GL_FLOAT_VEC2:         return string("GL_FLOAT_VEC2");
+  case GL_FLOAT_VEC3:         return string("GL_FLOAT_VEC3");
+  case GL_FLOAT_VEC4:         return string("GL_FLOAT_VEC4");
+  case GL_FLOAT_MAT2:         return string("GL_FLOAT_MAT2");
+  case GL_FLOAT_MAT3:         return string("GL_FLOAT_MAT3");
+  case GL_FLOAT_MAT4:         return string("GL_FLOAT_MAT4");
+  case GL_FLOAT_MAT2x3:       return string("GL_FLOAT_MAT2x3");
+  case GL_FLOAT_MAT2x4:       return string("GL_FLOAT_MAT2x4"); 
+  case GL_FLOAT_MAT3x2:       return string("GL_FLOAT_MAT3x2");
+  case GL_FLOAT_MAT3x4:       return string("GL_FLOAT_MAT3x4");
+  case GL_FLOAT_MAT4x2:       return string("GL_FLOAT_MAT4x2");
+  case GL_FLOAT_MAT4x3:       return string("GL_FLOAT_MAT4x3");
+  case GL_INT:                return string("GL_INT");
+  case GL_INT_VEC2:           return string("GL_INT_VEC2");
+  case GL_INT_VEC3:           return string("GL_INT_VEC3");
+  case GL_INT_VEC4:           return string("GL_INT_VEC4");
+  case GL_UNSIGNED_INT:       return string("GL_UNSIGNED_INT");
+  case GL_UNSIGNED_INT_VEC2:  return string("GL_UNSIGNED_INT_VEC2");
+  case GL_UNSIGNED_INT_VEC3:  return string("GL_UNSIGNED_INT_VEC3");
+  case GL_UNSIGNED_INT_VEC4:  return string("GL_UNSIGNED_INT_VEC4");
+  default: NDJINN_THROW("Unrecognized attrib type: " << attrib.type);
+  }
+}
+
+//! DOCS [static]
+inline std::string
+ShaderProgram::typeName(const ShaderProgram::Uniform& uniform) {
+  using std::string; 
+  
+  switch (uniform.type) {
+  case GL_FLOAT:              return string("GL_FLOAT");
+  case GL_FLOAT_VEC2:         return string("GL_FLOAT_VEC2");
+  case GL_FLOAT_VEC3:         return string("GL_FLOAT_VEC3");
+  case GL_FLOAT_VEC4:         return string("GL_FLOAT_VEC4");
+  case GL_INT:                return string("GL_INT");
+  case GL_INT_VEC2:           return string("GL_INT_VEC2");
+  case GL_INT_VEC3:           return string("GL_INT_VEC3");
+  case GL_INT_VEC4:           return string("GL_INT_VEC4");
+  case GL_BOOL:               return string("GL_BOOL");
+  case GL_BOOL_VEC2:          return string("GL_BOOL_VEC2");
+  case GL_BOOL_VEC3:          return string("GL_BOOL_VEC3");
+  case GL_BOOL_VEC4:          return string("GL_BOOL_VEC4");
+  case GL_FLOAT_MAT2:         return string("GL_FLOAT_MAT2");
+  case GL_FLOAT_MAT3:         return string("GL_FLOAT_MAT3");
+  case GL_FLOAT_MAT4:         return string("GL_FLOAT_MAT4");
+  case GL_FLOAT_MAT2x3:       return string("GL_FLOAT_MAT2x3");
+  case GL_FLOAT_MAT2x4:       return string("GL_FLOAT_MAT2x4"); 
+  case GL_FLOAT_MAT3x2:       return string("GL_FLOAT_MAT3x2");
+  case GL_FLOAT_MAT3x4:       return string("GL_FLOAT_MAT3x4");
+  case GL_FLOAT_MAT4x2:       return string("GL_FLOAT_MAT4x2");
+  case GL_FLOAT_MAT4x3:       return string("GL_FLOAT_MAT4x3");
+  case GL_SAMPLER_1D:         return string("GL_SAMPLER_1D");
+  case GL_SAMPLER_2D:         return string("GL_SAMPLER_2D");
+  case GL_SAMPLER_3D:         return string("GL_SAMPLER_3D");
+  case GL_SAMPLER_CUBE:       return string("GL_SAMPLER_CUBE");
+  case GL_SAMPLER_1D_SHADOW:  return string("GL_SAMPLER_1D_SHADOW");
+  case GL_SAMPLER_2D_SHADOW:  return string("GL_SAMPLER_2D_SHADOW");
+  default: NDJINN_THROW("Unrecognized uniform type: " << uniform.type);
+  }
+}
+
+//! DOCS [static]
+inline GLint
+ShaderProgram::componentCount(const ShaderProgram::Attrib& attrib) {
+  switch (attrib.type) {
+  case GL_FLOAT:
+  case GL_INT:  
+  case GL_UNSIGNED_INT:
+    return 1;
+  case GL_FLOAT_VEC2:       
+  case GL_INT_VEC2:         
+  case GL_UNSIGNED_INT_VEC2:
+    return 2;
+  case GL_FLOAT_VEC3:         
+  case GL_INT_VEC3:           
+  case GL_UNSIGNED_INT_VEC3:  
+    return 3;
+  case GL_FLOAT_VEC4:
+  case GL_INT_VEC4:  
+  case GL_UNSIGNED_INT_VEC4:
+    return 4;
+  default: NDJINN_THROW("Unrecognized attrib type: " << attrib.type);
+
+  // TODO: Not sure about these...
+  //case GL_FLOAT_MAT2:         return std::string("GL_FLOAT_MAT2");
+  //case GL_FLOAT_MAT3:         return std::string("GL_FLOAT_MAT3");
+  //case GL_FLOAT_MAT4:         return std::string("GL_FLOAT_MAT4");
+  //case GL_FLOAT_MAT2x3:       return std::string("GL_FLOAT_MAT2x3");
+  //case GL_FLOAT_MAT2x4:       return std::string("GL_FLOAT_MAT2x4"); 
+  //case GL_FLOAT_MAT3x2:       return std::string("GL_FLOAT_MAT3x2");
+  //case GL_FLOAT_MAT3x4:       return std::string("GL_FLOAT_MAT3x4");
+  //case GL_FLOAT_MAT4x2:       return std::string("GL_FLOAT_MAT4x2");
+  //case GL_FLOAT_MAT4x3:       return std::string("GL_FLOAT_MAT4x3");
+  }
+}
+
+//! DOCS [static]
+inline GLenum
+ShaderProgram::dataType(const ShaderProgram::Attrib& attrib) {
+  switch (attrib.type) {
+  case GL_FLOAT:
+  case GL_FLOAT_VEC2:       
+  case GL_FLOAT_VEC3:         
+  case GL_FLOAT_VEC4:
+    return GL_FLOAT;
+  case GL_INT:  
+  case GL_INT_VEC2:         
+  case GL_INT_VEC3:           
+  case GL_INT_VEC4:  
+    return GL_INT;
+  case GL_UNSIGNED_INT:
+  case GL_UNSIGNED_INT_VEC2:
+  case GL_UNSIGNED_INT_VEC3:  
+  case GL_UNSIGNED_INT_VEC4:
+    return GL_UNSIGNED_INT;
+  default: NDJINN_THROW("Unrecognized attrib type: " << attrib.type);
+  }
+}
 
 // -----------------------------------------------------------------------------
 
 //! CTOR. May throw.
 inline
 ShaderProgram::ShaderProgram()
-    : _handle(0)
+  : _handle(detail::createProgram())
 {
-  _handle = detail::createProgram(); 
   if (_handle == 0) {
     NDJINN_THROW("Invalid shader program handle");
   }
@@ -544,6 +858,7 @@ ShaderProgram::link() {
 
   // Successful link and validation. Now get some info about the shader.
   _updateActiveUniforms();
+  _updateActiveUniformBlocks();
   _updateActiveAttribs();
 }
 
@@ -564,6 +879,17 @@ ShaderProgram::queryActiveUniform(const std::string &name) const {
     uni = &iter->second;
   }
   return uni;
+}
+
+//! May return null.
+inline const ShaderProgram::UniformBlock*
+ShaderProgram::queryActiveUniformBlock(const std::string &name) const {
+  const UniformBlock *uniBlock = 0;
+  const UniformBlockMap::const_iterator iter = _uniformBlocks.find(name);
+  if (iter != _uniformBlocks.end()) {
+    uniBlock = &iter->second;
+  }
+  return uniBlock;
 }
 
 //! May return null.
@@ -588,6 +914,16 @@ ShaderProgram::activeUniform(const std::string &name) const {
 }
 
 //! May throw.
+inline const ShaderProgram::UniformBlock&
+ShaderProgram::activeUniformBlock(const std::string &name) const {
+  const UniformBlockMap::const_iterator iter = _uniformBlocks.find(name);
+  if (iter != _uniformBlocks.end()) {
+    return iter->second;
+  }
+  NDJINN_THROW("invalid uniform block: '" << name << "'");
+}
+
+//! May throw.
 inline const ShaderProgram::Attrib&
 ShaderProgram::activeAttrib(const std::string &name) const {
   const AttribMap::const_iterator iter = _attribs.find(name);
@@ -595,6 +931,65 @@ ShaderProgram::activeAttrib(const std::string &name) const {
     return iter->second;
   }
   NDJINN_THROW("invalid attrib: '" << name << "'");
+}
+
+// -----------------------------------------------------------------------------
+
+//! DOCS
+template<class T>
+inline void
+ShaderProgram::uniform1(const Uniform &uni, const T v0) {
+  //_Bindor bind(this);
+  detail::uniform1<T>(uni.location, v0);
+}
+
+//! DOCS
+template<class T>
+inline void
+ShaderProgram::uniform2(const Uniform &uni, const T v0, const T v1) {
+  //_Bindor bind(this);
+  detail::uniform2<T>(uni.location, v0, v1);
+}
+
+//! DOCS
+template<class T>
+inline void
+ShaderProgram::uniform3(const Uniform &uni, 
+                        const T v0, 
+                        const T v1, 
+                        const T v2) {
+  //_Bindor bind(this);
+  detail::uniform3<T>(uni.location, v0, v1, v2);
+}
+
+//! DOCS
+template<class T>
+inline void
+ShaderProgram::uniform4(const Uniform &uni, 
+                        const T v0, 
+                        const T v1, 
+                        const T v2, 
+                        const T v3) {
+  //_Bindor bind(this);
+  detail::uniform4<T>(uni.location, v0, v1, v2, v3);
+}
+
+//! DOCS
+template<int D, class T>
+inline void
+ShaderProgram::uniformv(const ShaderProgram::Uniform &uni, const T *value) {
+  //_Bindor bind(this);
+  detail::uniformv<D,T>(uni.location, uni.size, value);
+}
+
+//! DOCS
+template<int R, int C>
+inline void
+ShaderProgram::uniformMatrixfv(const ShaderProgram::Uniform &uni,
+                               const GLboolean transpose,
+                               const GLfloat *value) {
+  //_Bindor bind(this);
+  detail::uniformMatrixfv<R,C>(uni.location, uni.size, transpose, value);
 }
 
 // -----------------------------------------------------------------------------
@@ -624,6 +1019,36 @@ ShaderProgram::_updateActiveUniforms() {
     name.resize(length);
     uni.location = detail::getUniformLocation(_handle, name.c_str());
     _uniforms.insert(UniformMap::value_type(name, uni));
+  }
+}
+
+//! Grab info about active uniforms from OpenGL.
+inline void
+ShaderProgram::_updateActiveUniformBlocks() {
+  _uniformBlocks.clear();
+  GLint activeUniformBlocks = 0;
+  detail::getProgramiv(_handle, GL_ACTIVE_UNIFORM_BLOCKS, &activeUniformBlocks);
+  std::string uniformBlockName;
+  for (GLint i = 0; i < activeUniformBlocks; ++i) {
+    const GLuint uniformBlockIndex = static_cast<GLuint>(i);
+    GLint uniformBlockNameLength = -1;
+    detail::getActiveUniformBlockiv(
+      _handle, 
+      uniformBlockIndex,
+      GL_UNIFORM_BLOCK_NAME_LENGTH,
+      &uniformBlockNameLength);
+    uniformBlockName.resize(uniformBlockNameLength);
+    GLsizei length = -1;
+    detail::getActiveUniformBlockName(
+      _handle, 
+      uniformBlockIndex, 
+      static_cast<GLsizei>(uniformBlockName.size()), 
+      &length, 
+      &uniformBlockName[0]);
+      uniformBlockName.resize(length);
+    _uniformBlocks.insert(
+      UniformBlockMap::value_type(
+        uniformBlockName, UniformBlock(uniformBlockIndex, _handle)));
   }
 }
 

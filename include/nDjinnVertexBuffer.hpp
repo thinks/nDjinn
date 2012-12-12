@@ -44,6 +44,23 @@ bindBuffer(const GLenum target, const GLuint buffer)
   checkError("glBindBuffer"); 
 }
 
+//! glBindBufferBase wrapper. May throw.
+inline void
+bindBufferBase(const GLenum target, const GLuint index, const GLuint buffer) {
+  glBindBufferBase(target, index, buffer);
+  checkError("glBindBufferBase");
+}
+
+inline void 
+bindBufferRange(const GLenum target, 
+                const GLuint index, 
+                const GLuint buffer, 
+                const GLintptr offset, 
+                const GLsizeiptr size) {
+  glBindBufferRange(target, index, buffer, offset, size);
+  checkError("glBindBufferRange");
+}
+
 //! Reserve 'size' bytes in buffer. If 'data' is non-null also copy 
 //! data into buffer. May throw.
 inline void
@@ -111,6 +128,12 @@ public:
 
   void 
   bind() const;
+
+  void
+  bindBase(GLuint index) const;
+
+  void
+  bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const;
 
   void 
   release() const;
@@ -249,6 +272,20 @@ VertexBuffer::handle() const {
 inline void 
 VertexBuffer::bind() const { 
   detail::bindBuffer(_target, _handle);
+}
+
+//! DOCS
+inline void
+VertexBuffer::bindBase(const GLuint index) const {
+  detail::bindBufferBase(_target, index, _handle);
+}
+
+//! DOCS
+inline void
+VertexBuffer::bindRange(const GLuint index, 
+                        const GLintptr offset, 
+                        const GLsizeiptr size) const {
+  detail::bindBufferRange(_target, index, _handle, offset, size);
 }
 
 //! Release buffer. May throw.
