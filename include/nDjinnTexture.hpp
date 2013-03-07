@@ -182,7 +182,6 @@ getCompressedTexImage(const GLenum target, const GLint lod, GLvoid *img) {
 class Texture
 {
 public:
-
   GLenum
   target() const;
 
@@ -202,7 +201,6 @@ public:
   isTexture(GLuint texture);
 
 public: // Texture Queries.
-
   void
   getImage(GLint lod, GLenum fmt, GLenum type, GLvoid *img);
 
@@ -210,7 +208,6 @@ public: // Texture Queries.
   getCompressedImage(GLint lod, GLvoid *img);
 
 public: // Texture Parameters.
-
   void
   parameteri(GLenum pname, GLint param);
 
@@ -230,7 +227,6 @@ public: // Texture Parameters.
   parameterIuiv(GLenum pname, const GLuint *params);
 
 public: // Enumerated queries.
-
   void 
   getParameteriv(GLenum value, GLint *data);
 
@@ -250,7 +246,6 @@ public: // Enumerated queries.
   getLevelParameterfv(GLint lod, const GLenum value, GLfloat *data);
 
 protected:
-
   explicit Texture(GLenum target);
   ~Texture();
 
@@ -258,11 +253,10 @@ protected:
   class Bindor
   {
   public:
-
     //! CTOR.
     explicit
     Bindor(Texture *tex) 
-        : _tex(tex) { 
+      : _tex(tex) { 
       _tex->bind(); 
     }   
 
@@ -276,12 +270,10 @@ protected:
     } 
 
   private:  // Member variables.
-
     Texture *_tex;
   };
 
 private:
-
   Texture(const Texture&);            //!< Disabled copy.
   Texture& operator=(const Texture&); //!< Disabled assign.
 

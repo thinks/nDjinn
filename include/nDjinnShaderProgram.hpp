@@ -163,6 +163,7 @@ uniformBlockBinding(const GLuint program,
   checkError("glUniformBlockBinding");
 }
 
+//! Generic.
 template<class T>
 void
 uniform1(const GLint location, T v0);
@@ -459,7 +460,7 @@ getProgramInfoLog(const GLuint program,
 
 //! Grab info log from OpenGL. 
 inline void
-getProgramInfoLog(const GLuint program, std::string &infoLog) {
+getProgramInfoLog(GLuint const program, std::string &infoLog) {
   GLint maxLength = 0;
   getProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
   if (maxLength > 0) {
@@ -474,6 +475,328 @@ getProgramInfoLog(const GLuint program, std::string &infoLog) {
                       &infoLog[0]); // Null-terminated.
     infoLog.resize(logLength + 1);
   }
+}
+
+//! Generic.
+template<class T>
+void
+programUniform1(GLuint program, GLint location, T v0);
+
+//! glProgramUniform1i wrapper. May throw. 
+template<>
+inline void
+programUniform1<GLint>(GLuint const program, 
+                       GLint const location, 
+                       GLint const v0) {
+  glProgramUniform1iEXT(program, location, v0);
+  checkError("glProgramUniform1iEXT");
+}
+
+//! glProgramUniform1f wrapper. May throw.
+template<>
+inline void
+programUniform1<GLfloat>(GLuint const program, 
+                         GLint const location, 
+                         GLfloat const v0) {
+  glProgramUniform1fEXT(program, location, v0);
+  checkError("glProgramUniform1fEXT");
+}
+
+//! Generic.
+template<class T>
+void
+programUniform2(GLuint program, GLint location, T v0, T v1);
+
+//! glUniform2i wrapper. May throw.
+template<>
+inline void
+programUniform2<GLint>(GLuint const program, 
+                       GLint const location, 
+                       GLint const v0, 
+                       GLint const v1) {
+  glProgramUniform2i(program, location, v0, v1);
+  checkError("glProgramUniform2iEXT");
+}
+
+//! glUniform2f wrapper. May throw.
+template<>
+inline void
+programUniform2<GLfloat>(GLuint const program, 
+                         GLint const location, 
+                         GLfloat const v0, 
+                         GLfloat const v1) {
+  glProgramUniform2f(program, location, v0, v1);
+  checkError("glProgramUniform2fEXT");
+}
+
+//! Generic.
+template<class T>
+void
+programUniform3(GLuint program, GLint location, T v0, T v1, T v2);
+
+//! glProgramUniform3i wrapper. May throw.
+template<>
+inline void
+programUniform3<GLint>(GLuint const program, 
+                       GLint const location, 
+                       GLint const v0, 
+                       GLint const v1, 
+                       GLint const v2) {
+  glProgramUniform3iEXT(program, location, v0, v1, v2);
+  checkError("glProgramUniform3iEXT");
+}
+
+//! glProgramUniform3f wrapper. May throw.
+template<>
+inline void
+programUniform3<GLfloat>(GLuint const program, 
+                         GLint const location, 
+                         GLfloat const v0, 
+                         GLfloat const v1, 
+                         GLfloat const v2) {
+  glProgramUniform3fEXT(program, location, v0, v1, v2);
+  checkError("glProgramUniform3fEXT");
+}
+
+//! Generic.
+template<class T>
+void
+programUniform4(GLuint program, GLint location, T v0, T v1, T v2, T v3);
+
+//! glProgramUniform4i wrapper. May throw. 
+template<>
+inline void
+programUniform4<GLint>(GLuint const program, 
+                       GLint const location, 
+                       GLint const v0, 
+                       GLint const v1, 
+                       GLint const v2, 
+                       GLint const v3) {
+  glProgramUniform4iEXT(program, location, v0, v1, v2, v3);
+  checkError("glProgramUniform4iEXT");
+}
+
+//! glProgramUniform4f wrapper. May throw.
+template<>
+inline void
+programUniform4<GLfloat>(GLuint const program, 
+                         GLint const location, 
+                         GLfloat const v0, 
+                         GLfloat const v1, 
+                         GLfloat const v2, 
+                         GLfloat const v3) {
+  glProgramUniform4fEXT(program, location, v0, v1, v2, v3);
+  checkError("glProgramUniform4fEXT"); 
+}
+
+//! Generic.
+template<int D, class T>
+void
+programUniformv(GLuint program, GLint location, GLsizei count, T const* value);
+
+//! glProgramUniform1fv wrapper. May throw. 
+template<>
+inline void
+programUniformv<1,GLfloat>(GLuint const program, 
+                           GLint const location, 
+                           GLsizei const count, 
+                           GLfloat const* value) {
+  glProgramUniform1fvEXT(program, location, count, value);
+  checkError("glProgramUniform1fvEXT");
+}
+
+//! glProgramUniform2fv wrapper. May throw.
+template<>
+inline void
+programUniformv<2,GLfloat>(GLuint const program, 
+                           GLint const location, 
+                           GLsizei const count,
+                           GLfloat const* value) {
+  glProgramUniform2fvEXT(program, location, count, value);
+  checkError("glProgramUniform2fvEXT");
+}
+
+//! glProgramUniform3fv wrapper. May throw.
+template<>
+inline void
+programUniformv<3,GLfloat>(GLuint const program, 
+                           GLint const location, 
+                           GLsizei const count,
+                           GLfloat const* value) {
+  glProgramUniform3fvEXT(program, location, count, value);
+  checkError("glProgramUniform3fvEXT"); 
+}
+
+//! glProgramUniform4fv wrapper. May throw.
+template<>
+inline void
+programUniformv<4,GLfloat>(GLuint const program, 
+                           GLint const location, 
+                           GLsizei const count, 
+                           GLfloat const* value) {
+  glProgramUniform4fvEXT(program, location, count, value);
+  checkError("glProgramUniform4fvEXT");
+}
+
+//! glProgramUniform1iv wrapper. May throw.
+template<>
+inline void
+programUniformv<1,GLint>(GLuint const program, 
+                         GLint const location, 
+                         GLsizei const count, 
+                         GLint const* value) {
+  glProgramUniform1ivEXT(program, location, count, value);
+  checkError("glProgramUniform1ivEXT"); 
+}
+
+//! glProgramUniform2iv wrapper. May throw.
+template<>
+inline void
+programUniformv<2,GLint>(GLuint const program, 
+                         GLint const location, 
+                         GLsizei const count, 
+                         GLint const* value) {
+  glProgramUniform2ivEXT(program, location, count, value);
+  checkError("glProgramUniform2ivEXT");
+}
+
+//! glProgramUniform3iv wrapper. May throw.
+template<>
+inline void
+programUniformv<3,GLint>(GLuint const program, 
+                         GLint const location, 
+                         GLsizei const count, 
+                         GLint const* value) {
+  glProgramUniform3ivEXT(program, location, count, value);
+  checkError("glProgramUniform3ivEXT");
+}
+
+//! glProgramUniform4iv wrapper. May throw.
+template<>
+inline void
+programUniformv<4,GLint>(GLuint const program,
+                         GLint const location, 
+                         GLsizei const count, 
+                         GLint const* value) {
+  glProgramUniform4ivEXT(program, location, count, value);
+  checkError("glProgramUniform4ivEXT");
+}
+
+//! Generic.
+template<int R, int C>
+void
+programUniformMatrixfv(GLuint program, 
+                       GLint location,
+                       GLsizei count,
+                       GLboolean transpose,
+                       GLfloat const* value);
+
+//! glProgramUniformMatrix2fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<2,2>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix2fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix2fvEXT");
+}
+
+//! glProgramUniformMatrix3fv wrapper. May throw. 
+template<>
+inline void
+programUniformMatrixfv<3,3>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix3fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix3fvEXT"); 
+}
+
+//! glProgramUniformMatrix4fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<4,4>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix4fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix4fvEXT");
+}
+
+//! glProgramUniformMatrix2x3fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<2,3>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix2x3fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix2x3fvEXT"); 
+}
+
+//! glProgramUniformMatrix3x2fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<3,2>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix3x2fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix3x2fvEXT"); 
+}
+
+//! glProgramUniformMatrix2x4fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<2,4>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix2x4fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix2x4fvEXT");
+}
+
+//! glProgramUniformMatrix4x2fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<4,2>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix4x2fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix4x2fvEXT");
+}
+
+//! glProgramUniformMatrix3x4fv wrapper. May throw. 
+template<>
+inline void
+programUniformMatrixfv<3,4>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix3x4fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix3x4fvEXT"); 
+}
+
+//! glProgramUniformMatrix4x3fv wrapper. May throw.
+template<>
+inline void
+programUniformMatrixfv<4,3>(GLuint const program, 
+                            GLint const location,
+                            GLsizei const count,
+                            GLboolean const transpose,
+                            GLfloat const* value) {
+  glProgramUniformMatrix4x3fvEXT(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix4x3fvEXT"); 
 }
 
 } // Namespace: detail.
@@ -939,16 +1262,14 @@ ShaderProgram::activeAttrib(const std::string &name) const {
 template<class T>
 inline void
 ShaderProgram::uniform1(const Uniform &uni, const T v0) {
-  //_Bindor bind(this);
-  detail::uniform1<T>(uni.location, v0);
+  detail::programUniform1<T>(_handle, uni.location, v0);
 }
 
 //! DOCS
 template<class T>
 inline void
 ShaderProgram::uniform2(const Uniform &uni, const T v0, const T v1) {
-  //_Bindor bind(this);
-  detail::uniform2<T>(uni.location, v0, v1);
+  detail::programUniform2<T>(_handle, uni.location, v0, v1);
 }
 
 //! DOCS
@@ -958,8 +1279,7 @@ ShaderProgram::uniform3(const Uniform &uni,
                         const T v0, 
                         const T v1, 
                         const T v2) {
-  //_Bindor bind(this);
-  detail::uniform3<T>(uni.location, v0, v1, v2);
+  detail::programUniform3<T>(_handle, uni.location, v0, v1, v2);
 }
 
 //! DOCS
@@ -970,16 +1290,14 @@ ShaderProgram::uniform4(const Uniform &uni,
                         const T v1, 
                         const T v2, 
                         const T v3) {
-  //_Bindor bind(this);
-  detail::uniform4<T>(uni.location, v0, v1, v2, v3);
+  detail::programUniform4<T>(_handle, uni.location, v0, v1, v2, v3);
 }
 
 //! DOCS
 template<int D, class T>
 inline void
 ShaderProgram::uniformv(const ShaderProgram::Uniform &uni, const T *value) {
-  //_Bindor bind(this);
-  detail::uniformv<D,T>(uni.location, uni.size, value);
+  detail::programUniformv<D,T>(_handle, uni.location, uni.size, value);
 }
 
 //! DOCS
@@ -988,8 +1306,12 @@ inline void
 ShaderProgram::uniformMatrixfv(const ShaderProgram::Uniform &uni,
                                const GLboolean transpose,
                                const GLfloat *value) {
-  //_Bindor bind(this);
-  detail::uniformMatrixfv<R,C>(uni.location, uni.size, transpose, value);
+  detail::programUniformMatrixfv<R,C>(
+    _handle, 
+    uni.location, 
+    uni.size, 
+    transpose, 
+    value);
 }
 
 // -----------------------------------------------------------------------------

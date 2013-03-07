@@ -38,8 +38,7 @@ deleteBuffers(const GLsizei n, const GLuint *buffers) {
 
 //! Make buffer the currently bound buffer. May throw.
 inline void
-bindBuffer(const GLenum target, const GLuint buffer)
-{ 
+bindBuffer(const GLenum target, const GLuint buffer) { 
   glBindBuffer(target, buffer); 
   checkError("glBindBuffer"); 
 }

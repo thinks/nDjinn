@@ -12,6 +12,8 @@
 
 #include "nDjinnState.hpp"
 #include "nDjinnBuffer.hpp"
+#include "nDjinnVertex.hpp"
+#include "nDjinnBlend.hpp"
 #include "nDjinnViewport.hpp"
 #include "nDjinnError.hpp"
 #include "nDjinnException.hpp"
@@ -21,7 +23,7 @@
 #include "nDjinnTexture3D.hpp"
 #include "nDjinnShader.hpp"
 #include "nDjinnShaderProgram.hpp"
-#include "nDjinnVertexBuffer.hpp"
+#include "nDjinnBufferObject.hpp"
 #include "nDjinnFramebuffer.hpp"
 //#include "nDjinnCamera.hpp"
 

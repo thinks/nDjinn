@@ -129,12 +129,10 @@ public:
   //}
 
 public:
-
-    explicit Texture2D(GLenum target = GL_TEXTURE_RECTANGLE/*GL_TEXTURE_2D*/);
-    ~Texture2D();
+  explicit Texture2D(GLenum target = GL_TEXTURE_RECTANGLE/*GL_TEXTURE_2D*/);
+  ~Texture2D();
 
 public:     // 2D specific functions.
-
   void
   image(GLint level, 
         GLint intFmt, 
@@ -193,7 +191,6 @@ public:     // 2D specific functions.
                      const GLvoid *data);
 
 private:
-
   Texture2D(const Texture2D&);              //!< Disabled copy.
   Texture2D& operator=(const Texture2D&);   //!< Disabled assign.
 };
@@ -203,7 +200,7 @@ private:
 //! CTOR.
 inline
 Texture2D::Texture2D(const GLenum target)
-    : Texture(target) { // May throw.
+  : Texture(target) { // May throw.
 }
 
 //! DTOR.

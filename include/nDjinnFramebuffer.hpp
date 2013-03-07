@@ -175,10 +175,8 @@ getFramebufferAttachmentParameteriv(const GLenum target,
 //------------------------------------------------------------------------------
 
 //! DOCS
-class Framebuffer
-{
+class Framebuffer {
 public:
-
   static GLuint
   binding();
 
@@ -186,13 +184,10 @@ public:
   disable(GLenum target = GL_FRAMEBUFFER);
 
 public:
-
   Framebuffer(GLenum target = GL_FRAMEBUFFER);
-
   ~Framebuffer();
 
 public:
-
   void
   bind();
 
@@ -242,26 +237,18 @@ public:
   detachAll();
 
 private:
-
   //! DOCS
-  class _Bindor
-  {
+  class _Bindor {
   public:
-
     //! CTOR.
     explicit _Bindor(Framebuffer *fbo) 
-      : _fbo(fbo) 
-    { 
+      : _fbo(fbo) { 
       _fbo->bind(); 
     }   
 
     //! DTOR.
     ~_Bindor() { 
-      try { 
-        _fbo->release(); 
-      } 
-      catch (...) {
-      } 
+      _fbo->release(); 
     } 
 
   private:  // Member variables.
@@ -301,7 +288,7 @@ inline
 Framebuffer::Framebuffer(const GLenum target)
   : _target(target)
   , _handle(0)
-  , _savedHandle(0)
+  , _savedHandle(0) 
 {
   try {
     detail::genFramebuffers(1, &_handle);
@@ -316,11 +303,7 @@ Framebuffer::Framebuffer(const GLenum target)
 //! DTOR.
 inline
 Framebuffer::~Framebuffer() {
-  try { 
-    detail::deleteFramebuffers(1, &_handle); 
-  }
-  catch (...) {
-  }    
+  detail::deleteFramebuffers(1, &_handle); 
 }
 
 // -----------------------------------------------------------------------------

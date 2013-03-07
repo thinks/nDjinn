@@ -17,14 +17,14 @@
 NDJINN_BEGIN_NAMESPACE
 
 // glEnable wrapper. May throw.
-inline void
+inline void 
 enable(const GLenum cap) {
   glEnable(cap);
   checkError("glEnable");
 }
 
 // glDisable wrapper. May throw.
-inline void
+inline void 
 disable(const GLenum cap) {
   glDisable(cap);
   checkError("glDisable");
@@ -38,14 +38,14 @@ getBooleanv(const GLenum pname, GLboolean *data) {
 }
 
 //! glGetIntegerv wrapper. May throw. 
-inline void
+inline void 
 getIntegerv(const GLenum pname, GLint *data) {
   glGetIntegerv(pname, data);
   checkError("glGetIntegerv");
 }
 
 //! glGetInteger64v wrapper. May throw.
-inline void
+inline void 
 getInteger64v(const GLenum pname, GLint64 *data) {
   glGetInteger64v(pname, data);
   checkError("glGetInteger64v");
