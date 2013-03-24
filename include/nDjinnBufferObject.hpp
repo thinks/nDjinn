@@ -141,6 +141,13 @@ genBuffer() {
   return handle;
 }
 
+//! Convenience.
+inline void 
+deleteBuffer(GLuint const handle) {
+  deleteBuffers(1, &handle);
+}
+
+
 // Named version of buffer operations. These version avoid 
 // having to bind/release a certain buffer every time it is used.
 
@@ -292,10 +299,10 @@ Buffer<Target>::Buffer()
   : _handle(detail::genBuffer()) // May throw. 
 {
   bind(); // Make sure buffer gets created.
-  release();
   if (detail::isBuffer(_handle) == GL_FALSE) {
     NDJINN_THROW("invalid buffer");
   }
+  release();
 }
 
 //! CTOR. Construct a VBO from a single chunk of memory. Note that
@@ -307,11 +314,11 @@ Buffer<Target>::Buffer(GLsizeiptr const size, // [bytes]
   : _handle(detail::genBuffer()) // May throw.
 {
   bind(); // Make sure buffer gets created.
-  release();
   if (detail::isBuffer(_handle) == GL_FALSE) {
     NDJINN_THROW("invalid buffer");
   }
   data(size, ptr, usage);
+  release();
 }
 
 //! DTOR. Free handle resource.

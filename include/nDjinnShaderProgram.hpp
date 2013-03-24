@@ -488,8 +488,8 @@ inline void
 programUniform1<GLint>(GLuint const program, 
                        GLint const location, 
                        GLint const v0) {
-  glProgramUniform1iEXT(program, location, v0);
-  checkError("glProgramUniform1iEXT");
+  glProgramUniform1i(program, location, v0);
+  checkError("glProgramUniform1i");
 }
 
 //! glProgramUniform1f wrapper. May throw.
@@ -498,8 +498,8 @@ inline void
 programUniform1<GLfloat>(GLuint const program, 
                          GLint const location, 
                          GLfloat const v0) {
-  glProgramUniform1fEXT(program, location, v0);
-  checkError("glProgramUniform1fEXT");
+  glProgramUniform1f(program, location, v0);
+  checkError("glProgramUniform1f");
 }
 
 //! Generic.
@@ -515,7 +515,7 @@ programUniform2<GLint>(GLuint const program,
                        GLint const v0, 
                        GLint const v1) {
   glProgramUniform2i(program, location, v0, v1);
-  checkError("glProgramUniform2iEXT");
+  checkError("glProgramUniform2i");
 }
 
 //! glUniform2f wrapper. May throw.
@@ -526,7 +526,7 @@ programUniform2<GLfloat>(GLuint const program,
                          GLfloat const v0, 
                          GLfloat const v1) {
   glProgramUniform2f(program, location, v0, v1);
-  checkError("glProgramUniform2fEXT");
+  checkError("glProgramUniform2f");
 }
 
 //! Generic.
@@ -542,8 +542,8 @@ programUniform3<GLint>(GLuint const program,
                        GLint const v0, 
                        GLint const v1, 
                        GLint const v2) {
-  glProgramUniform3iEXT(program, location, v0, v1, v2);
-  checkError("glProgramUniform3iEXT");
+  glProgramUniform3i(program, location, v0, v1, v2);
+  checkError("glProgramUniform3i");
 }
 
 //! glProgramUniform3f wrapper. May throw.
@@ -554,8 +554,8 @@ programUniform3<GLfloat>(GLuint const program,
                          GLfloat const v0, 
                          GLfloat const v1, 
                          GLfloat const v2) {
-  glProgramUniform3fEXT(program, location, v0, v1, v2);
-  checkError("glProgramUniform3fEXT");
+  glProgramUniform3f(program, location, v0, v1, v2);
+  checkError("glProgramUniform3f");
 }
 
 //! Generic.
@@ -572,8 +572,8 @@ programUniform4<GLint>(GLuint const program,
                        GLint const v1, 
                        GLint const v2, 
                        GLint const v3) {
-  glProgramUniform4iEXT(program, location, v0, v1, v2, v3);
-  checkError("glProgramUniform4iEXT");
+  glProgramUniform4i(program, location, v0, v1, v2, v3);
+  checkError("glProgramUniform4i");
 }
 
 //! glProgramUniform4f wrapper. May throw.
@@ -585,8 +585,8 @@ programUniform4<GLfloat>(GLuint const program,
                          GLfloat const v1, 
                          GLfloat const v2, 
                          GLfloat const v3) {
-  glProgramUniform4fEXT(program, location, v0, v1, v2, v3);
-  checkError("glProgramUniform4fEXT"); 
+  glProgramUniform4f(program, location, v0, v1, v2, v3);
+  checkError("glProgramUniform4f"); 
 }
 
 //! Generic.
@@ -601,8 +601,8 @@ programUniformv<1,GLfloat>(GLuint const program,
                            GLint const location, 
                            GLsizei const count, 
                            GLfloat const* value) {
-  glProgramUniform1fvEXT(program, location, count, value);
-  checkError("glProgramUniform1fvEXT");
+  glProgramUniform1fv(program, location, count, value);
+  checkError("glProgramUniform1fv");
 }
 
 //! glProgramUniform2fv wrapper. May throw.
@@ -612,8 +612,8 @@ programUniformv<2,GLfloat>(GLuint const program,
                            GLint const location, 
                            GLsizei const count,
                            GLfloat const* value) {
-  glProgramUniform2fvEXT(program, location, count, value);
-  checkError("glProgramUniform2fvEXT");
+  glProgramUniform2fv(program, location, count, value);
+  checkError("glProgramUniform2fv");
 }
 
 //! glProgramUniform3fv wrapper. May throw.
@@ -623,8 +623,8 @@ programUniformv<3,GLfloat>(GLuint const program,
                            GLint const location, 
                            GLsizei const count,
                            GLfloat const* value) {
-  glProgramUniform3fvEXT(program, location, count, value);
-  checkError("glProgramUniform3fvEXT"); 
+  glProgramUniform3fv(program, location, count, value);
+  checkError("glProgramUniform3fv"); 
 }
 
 //! glProgramUniform4fv wrapper. May throw.
@@ -634,8 +634,8 @@ programUniformv<4,GLfloat>(GLuint const program,
                            GLint const location, 
                            GLsizei const count, 
                            GLfloat const* value) {
-  glProgramUniform4fvEXT(program, location, count, value);
-  checkError("glProgramUniform4fvEXT");
+  glProgramUniform4fv(program, location, count, value);
+  checkError("glProgramUniform4fv");
 }
 
 //! glProgramUniform1iv wrapper. May throw.
@@ -645,8 +645,8 @@ programUniformv<1,GLint>(GLuint const program,
                          GLint const location, 
                          GLsizei const count, 
                          GLint const* value) {
-  glProgramUniform1ivEXT(program, location, count, value);
-  checkError("glProgramUniform1ivEXT"); 
+  glProgramUniform1iv(program, location, count, value);
+  checkError("glProgramUniform1iv"); 
 }
 
 //! glProgramUniform2iv wrapper. May throw.
@@ -656,8 +656,8 @@ programUniformv<2,GLint>(GLuint const program,
                          GLint const location, 
                          GLsizei const count, 
                          GLint const* value) {
-  glProgramUniform2ivEXT(program, location, count, value);
-  checkError("glProgramUniform2ivEXT");
+  glProgramUniform2iv(program, location, count, value);
+  checkError("glProgramUniform2iv");
 }
 
 //! glProgramUniform3iv wrapper. May throw.
@@ -667,8 +667,8 @@ programUniformv<3,GLint>(GLuint const program,
                          GLint const location, 
                          GLsizei const count, 
                          GLint const* value) {
-  glProgramUniform3ivEXT(program, location, count, value);
-  checkError("glProgramUniform3ivEXT");
+  glProgramUniform3iv(program, location, count, value);
+  checkError("glProgramUniform3iv");
 }
 
 //! glProgramUniform4iv wrapper. May throw.
@@ -678,8 +678,8 @@ programUniformv<4,GLint>(GLuint const program,
                          GLint const location, 
                          GLsizei const count, 
                          GLint const* value) {
-  glProgramUniform4ivEXT(program, location, count, value);
-  checkError("glProgramUniform4ivEXT");
+  glProgramUniform4iv(program, location, count, value);
+  checkError("glProgramUniform4iv");
 }
 
 //! Generic.
@@ -699,8 +699,8 @@ programUniformMatrixfv<2,2>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix2fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix2fvEXT");
+  glProgramUniformMatrix2fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix2fv");
 }
 
 //! glProgramUniformMatrix3fv wrapper. May throw. 
@@ -711,8 +711,8 @@ programUniformMatrixfv<3,3>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix3fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix3fvEXT"); 
+  glProgramUniformMatrix3fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix3fv"); 
 }
 
 //! glProgramUniformMatrix4fv wrapper. May throw.
@@ -723,8 +723,8 @@ programUniformMatrixfv<4,4>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix4fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix4fvEXT");
+  glProgramUniformMatrix4fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix4fv");
 }
 
 //! glProgramUniformMatrix2x3fv wrapper. May throw.
@@ -735,8 +735,8 @@ programUniformMatrixfv<2,3>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix2x3fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix2x3fvEXT"); 
+  glProgramUniformMatrix2x3fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix2x3fv"); 
 }
 
 //! glProgramUniformMatrix3x2fv wrapper. May throw.
@@ -747,8 +747,8 @@ programUniformMatrixfv<3,2>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix3x2fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix3x2fvEXT"); 
+  glProgramUniformMatrix3x2fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix3x2fv"); 
 }
 
 //! glProgramUniformMatrix2x4fv wrapper. May throw.
@@ -759,8 +759,8 @@ programUniformMatrixfv<2,4>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix2x4fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix2x4fvEXT");
+  glProgramUniformMatrix2x4fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix2x4fv");
 }
 
 //! glProgramUniformMatrix4x2fv wrapper. May throw.
@@ -771,8 +771,8 @@ programUniformMatrixfv<4,2>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix4x2fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix4x2fvEXT");
+  glProgramUniformMatrix4x2fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix4x2fv");
 }
 
 //! glProgramUniformMatrix3x4fv wrapper. May throw. 
@@ -783,8 +783,8 @@ programUniformMatrixfv<3,4>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix3x4fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix3x4fvEXT"); 
+  glProgramUniformMatrix3x4fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix3x4fv"); 
 }
 
 //! glProgramUniformMatrix4x3fv wrapper. May throw.
@@ -795,8 +795,8 @@ programUniformMatrixfv<4,3>(GLuint const program,
                             GLsizei const count,
                             GLboolean const transpose,
                             GLfloat const* value) {
-  glProgramUniformMatrix4x3fvEXT(program, location, count, transpose, value);
-  checkError("glProgramUniformMatrix4x3fvEXT"); 
+  glProgramUniformMatrix4x3fv(program, location, count, transpose, value);
+  checkError("glProgramUniformMatrix4x3fv"); 
 }
 
 } // Namespace: detail.
@@ -1120,18 +1120,14 @@ ShaderProgram::ShaderProgram()
   : _handle(detail::createProgram())
 {
   if (_handle == 0) {
-    NDJINN_THROW("Invalid shader program handle");
+    NDJINN_THROW("invalid shader program handle");
   }
 }
 
 //! DTOR.
 inline
 ShaderProgram::~ShaderProgram() { 
-  try { 
-    detail::deleteProgram(_handle); 
-  }
-  catch (...) {
-  }
+  detail::deleteProgram(_handle); 
 }
 
 // -----------------------------------------------------------------------------
@@ -1168,7 +1164,8 @@ ShaderProgram::link() {
   GLint linkStatus = GL_FALSE;
   detail::getProgramiv(_handle, GL_LINK_STATUS, &linkStatus);
   if (linkStatus == GL_FALSE) {
-    NDJINN_THROW("Shader program link error: " << _handle << ": " << _infoLog);
+    NDJINN_THROW("Shader program link error: " 
+                 << _handle << ": " << _infoLog);
   }
 
   detail::validateProgram(_handle);
