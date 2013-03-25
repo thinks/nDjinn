@@ -174,6 +174,21 @@ getCompressedTexImage(const GLenum target, const GLint lod, GLvoid *img) {
   checkError("glGetCompressedTexImage"); // May throw. 
 }
 
+//! Convenience, generate a single texture handle and return it. May throw.
+inline GLuint
+genTexture() {
+  GLuint handle = 0;
+  genTextures(1, &handle);
+  return handle;
+}
+
+//! Convenience.
+inline void 
+deleteTexture(GLuint const& handle) {
+  deleteTextures(1, &handle);
+}
+
+
 } // Namespace: detail.
 
 //------------------------------------------------------------------------------
@@ -189,10 +204,10 @@ public:
   handle() const;
 
   void
-  bind();
+  bind() const;
 
   void
-  release();
+  release() const;
 
   static void
   activeTexture(GLenum texture);
@@ -289,23 +304,19 @@ private:  // Member variables.
 inline
 Texture::Texture(const GLenum target)
   : _target(target)
-  , _handle(0) 
+  , _handle(detail::genTexture()) // May throw. 
 {
-  detail::genTextures(1, &_handle);
-  if (_handle == 0) {
-    NDJINN_THROW("Null texture handle");
+  bind();
+  if (detail::isTexture(_handle) == GL_FALSE) {
+    NDJINN_THROW("invalid texture handle");
   }
+  release();
 }
 
 //! DTOR.
 inline
 Texture::~Texture() {
-  // TODO: release(); ?
-  try { 
-    detail::deleteTextures(1, &_handle); 
-  }
-  catch (...) {
-  }    
+  detail::deleteTexture(_handle); 
 }
 
 //! Expose target.
@@ -323,13 +334,13 @@ Texture::handle() const {
 //! Bind this texture. May throw.
 // TODO: Check if this object is already bound?
 inline void
-Texture::bind() { 
+Texture::bind() const { 
   detail::bindTexture(_target, _handle); // May throw.
 } 
 
 //! Release this texture. May throw.
 inline void
-Texture::release() { 
+Texture::release() const { 
   detail::bindTexture(_target, 0); // May throw.
 } 
 
@@ -454,6 +465,27 @@ Texture::getLevelParameterfv(const GLint lod,
   Bindor bind(this);
   detail::getTexLevelParameterfv(_target, lod, value, data); // May throw.
 } 
+
+//------------------------------------------------------------------------------
+
+//! DOCS
+class TextureBindor {
+public:
+  explicit
+  TextureBindor(Texture const& texture) 
+    : _texture(texture) {
+    _texture.bind();
+  }
+
+  ~TextureBindor() {
+    _texture.release();
+  }
+
+private: // Member variables.
+  Texture const& _texture;
+};
+
+//------------------------------------------------------------------------------
 
 NDJINN_END_NAMESPACE
 

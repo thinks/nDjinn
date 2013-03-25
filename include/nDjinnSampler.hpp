@@ -99,7 +99,7 @@ samplerParameterIuiv(GLuint const sampler,
 }
 
 //! glGetSamplerParameteriv wrapper. May throw.
-void 
+inline void 
 getSamplerParameteriv(GLuint const sampler, 
                       GLenum const pname, 
                       GLint* params) {
@@ -108,7 +108,7 @@ getSamplerParameteriv(GLuint const sampler,
 }
 
 //! glGetSamplerParameterfv wrapper. May throw.
-void 
+inline void 
 getSamplerParameterfv(GLuint const sampler, 
                       GLenum const pname, 
                       GLfloat* params) {
@@ -117,7 +117,7 @@ getSamplerParameterfv(GLuint const sampler,
 }
 
 //! glGetSamplerParameterIiv wrapper. May throw.
-void 
+inline void 
 getSamplerParameterIiv(GLuint const sampler, 
                        GLenum const pname, 
                        GLint* params) {
@@ -126,7 +126,7 @@ getSamplerParameterIiv(GLuint const sampler,
 }
 
 //! glGetSamplerParameterIuiv wrapper. May throw.
-void 
+inline void 
 getSamplerParameterIuiv(GLuint const sampler, 
                         GLenum const pname, 
                         GLuint* params) {
@@ -152,7 +152,7 @@ genSampler() {
 
 //! Convenience.
 inline void 
-deleteSampler(GLuint const handle) {
+deleteSampler(GLuint const& handle) {
   deleteSamplers(1, &handle);
 }
 
@@ -160,7 +160,7 @@ template<typename T>
 void 
 samplerParameter(GLuint sampler, GLenum pname, T param);
 
-template<>
+template<> inline
 void 
 samplerParameter<GLint>(GLuint const sampler, 
                         GLenum const pname, 
@@ -168,7 +168,7 @@ samplerParameter<GLint>(GLuint const sampler,
   samplerParameteri(sampler, pname, param);
 }
 
-template<>
+template<> inline
 void 
 samplerParameter<GLfloat>(GLuint const sampler, 
                           GLenum const pname, 
@@ -176,7 +176,7 @@ samplerParameter<GLfloat>(GLuint const sampler,
   samplerParameterf(sampler, pname, param);
 }
 
-template<typename T>
+template<typename T> inline
 void 
 samplerParameterv(GLuint sampler, GLenum pname, T const* params);
 
@@ -294,11 +294,11 @@ public:
 
   template<typename T>
   void
-  getParameterv(GLenum pname, T* params);
+  getParameterv(GLenum pname, T* params) const;
 
   template<typename T>
   void
-  getParameterIv(GLenum pname, T* params);
+  getParameterIv(GLenum pname, T* params) const;
 
 private:
   Sampler(Sampler const&);            //!< Disabled copy.
@@ -323,7 +323,7 @@ Sampler::Sampler()
 
 inline
 Sampler::~Sampler() { 
-  detail::deleteSamplers(1, &_handle); 
+  detail::deleteSampler(_handle); 
 }
 
 // -----------------------------------------------------------------------------
@@ -363,15 +363,38 @@ Sampler::parameterIv(GLenum const pname, T const* params) {
 
 template<typename T> inline
 void
-Sampler::getParameterv(GLenum const pname, T* params) {
+Sampler::getParameterv(GLenum const pname, T* params) const {
   detail::getSamplerParameterv<T>(_handle, pname, params);
 }
 
 template<typename T> inline
 void
-Sampler::getParameterIv(GLenum const pname, T* params) {
+Sampler::getParameterIv(GLenum const pname, T* params) const {
   detail::getSamplerParameterIv<T>(_handle, pname, params);
 }
+
+// -----------------------------------------------------------------------------
+
+//! DOCS
+class SamplerBindor {
+public:
+  explicit
+  SamplerBindor(Sampler const& sampler, GLuint const unit = 0) 
+    : _sampler(sampler)
+    , _unit(unit) {
+    _sampler.bind(_unit);
+  }
+
+  ~SamplerBindor() {
+    _sampler.release(_unit);
+  }
+
+private: // Member variables.
+  Sampler const& _sampler;
+  GLuint const _unit;
+};
+
+// -----------------------------------------------------------------------------
 
 NDJINN_END_NAMESPACE
 

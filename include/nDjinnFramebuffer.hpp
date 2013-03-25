@@ -279,10 +279,10 @@ public:
 
 public:
   void
-  bind();
+  bind() const;
 
   void
-  release();
+  release() const;
 
   bool
   bound();
@@ -351,7 +351,7 @@ private:
 private:  // Member variables.
   const GLenum _target;
   GLuint _handle;     //!< Resource handle.
-  GLuint _savedHandle;
+  mutable GLuint _savedHandle;
 };
 
 // -----------------------------------------------------------------------------
@@ -398,7 +398,7 @@ Framebuffer::~Framebuffer() {
 //! Store current FBO and bind this FBO. May throw.
 //! NOTE: Not thread-safe!
 inline void
-Framebuffer::bind() { 
+Framebuffer::bind() const { 
   _savedHandle = binding();
   if (_savedHandle != _handle) {
     detail::bindFramebuffer(_target, _handle);
@@ -408,7 +408,7 @@ Framebuffer::bind() {
 //! Return to stored FBO, if it is different from this one. May throw.
 //! TODO: Not thread-safe!
 inline void
-Framebuffer::release() { 
+Framebuffer::release() const { 
   if (_savedHandle != _handle) {
     detail::bindFramebuffer(_target, _savedHandle); // May throw.
   }
