@@ -282,7 +282,7 @@ public:
 
   template<typename T>
   void 
-  parameter(GLenum pname, T const param);
+  parameter(GLenum pname, T param);
 
   template<typename T>
   void 

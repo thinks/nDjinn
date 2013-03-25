@@ -439,6 +439,28 @@ Buffer<Target>::usage() const {
   return usage;
 }
 
+// -----------------------------------------------------------------------------
+
+//! DOCS
+template <class BufferT>
+class BufferBindor {
+public:
+  explicit
+  BufferBindor(BufferT const& buffer) 
+    : _buffer(buffer) {
+    _buffer.bind();
+  }
+
+  ~BufferBindor() {
+    _buffer.release();
+  }
+
+private: // Member variables.
+  BufferT const& _buffer;
+};
+
+// -----------------------------------------------------------------------------
+
 NDJINN_END_NAMESPACE
 
 #endif // NDJINN_BUFFER_OBJECT_HPP_INCLUDED
