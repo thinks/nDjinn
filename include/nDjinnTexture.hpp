@@ -58,7 +58,8 @@ bindTexture(const GLenum target, const GLuint texture) {
   checkError("glBindTexture"); // May throw.
 }
 
-// Texture Parameters.
+#if 0 
+// DEPRECATED - use direct state access instead!
 
 //! glTexParameteri wrapper. May throw.
 inline void 
@@ -73,6 +74,106 @@ texParameterf(const GLenum target, const GLenum pname, const GLfloat param) {
   glTexParameterf(target, pname, param);
   checkError("glTexParameterf"); // May throw.
 }
+
+//! glTexParameteriv wrapper. May throw.
+inline void 
+texParameteriv(const GLenum target, const GLenum pname, const GLint *params) {
+  glTexParameteriv(target, pname, params);
+  checkError("glTexParameteriv"); // May throw.
+}
+
+//! glTexParameterfv wrapper. May throw. 
+inline void 
+texParameterfv(const GLenum target, const GLenum pname, const GLfloat *params) {
+  glTexParameterfv(target, pname, params);
+  checkError("glTexParameterfv"); // May throw.
+}
+
+//! glTexParameterIiv wrapper. May throw.
+inline void 
+texParameterIiv(const GLenum target, const GLenum pname, const GLint *params) {
+  glTexParameterIiv(target, pname, params);
+  checkError("glTexParameterIiv"); // May throw.
+}
+
+//! glTexParameterIuiv wrapper. May throw.
+inline void 
+texParameterIuiv(const GLenum target, 
+                 const GLenum pname, 
+                 const GLuint *params) {
+  glTexParameterIuiv(target, pname, params);
+  checkError("glTexParameterIuiv"); // May throw.
+}
+
+//! glGetTexParameteriv wrapper. May throw.
+inline void 
+getTexParameteriv(const GLenum target, const GLenum value, GLint *data) {
+  glGetTexParameteriv(target, value, data);
+  checkError("glGetTexParameteriv"); // May throw.
+}
+
+//! glGetTexParameterfv wrapper. May throw.
+inline void 
+getTexParameterfv(const GLenum target, const GLenum value, GLfloat *data) {
+  glGetTexParameterfv(target, value, data);
+  checkError("glGetTexParameterfv"); // May throw.
+}
+
+//! glGetTexParameterIiv wrapper. May throw.
+inline void 
+getTexParameterIiv(const GLenum target, const GLenum value, GLint *data) {
+  glGetTexParameterIiv(target, value, data);
+  checkError("glGetTexParameterIiv"); // May throw.
+}
+
+//! glGetTexParameterIuiv wrapper. May throw.
+inline void 
+getTexParameterIuiv(const GLenum target, const GLenum value, GLuint *data) {
+  glGetTexParameterIuiv(target, value, data);
+  checkError("glGetTexParameterIuiv"); // May throw.
+}
+
+//! glGetTexLevelParameteriv wrapper. May throw.
+inline void 
+getTexLevelParameteriv(const GLenum target, 
+                       const GLint lod, 
+                       const GLenum value, 
+                       GLint *data) {
+  glGetTexLevelParameteriv(target, lod, value, data);
+  checkError("glGetTexLevelParameteriv"); // May throw.
+}
+
+//! glGetTexLevelParameterfv wrapper. May throw.
+inline void 
+getTexLevelParameterfv(const GLenum target, 
+                       const GLint lod, 
+                       const GLenum value, 
+                       GLfloat *data) {
+  glGetTexLevelParameterfv(target, lod, value, data);
+  checkError("glGetTexLevelParameterfv"); // May throw.
+}
+
+//! glGetTexImage wrapper. May throw.
+inline void
+getTexImage(const GLenum tex, 
+            const GLint lod, 
+            const GLenum fmt, 
+            const GLenum type, 
+            GLvoid *img) {
+  glGetTexImage(tex, lod, fmt, type, img);
+  checkError("glGetTexImage"); // May throw.
+}
+
+//! glGetCompressedTexImage wrapper. May throw.
+inline void 
+getCompressedTexImage(const GLenum target, const GLint lod, GLvoid *img) {
+  glGetCompressedTexImage(target, lod, img);
+  checkError("glGetCompressedTexImage"); // May throw. 
+}
+
+#endif
+
+// Texture Parameters.
 
 //! glTextureParameteri wrapper. May throw.
 inline void 
@@ -119,20 +220,6 @@ textureParameter<GLfloat>(GLuint const texture,
   textureParameterf(texture, target, pname, param);
 }
 
-//! glTexParameteriv wrapper. May throw.
-inline void 
-texParameteriv(const GLenum target, const GLenum pname, const GLint *params) {
-  glTexParameteriv(target, pname, params);
-  checkError("glTexParameteriv"); // May throw.
-}
-
-//! glTexParameterfv wrapper. May throw. 
-inline void 
-texParameterfv(const GLenum target, const GLenum pname, const GLfloat *params) {
-  glTexParameterfv(target, pname, params);
-  checkError("glTexParameterfv"); // May throw.
-}
-
 //! glTextureParameteriv wrapper. May throw.
 inline void 
 textureParameteriv(GLuint const texture,
@@ -176,22 +263,6 @@ textureParameterv<GLfloat>(GLuint const texture,
                            GLenum const pname, 
                            GLfloat const* params) {
   textureParameterfv(texture, target, pname, params);
-}
-
-//! glTexParameterIiv wrapper. May throw.
-inline void 
-texParameterIiv(const GLenum target, const GLenum pname, const GLint *params) {
-  glTexParameterIiv(target, pname, params);
-  checkError("glTexParameterIiv"); // May throw.
-}
-
-//! glTexParameterIuiv wrapper. May throw.
-inline void 
-texParameterIuiv(const GLenum target, 
-                 const GLenum pname, 
-                 const GLuint *params) {
-  glTexParameterIuiv(target, pname, params);
-  checkError("glTexParameterIuiv"); // May throw.
 }
 
 //! glTextureParameterIiv wrapper. May throw.
@@ -244,19 +315,6 @@ textureParameterIv<GLuint>(GLuint const texture,
 
 // Enumerated queries.
 
-//! glGetTexParameteriv wrapper. May throw.
-inline void 
-getTexParameteriv(const GLenum target, const GLenum value, GLint *data) {
-  glGetTexParameteriv(target, value, data);
-  checkError("glGetTexParameteriv"); // May throw.
-}
-
-//! glGetTexParameterfv wrapper. May throw.
-inline void 
-getTexParameterfv(const GLenum target, const GLenum value, GLfloat *data) {
-  glGetTexParameterfv(target, value, data);
-  checkError("glGetTexParameterfv"); // May throw.
-}
 
 //! glGetTextureParameteriv wrapper. May throw.
 inline void 
@@ -306,19 +364,6 @@ getTextureParameterv<GLfloat>(GLuint const texture,
   getTextureParameterfv(texture, target, pname, params);
 }
 
-//! glGetTexParameterIiv wrapper. May throw.
-inline void 
-getTexParameterIiv(const GLenum target, const GLenum value, GLint *data) {
-  glGetTexParameterIiv(target, value, data);
-  checkError("glGetTexParameterIiv"); // May throw.
-}
-
-//! glGetTexParameterIuiv wrapper. May throw.
-inline void 
-getTexParameterIuiv(const GLenum target, const GLenum value, GLuint *data) {
-  glGetTexParameterIuiv(target, value, data);
-  checkError("glGetTexParameterIuiv"); // May throw.
-}
 
 //! glGetTextureParameterIiv wrapper. May throw.
 inline void 
@@ -369,25 +414,6 @@ getTextureParameterv<GLuint>(GLuint const texture,
 }
 
 
-//! glGetTexLevelParameteriv wrapper. May throw.
-inline void 
-getTexLevelParameteriv(const GLenum target, 
-                       const GLint lod, 
-                       const GLenum value, 
-                       GLint *data) {
-  glGetTexLevelParameteriv(target, lod, value, data);
-  checkError("glGetTexLevelParameteriv"); // May throw.
-}
-
-//! glGetTexLevelParameterfv wrapper. May throw.
-inline void 
-getTexLevelParameterfv(const GLenum target, 
-                       const GLint lod, 
-                       const GLenum value, 
-                       GLfloat *data) {
-  glGetTexLevelParameterfv(target, lod, value, data);
-  checkError("glGetTexLevelParameterfv"); // May throw.
-}
 
 //! glGetTextureLevelParameteriv wrapper. May throw.
 inline void 
@@ -444,16 +470,6 @@ getTextureLevelParameterv<GLfloat>(GLuint const texture,
 
 // Texture Queries.
 
-//! glGetTexImage wrapper. May throw.
-inline void
-getTexImage(const GLenum tex, 
-            const GLint lod, 
-            const GLenum fmt, 
-            const GLenum type, 
-            GLvoid *img) {
-  glGetTexImage(tex, lod, fmt, type, img);
-  checkError("glGetTexImage"); // May throw.
-}
 
 //! glGetTextureImage wrapper. May throw.
 inline void
@@ -469,13 +485,6 @@ getTextureImage(GLuint const texture,
 
 //! glGetCompressedTexImage wrapper. May throw.
 inline void 
-getCompressedTexImage(const GLenum target, const GLint lod, GLvoid *img) {
-  glGetCompressedTexImage(target, lod, img);
-  checkError("glGetCompressedTexImage"); // May throw. 
-}
-
-//! glGetCompressedTexImage wrapper. May throw.
-inline void 
 getCompressedTextureImage(GLuint const texture, 
                           GLenum const target,
                           GLint const level, 
@@ -483,7 +492,6 @@ getCompressedTextureImage(GLuint const texture,
   glGetCompressedTextureImageEXT(texture, target, level, img);
   checkError("glGetCompressedTextureImageEXT"); // May throw. 
 }
-
 
 //! Convenience, generate a single texture handle and return it. May throw.
 inline GLuint
@@ -493,7 +501,7 @@ genTexture() {
   return handle;
 }
 
-//! Convenience.
+//! Convenience, delete a single texture handle.
 inline void 
 deleteTexture(GLuint const& handle) {
   deleteTextures(1, &handle);
@@ -556,38 +564,13 @@ protected:
   explicit Texture(GLenum target);
   ~Texture();
 
-  //! DOCS
-  class Bindor
-  {
-  public:
-    //! CTOR.
-    explicit
-    Bindor(Texture *tex) 
-      : _tex(tex) { 
-      _tex->bind(); 
-    }   
-
-    //! DTOR.
-    ~Bindor() { 
-      try { 
-        _tex->release(); 
-      } 
-      catch (...) {
-      } 
-    } 
-
-  private:  // Member variables.
-    Texture *_tex;
-  };
-
 private:
-  Texture(const Texture&);            //!< Disabled copy.
-  Texture& operator=(const Texture&); //!< Disabled assign.
+  Texture(Texture const&);            //!< Disabled copy.
+  Texture& operator=(Texture const&); //!< Disabled assign.
 
 private:  // Member variables.
-
-  GLuint _handle; //!< Resource handle.
-  GLenum _target;
+  GLuint const _handle; //!< Resource handle.
+  GLenum const _target;
 };
 
 //------------------------------------------------------------------------------
@@ -600,7 +583,7 @@ Texture::Texture(const GLenum target)
 {
   bind();
   if (detail::isTexture(_handle) == GL_FALSE) {
-    NDJINN_THROW("invalid texture handle");
+    NDJINN_THROW("invalid texture");
   }
   release();
 }
@@ -640,16 +623,16 @@ Texture::release() const {
 
 //! Copy image into main memory. May throw.
 inline void
-Texture::getImage(const GLint lod, 
-                  const GLenum fmt, 
-                  const GLenum type, 
+Texture::getImage(GLint const lod, 
+                  GLenum const fmt, 
+                  GLenum const type, 
                   GLvoid *img) {
   detail::getTextureImage(_handle, _target, lod, fmt, type, img); // May throw.
 }
 
 //! Copy compressed image into main memory. May throw.
 inline void 
-Texture::getCompressedImage(const GLint lod, GLvoid *img) { 
+Texture::getCompressedImage(GLint const lod, GLvoid *img) { 
   detail::getCompressedTextureImage(_handle, _target, lod, img); // May throw.
 }
 
@@ -695,7 +678,7 @@ Texture::getLevelParameterv(GLenum const pname, T* params) const {
 
 //------------------------------------------------------------------------------
 
-//! DOCS. May throw. [static]
+//! DOCS. May throw.
 inline void
 activeTexture(GLenum const unit) {
   detail::activeTexture(unit);

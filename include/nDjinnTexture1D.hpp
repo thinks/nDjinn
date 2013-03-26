@@ -21,6 +21,9 @@ NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
+#if 0 
+// DEPRECATED - use direct state access instead!  
+
 //! glTexImage1D wrapper. May throw.
 inline void
 texImage1D(const GLenum target, 
@@ -99,6 +102,94 @@ compressedTexSubImage1D(const GLenum target,
   checkError("glCompressedTexSubImage1D"); // May throw;
 }
 
+#endif
+
+//! glTextureImage1D wrapper. May throw.
+inline void
+textureImage1D(GLuint const texture,
+               GLenum const target, 
+               GLint const level, 
+               GLint const intFmt, 
+               GLsizei const w, 
+               GLint const b,      
+               GLenum const fmt, 
+               GLenum const type,   
+               GLvoid const* data) {
+  glTextureImage1DEXT(texture, target, level, intFmt, w, b, fmt, type, data);     
+  checkError("glTextureImage1DEXT"); // May throw;
+}
+
+//! glCopyTextureImage1D wrapper. May throw.
+inline void
+copyTextureImage1D(GLuint const texture, 
+                   GLenum const target, 
+                   GLint const level, 
+                   GLenum const intFmt, 
+                   GLint const x, 
+                   GLint const y, 
+                   GLsizei const w,      
+                   GLint const b) {
+  glCopyTextureImage1DEXT(texture, target, level, intFmt, x, y, w, b);
+  checkError("glCopyTextureImage1DEXT"); // May throw;
+}
+
+//! glTextureSubImage1D wrapper. May throw.
+inline void 
+textureSubImage1D(GLuint const texture,
+                  GLenum const target, 
+                  GLint const level, 
+                  GLint const x0,     
+                  GLsizei const w, 
+                  GLenum const fmt,    
+                  GLenum const type, 
+                  GLvoid const* data) {
+  glTextureSubImage1DEXT(texture, target, level, x0, w, fmt, type, data);
+  checkError("glTextureSubImage1DEXT"); // May throw;
+}
+
+//! glCopyTextureSubImage1D wrapper. May throw.
+inline void
+copyTextureSubImage1D(GLuint const texture, 
+                      GLenum const target, 
+                      GLint const level, 
+                      GLint const x0,     
+                      GLint const x, 
+                      GLint const y,       
+                      GLsizei const w) {
+  glCopyTextureSubImage1DEXT(texture, target, level, x0, x, y, w);
+  checkError("glCopyTexImage1DEXT"); // May throw;
+}
+
+//! glCompressedTextureImage1D wrapper. May throw.
+inline void 
+compressedTextureImage1D(GLuint const texture,
+                         GLenum const target, 
+                         GLint const level, 
+                         GLenum const intFmt, 
+                         GLsizei const w, 
+                         GLint const b,
+                         GLsizei const size, 
+                         GLvoid const* data) {
+  glCompressedTextureImage1DEXT(
+    texture, target, level, intFmt, w, b, size, data);
+  checkError("glCompressedTexImage1DEXT"); // May throw;
+}
+
+//! glCompressedTextureSubImage1D wrapper. May throw.
+inline void 
+compressedTextureSubImage1D(GLuint const texture,
+                            GLenum const target, 
+                            GLint const level, 
+                            GLint const x0,     
+                            GLsizei const w, 
+                            GLenum const fmt,    
+                            GLsizei const size,
+                            GLvoid const* data) {
+  glCompressedTextureSubImage1DEXT(
+    texture, target, level, x0, w, fmt, size, data);
+  checkError("glCompressedTexSubImage1DEXT"); // May throw;
+}
+
 } // Namespace: detail.
 
 //------------------------------------------------------------------------------
@@ -119,7 +210,7 @@ public:     // 1D specific functions.
         GLint b, 
         GLenum fmt, 
         GLenum type, 
-        const GLvoid *data);
+        GLvoid const* data);
 
   void
   copyImage(GLint level, 
@@ -135,7 +226,7 @@ public:     // 1D specific functions.
            GLsizei w, 
            GLenum fmt, 
            GLenum type, 
-           const GLvoid *data);
+           GLvoid const* data);
 
   void
   copySubImage(GLint level, GLint x0, GLint x, GLint y, GLsizei w);
@@ -146,7 +237,7 @@ public:     // 1D specific functions.
                   GLsizei w, 
                   GLint b, 
                   GLsizei size, 
-                  const GLvoid *data);
+                  GLvoid const* data);
 
   void 
   compressedSubImage(GLint level, 
@@ -154,7 +245,7 @@ public:     // 1D specific functions.
                      GLsizei w, 
                      GLenum fmt, 
                      GLsizei size, 
-                     const GLvoid *data);
+                     GLvoid const* data);
 };
 
 //------------------------------------------------------------------------------
@@ -164,7 +255,6 @@ inline
 Texture1D::Texture1D(const GLenum target)
   : Texture(target) { // May throw.
 }
-
 
 //! DTOR.
 inline
@@ -182,8 +272,8 @@ Texture1D::image(const GLint level,
                  const GLenum fmt, 
                  const GLenum type, 
                  const GLvoid *data) {
-  Bindor bind(this);
-  detail::texImage1D(target(), level, intFmt, w, b, fmt, type, data);
+  detail::textureImage1D(
+    handle(), target(), level, intFmt, w, b, fmt, type, data);
 }
 
 //! "glCopyTexImage1D defines a one-dimensional texture image with 
@@ -195,8 +285,8 @@ Texture1D::copyImage(const GLint level,
                      const GLint y, 
                      const GLsizei w, 
                      const GLint b) {
-  Bindor bind(this);
-  detail::copyTexImage1D(target(), level, intFmt, x, y, w, b);
+  detail::copyTextureImage1D(
+    handle(), target(), level, intFmt, x, y, w, b);
 }
 
 //! DOCS. May throw.
@@ -207,8 +297,8 @@ Texture1D::subImage(const GLint level,
                     const GLenum fmt, 
                     const GLenum type, 
                     const GLvoid *data) {
-  Bindor bind(this);
-  detail::texSubImage1D(target(), level, x0, w, fmt, type, data);
+  detail::textureSubImage1D(
+    handle(), target(), level, x0, w, fmt, type, data);
 }
 
 //! DOCS. May throw.
@@ -218,8 +308,8 @@ Texture1D::copySubImage(const GLint level,
                         const GLint x, 
                         const GLint y, 
                         const GLsizei w) {
-  Bindor bind(this);
-  detail::copyTexSubImage1D(target(), level, x0, x, y, w);
+  detail::copyTextureSubImage1D(
+    handle(), target(), level, x0, x, y, w);
 }
 
 //! DOCS. May throw.
@@ -230,8 +320,8 @@ Texture1D::compressedImage(const GLint level,
                            const GLint b, 
                            const GLsizei size, 
                            const GLvoid *data) {
-  Bindor bind(this);
-  detail::compressedTexImage1D(target(), level, intFmt, w, b, size, data);
+  detail::compressedTextureImage1D(
+    handle(), target(), level, intFmt, w, b, size, data);
 }
 
 //! DOCS. May throw.
@@ -242,8 +332,8 @@ Texture1D::compressedSubImage(const GLint level,
                               const GLenum fmt, 
                               const GLsizei size,  
                               const GLvoid *data) {
-  Bindor bind(this);
-  detail::compressedTexSubImage1D(target(), level, x0, w, fmt, size, data);
+  detail::compressedTextureSubImage1D(
+    handle(), target(), level, x0, w, fmt, size, data);
 }
 
 NDJINN_END_NAMESPACE

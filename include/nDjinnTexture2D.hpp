@@ -21,6 +21,9 @@ NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
+#if 0 
+// DEPRECATED - use direct state access instead!  
+
 //! glTexImage2D wrapper. May throw.
 inline void
 texImage2D(const GLenum target, 
@@ -108,6 +111,105 @@ compressedTexSubImage2D(const GLenum target,
   checkError("glCompressedTexSubImage2D"); // May throw;
 }
 
+#endif
+
+//! glTextureImage2D wrapper. May throw.
+inline void
+textureImage2D(GLuint const texture, 
+               GLenum const target, 
+               GLint const level, 
+               GLint const intFmt, 
+               GLsizei const w,     
+               GLsizei const h,      
+               GLint const b, 
+               GLenum const fmt,    
+               GLenum const type, 
+               GLvoid const* data) {
+  glTextureImage2DEXT(texture, target, level, intFmt, w, h, b, fmt, type, data);     
+  checkError("glTextureImage2DEXT"); // May throw;
+}
+
+//! glCopyTextureImage2D wrapper. May throw.
+inline void
+copyTextureImage2D(GLuint const texture,
+                   GLenum const target, 
+                   GLint const level, 
+                   GLenum const intFmt, 
+                   GLint const x, 
+                   GLint const y,        
+                   GLsizei const w,      
+                   GLsizei const h,      
+                   GLint const b) {
+  glCopyTextureImage2DEXT(texture, target, level, intFmt, x, y, w, h, b);
+  checkError("glCopyTextureImage2DEXT"); // May throw;
+}
+
+//! glTextureSubImage2D wrapper. May throw.
+inline void 
+textureSubImage2D(GLuint const texture,
+                  GLenum const target, 
+                  GLint const level, 
+                  GLint const x0,     
+                  GLint const y0, 
+                  GLsizei const w,      
+                  GLsizei const h,
+                  GLenum const fmt,    
+                  GLenum const type, 
+                  GLvoid const* data) {
+  glTextureSubImage2DEXT(texture, target, level, x0, y0, w, h, fmt, type, data);
+  checkError("glTextureSubImage2DEXT"); // May throw;
+}
+
+//! glCopyTextureSubImage2D wrapper. May throw.
+inline void
+copyTextureSubImage2D(GLuint const texture,
+                      GLenum const target, 
+                      GLint const level, 
+                      GLint const x0,     
+                      GLint const y0, 
+                      GLint const x,      
+                      GLint const y, 
+                      GLsizei const w,      
+                      GLsizei const h) {
+  glCopyTextureSubImage2DEXT(texture, target, level, x0, y0, x, y, w, h);
+  checkError("glCopyTextureSubImage2DEXT"); // May throw;
+}
+
+
+
+//! glCompressedTextureImage2D wrapper. May throw.
+inline void 
+compressedTextureImage2D(GLuint const texture,
+  const GLenum target, 
+                     const GLint level, 
+                     const GLenum intFmt, 
+                     const GLsizei w, 
+                     const GLsizei h,     
+                     const GLint b, 
+                     const GLsizei size,  
+                     const GLvoid *data) {
+  glCompressedTextureImage2DEXT(
+    texture, target, level, intFmt, w, h, b, size, data);
+  checkError("glCompressedTextureImage2DEXT"); // May throw;
+}
+
+//! glCompressedTextureSubImage2D wrapper. May throw.
+inline void 
+compressedTextureSubImage2D(GLuint const texture, 
+                            GLenum const target, 
+                            GLint const level, 
+                            GLint const x0,     
+                            GLint const y0,
+                            GLsizei const w,      
+                            GLsizei const h,
+                            GLenum const fmt,    
+                            GLsizei const size,
+                            GLvoid const* data) {
+  glCompressedTextureSubImage2DEXT(
+    texture, target, level, x0, y0, w, h, fmt, size, data);
+  checkError("glCompressedTextureSubImage2DEXT"); // May throw;
+}
+
 } // Namespace: detail.
 
 //------------------------------------------------------------------------------
@@ -115,19 +217,6 @@ compressedTexSubImage2D(const GLenum target,
 //! 2D texture class.
 class Texture2D : public Texture
 {
-public:
-
-  //! Return currently bound 2D texture Id. 
-  //! TODO: Slow to query OpenGL, should probably keep track 
-  //!       of this ourselves.
-  //static GLuint 
-  //binding()
-  //{
-  //    GLint params = 0;
-  //    state::get_integer(GL_TEXTURE_BINDING_2D, &params);
-  //    return static_cast<GLuint>(params);
-  //}
-
 public:
   explicit Texture2D(GLenum target = GL_TEXTURE_RECTANGLE/*GL_TEXTURE_2D*/);
   ~Texture2D();
@@ -141,7 +230,7 @@ public:     // 2D specific functions.
         GLint b, 
         GLenum fmt, 
         GLenum type, 
-        const GLvoid *data);
+        GLvoid const* data);
 
   void
   copyImage(GLint level, 
@@ -160,7 +249,7 @@ public:     // 2D specific functions.
            GLsizei h,  
            GLenum fmt, 
            GLenum type, 
-           const GLvoid *data);
+           GLvoid const* data);
 
   void
   copySubImage(GLint level, 
@@ -178,7 +267,7 @@ public:     // 2D specific functions.
                   GLsizei h, 
                   GLint b, 
                   GLsizei size, 
-                  const GLvoid *data);
+                  GLvoid const* data);
 
   void 
   compressedSubImage(GLint level, 
@@ -188,18 +277,14 @@ public:     // 2D specific functions.
                      GLsizei h, 
                      GLenum fmt, 
                      GLsizei size, 
-                     const GLvoid *data);
-
-private:
-  Texture2D(const Texture2D&);              //!< Disabled copy.
-  Texture2D& operator=(const Texture2D&);   //!< Disabled assign.
+                     GLvoid const* data);
 };
 
 //------------------------------------------------------------------------------
 
 //! CTOR.
 inline
-Texture2D::Texture2D(const GLenum target)
+Texture2D::Texture2D(GLenum const target)
   : Texture(target) { // May throw.
 }
 
@@ -220,8 +305,8 @@ Texture2D::image(const GLint level,
                  const GLenum fmt, 
                  const GLenum type, 
                  const GLvoid *data) {
-  Bindor bind(this);
-  detail::texImage2D(target(), level, intFmt, w, h, b, fmt, type, data);
+  detail::textureImage2D(
+    handle(), target(), level, intFmt, w, h, b, fmt, type, data);
 }
 
 //! "glCopyTexImage2D defines a two-dimensional texture image with 
@@ -234,8 +319,8 @@ Texture2D::copyImage(const GLint level,
                      const GLsizei w,   
                      const GLsizei h,   
                      const GLint b) {
-  Bindor bind(this);
-  detail::copyTexImage2D(target(), level, intFmt, x, y, w, h, b);
+  detail::copyTextureImage2D(
+    handle(), target(), level, intFmt, x, y, w, h, b);
 }
 
 //! DOCS. May throw.
@@ -248,8 +333,8 @@ Texture2D::subImage(const GLint level,
                     const GLenum fmt, 
                     const GLenum type, 
                     const GLvoid *data) {
-  Bindor bind(this);
-  detail::texSubImage2D(target(), level, x0, y0, w, h, fmt, type, data);
+  detail::textureSubImage2D(
+    handle(), target(), level, x0, y0, w, h, fmt, type, data);
 }
 
 //! DOCS. May throw.
@@ -261,8 +346,8 @@ Texture2D::copySubImage(const GLint level,
                         const GLint y,     
                         const GLsizei w, 
                         const GLsizei h) {
-  Bindor bind(this);
-  detail::copyTexSubImage2D(target(), level, x0, y0, x, y, w, h);
+  detail::copyTextureSubImage2D(
+    handle(), target(), level, x0, y0, x, y, w, h);
 }
 
 //! DOCS. May throw.
@@ -274,8 +359,8 @@ Texture2D::compressedImage(const GLint level,
                            const GLint b,     
                            const GLsizei size, 
                            const GLvoid *data) {
-  Bindor bind(this);
-  detail::compressedTexImage2D(target(), level, intFmt, w, h, b, size, data);
+  detail::compressedTextureImage2D(
+    handle(), target(), level, intFmt, w, h, b, size, data);
 }
 
 //! DOCS. May throw.
@@ -288,9 +373,8 @@ Texture2D::compressedSubImage(const GLint level,
                               const GLenum fmt, 
                               const GLsizei size,  
                               const GLvoid *data) {
-  Bindor bind(this);
-  detail::compressedTexSubImage2D(target(), level, x0, y0, w, h, 
-                                  fmt, size, data);
+  detail::compressedTextureSubImage2D(
+    handle(), target(), level, x0, y0, w, h, fmt, size, data);
 }
 
 NDJINN_END_NAMESPACE
