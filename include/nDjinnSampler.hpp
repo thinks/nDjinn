@@ -263,14 +263,12 @@ getSamplerParameterIv<GLuint>(GLuint const sampler,
 //! DOCS
 class Sampler{
 public:
-
   explicit 
   Sampler();
 
   ~Sampler();
 
 public:
-
   GLuint 
   handle() const;  
 

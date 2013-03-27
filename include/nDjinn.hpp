@@ -26,6 +26,7 @@
 #include "nDjinnShaderProgram.hpp"
 #include "nDjinnBufferObject.hpp"
 #include "nDjinnFramebuffer.hpp"
+#include "nDjinnVertexArray.hpp"
 //#include "nDjinnCamera.hpp"
 
 //------------------------------------------------------------------------------
