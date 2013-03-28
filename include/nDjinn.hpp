@@ -22,6 +22,7 @@
 #include "nDjinnTexture2D.hpp"
 #include "nDjinnTexture3D.hpp"
 #include "nDjinnSampler.hpp"
+#include "nDjinnBindor.hpp"
 #include "nDjinnShader.hpp"
 #include "nDjinnShaderProgram.hpp"
 #include "nDjinnBufferObject.hpp"

@@ -115,25 +115,6 @@ VertexArray::release() const {
 
 // -----------------------------------------------------------------------------
 
-//! DOCS
-class VertexArrayBindor {
-public:
-  explicit
-  VertexArrayBindor(VertexArray const& array) 
-    : _array(array) {
-    _array.bind();
-  }
-
-  ~VertexArrayBindor() {
-    _array.release();
-  }
-
-private: // Member variables.
-  VertexArray const& _array;
-};
-
-// -----------------------------------------------------------------------------
-
 NDJINN_END_NAMESPACE
 
 #endif // NDJINN_VERTEX_ARRAY_HPP_INCLUDED

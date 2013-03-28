@@ -441,23 +441,11 @@ Buffer<Target>::usage() const {
 
 // -----------------------------------------------------------------------------
 
-//! DOCS
-template <class BufferT>
-class BufferBindor {
-public:
-  explicit
-  BufferBindor(BufferT const& buffer) 
-    : _buffer(buffer) {
-    _buffer.bind();
-  }
-
-  ~BufferBindor() {
-    _buffer.release();
-  }
-
-private: // Member variables.
-  BufferT const& _buffer;
-};
+template<typename E, typename Size, GLenum Target> inline
+Size 
+elementCount(Buffer<Target> const& buffer) {
+  return static_cast<Size>(buffer.size()/sizeof(E));
+}
 
 // -----------------------------------------------------------------------------
 

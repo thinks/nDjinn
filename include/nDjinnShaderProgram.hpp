@@ -1399,6 +1399,8 @@ ShaderProgram::_updateActiveAttribs() {
   }
 }
 
+// -----------------------------------------------------------------------------
+
 NDJINN_END_NAMESPACE
 
 #endif // NDJINN_SHADER_PROGRAM_HPP_INCLUDED

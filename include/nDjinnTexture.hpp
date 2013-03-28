@@ -686,25 +686,6 @@ activeTexture(GLenum const unit) {
 
 //------------------------------------------------------------------------------
 
-//! DOCS
-class TextureBindor {
-public:
-  explicit
-  TextureBindor(Texture const& texture) 
-    : _texture(texture) {
-    _texture.bind();
-  }
-
-  ~TextureBindor() {
-    _texture.release();
-  }
-
-private: // Member variables.
-  Texture const& _texture;
-};
-
-//------------------------------------------------------------------------------
-
 NDJINN_END_NAMESPACE
 
 #endif  // NDJINN_TEXTURE_HPP_INCLUDED
