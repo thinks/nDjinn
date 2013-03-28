@@ -9,9 +9,9 @@
 #define NDJINN_FRAMEBUFFER_HPP_INCLUDED
 
 #include "nDjinnNamespace.hpp"
-#include "nDjinnState.hpp"
 #include "nDjinnException.hpp"
 #include "nDjinnError.hpp"
+#include "nDjinnFunctions.hpp"
 #include <gl/glew.h>
 #include <string>
 

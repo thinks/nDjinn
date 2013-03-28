@@ -14,7 +14,6 @@
 #include "nDjinnNamespace.hpp"
 #include "nDjinnException.hpp"
 #include "nDjinnError.hpp"
-#include "nDjinnState.hpp"
 #include <gl/glew.h>
 
 // -----------------------------------------------------------------------------
@@ -370,27 +369,6 @@ void
 Sampler::getParameterIv(GLenum const pname, T* params) const {
   detail::getSamplerParameterIv<T>(_handle, pname, params);
 }
-
-// -----------------------------------------------------------------------------
-
-//! DOCS
-class SamplerBindor {
-public:
-  explicit
-  SamplerBindor(Sampler const& sampler, GLuint const unit = 0) 
-    : _sampler(sampler)
-    , _unit(unit) {
-    _sampler.bind(_unit);
-  }
-
-  ~SamplerBindor() {
-    _sampler.release(_unit);
-  }
-
-private: // Member variables.
-  Sampler const& _sampler;
-  GLuint const _unit;
-};
 
 // -----------------------------------------------------------------------------
 
