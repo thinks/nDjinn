@@ -12,6 +12,8 @@
 
 #include "nDjinnBindor.hpp"
 #include "nDjinnBuffer.hpp"
+#include "nDjinnDisabler.hpp"
+#include "nDjinnEnabler.hpp"
 #include "nDjinnError.hpp"
 #include "nDjinnException.hpp"
 #include "nDjinnFramebuffer.hpp"
@@ -25,6 +27,8 @@
 #include "nDjinnTexture2D.hpp"
 #include "nDjinnTexture3D.hpp"
 #include "nDjinnVertexArray.hpp"
+#include "nDjinnVertexAttribArrayEnabler.hpp"
+#include "nDjinnVertexAttribType.hpp"
 
 //------------------------------------------------------------------------------
 

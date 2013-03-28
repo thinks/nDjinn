@@ -99,56 +99,56 @@ blendColor(GLclampf const red,
 
 // glEnable wrapper. May throw.
 inline void 
-enable(const GLenum cap) {
+enable(GLenum const cap) {
   glEnable(cap);
   checkError("glEnable");
 }
 
 // glDisable wrapper. May throw.
 inline void 
-disable(const GLenum cap) {
+disable(GLenum const cap) {
   glDisable(cap);
   checkError("glDisable");
 }
 
 //! glGetBooleanv wrapper. May throw.
 inline void
-getBooleanv(const GLenum pname, GLboolean *data) {
+getBooleanv(GLenum const pname, GLboolean *data) {
   glGetBooleanv(pname, data);
   checkError("glGetBooleanv");
 }
 
 //! glGetIntegerv wrapper. May throw. 
 inline void 
-getIntegerv(const GLenum pname, GLint *data) {
+getIntegerv(GLenum const pname, GLint *data) {
   glGetIntegerv(pname, data);
   checkError("glGetIntegerv");
 }
 
 //! glGetInteger64v wrapper. May throw.
 inline void 
-getInteger64v(const GLenum pname, GLint64 *data) {
+getInteger64v(GLenum const pname, GLint64 *data) {
   glGetInteger64v(pname, data);
   checkError("glGetInteger64v");
 }
 
 //! glGetFloatv wrapper. May throw. 
 inline void
-getFloatv(const GLenum pname, GLfloat *data) {
+getFloatv(GLenum const pname, GLfloat *data) {
   glGetFloatv(pname, data);
   checkError("glGetFloatv"); // May throw.
 }
 
 //! glGetDoublev wrapper. May throw.
 inline void
-getDoublev(const GLenum pname, GLdouble *data) {
+getDoublev(GLenum const pname, GLdouble *data) {
   glGetDoublev(pname, data);
   checkError("glGetDoublev"); // May throw.
 }
 
 //! glIsEnabled wrapper. May throw. 
 inline GLboolean
-isEnabled(const GLenum cap) {
+isEnabled(GLenum const cap) {
   const GLboolean enabled = glIsEnabled(cap);
   checkError("glIsEnabled"); // May throw.
   return enabled;
@@ -156,7 +156,7 @@ isEnabled(const GLenum cap) {
 
 //! glGetString wrapper. May throw.
 inline const GLubyte*
-getString(const GLenum name) {
+getString(GLenum const name) {
   const GLubyte *str = glGetString(name);
   checkError("glGetString");
   return str;
@@ -286,126 +286,125 @@ viewport(GLint const x, GLint const y, GLsizei const w, GLsizei const h) {
 
 //! glDrawBuffer wrapper. May throw.
 inline void
-drawBuffer(const GLenum buf) { 
+drawBuffer(GLenum const buf) { 
   glDrawBuffer(buf);
   checkError("glDrawBuffer");
 } 
 
 //! glDrawBuffers wrapper. May throw.
 inline void
-drawBuffers(const GLsizei n, const GLenum *bufs) { 
+drawBuffers(GLsizei const n, GLenum const* bufs) { 
   glDrawBuffers(n, bufs);
   checkError("glDrawBuffers");
 } 
 
 //! glColorMask wrapper. May throw.
 inline void 
-colorMask(const GLboolean r, 
-          const GLboolean g, 
-          const GLboolean b, 
-          const GLboolean a) {
+colorMask(GLboolean const r, 
+          GLboolean const g, 
+          GLboolean const b, 
+          GLboolean const a) {
   glColorMask(r, g, b, a);
   checkError("glColorMask");
 }
 
 //! glColorMaski wrapper. May throw.
 inline void 
-colorMaski(const GLuint buf, 
-           const GLboolean r, 
-           const GLboolean g, 
-           const GLboolean b, 
-           const GLboolean a) {
+colorMaski(GLuint const buf, 
+           GLboolean const r, 
+           GLboolean const g, 
+           GLboolean const b, 
+           GLboolean const a) {
   glColorMaski(buf, r, g, b, a);
   checkError("glColorMaski"); 
 }
 
 //! glDepthMask wrapper. May throw.
 inline void 
-depthMask(const GLboolean mask) {
+depthMask(GLboolean const mask) {
   glDepthMask(mask);
   checkError("glColorMask");
 }
 
 //! glStencilMask wrapper. May throw.
 inline void 
-stencilMask(const GLuint mask)
-{
+stencilMask(GLuint const mask) {
   glStencilMask(mask);
   checkError("glStencilMask");
 }
 
 //! glStencilMaskSeparate wrapper. May throw.
 inline void 
-stencilMaskSeparate(const GLenum face, const GLuint mask) {
+stencilMaskSeparate(GLenum const face, GLuint const mask) {
   glStencilMaskSeparate(face, mask);
   checkError("glStencilMaskSeparate");
 }
 
 //! glClear wrapper. May throw.
 inline void 
-clear(const GLbitfield buf) {
+clear(GLbitfield const buf) {
   glClear(buf);
   checkError("glClear");        
 }
 
 //! glClearColor wrapper. May throw.
 inline void 
-clearColor(const GLclampf r, 
-           const GLclampf g, 
-           const GLclampf b, 
-           const GLclampf a) {
+clearColor(GLclampf const r, 
+           GLclampf const g, 
+           GLclampf const b, 
+           GLclampf const a) {
   glClearColor(r, g, b, a);
   checkError("glClearColor");
 }
 
 //! glClearDepth wrapper. May throw.
 inline void 
-clearDepth(const GLclampd d) {
+clearDepth(GLclampd const d) {
   glClearDepth(d);
   checkError("glClearDepth");
 }
 
 //! glClearDepthf wrapper. May throw. 
 inline void 
-clearDepthf(const GLclampf d) {
+clearDepthf(GLclampf const d) {
   glClearDepthf(d);
   checkError("glClearDepthf");
 }
 
 //! glClearStencil wrapper. May throw.
 inline void 
-clearStencil(const GLint s) {
+clearStencil(GLint const s) {
   glClearStencil(s);
   checkError("glClearStencil");
 }
 
 //! glClearBufferiv wrapper. May throw.
 inline void 
-clearBufferiv(const GLenum buf, const GLint drawbuffer, const GLint *value) {
+clearBufferiv(GLenum const buf, GLint const drawbuffer, GLint const* value) {
   glClearBufferiv(buf, drawbuffer, value);
   checkError("glClearBufferiv"); // May throw.        
 }
 
 //! glClearBufferfv wrapper. May throw.
 inline void 
-clearBufferfv(const GLenum buf, const GLint drawbuffer, const GLfloat *value) {
+clearBufferfv(GLenum const buf, GLint const drawbuffer, GLfloat const* value) {
   glClearBufferfv(buf, drawbuffer, value);
   checkError("glClearBufferfv"); // May throw.        
 }
 
 //! glClearBufferuiv wrapper. May throw.
 inline void 
-clearBufferuiv(const GLenum buf, const GLint drawbuffer, const GLuint *value) {
+clearBufferuiv(GLenum const buf, GLint const drawbuffer, GLuint const* value) {
   glClearBufferuiv(buf, drawbuffer, value);
   checkError("glClearBufferuiv"); // May throw.        
 }
 
 //! glClearBufferfi wrapper. May throw.
 inline void 
-clearBufferfi(const GLenum buf, 
-              const GLint drawbuffer, 
-              const GLfloat depth, 
-              const GLint stencil) {
+clearBufferfi(GLenum const buf, 
+              GLint const drawbuffer, 
+              GLfloat const depth, 
+              GLint const stencil) {
   glClearBufferfi(buf, drawbuffer, depth, stencil);
   checkError("glClearBufferfi"); // May throw.
 }
