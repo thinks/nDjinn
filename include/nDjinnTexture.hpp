@@ -9,7 +9,6 @@
 #define NDJINN_TEXTURE_HPP_INCLUDED
 
 #include "nDjinnNamespace.hpp"
-//#include "nDjinnState.hpp"
 #include "nDjinnException.hpp"
 #include "nDjinnError.hpp"
 #include <gl/glew.h>

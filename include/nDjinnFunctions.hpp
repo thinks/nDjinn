@@ -410,6 +410,15 @@ clearBufferfi(GLenum const buf,
 }
 
 // -----------------------------------------------------------------------------
+// Rasterization
+
+inline void
+lineWidth(GLfloat const width) {
+  glLineWidth(width);
+  checkError("glLineWidth");
+}
+
+// -----------------------------------------------------------------------------
 
 NDJINN_END_NAMESPACE
 

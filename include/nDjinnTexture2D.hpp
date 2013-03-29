@@ -278,6 +278,12 @@ public:     // 2D specific functions.
                      GLenum fmt, 
                      GLsizei size, 
                      GLvoid const* data);
+
+  GLint
+  width(GLint level = 0) const;
+
+  GLint 
+  height(GLint level = 0) const;
 };
 
 //------------------------------------------------------------------------------
@@ -375,6 +381,23 @@ Texture2D::compressedSubImage(const GLint level,
                               const GLvoid *data) {
   detail::compressedTextureSubImage2D(
     handle(), target(), level, x0, y0, w, h, fmt, size, data);
+}
+
+GLint
+Texture2D::width(GLint const level) const {
+  GLint w = 0;
+  detail::getTextureLevelParameterv<GLint>(
+    handle(), target(), level, GL_TEXTURE_WIDTH, &w);
+  return w;
+}
+
+GLint 
+Texture2D::height(GLint const level) const {
+  GLint h = 0;
+  detail::getTextureLevelParameterv<GLint>(
+    handle(), target(), level, GL_TEXTURE_HEIGHT, &h);
+  return h;
+
 }
 
 NDJINN_END_NAMESPACE
