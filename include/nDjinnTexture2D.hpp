@@ -219,6 +219,16 @@ class Texture2D : public Texture
 {
 public:
   explicit Texture2D(GLenum target = GL_TEXTURE_RECTANGLE/*GL_TEXTURE_2D*/);
+
+  explicit Texture2D(GLenum target, 
+                     GLsizei width, 
+                     GLsizei height, 
+                     GLint level = 0, 
+                     GLint internalFormat = GL_RGBA8, 
+                     GLenum format = GL_RGBA, 
+                     GLenum type = GL_UNSIGNED_BYTE, 
+                     GLvoid const* data = 0);
+
   ~Texture2D();
 
 public:     // 2D specific functions.
@@ -292,6 +302,27 @@ public:     // 2D specific functions.
 inline
 Texture2D::Texture2D(GLenum const target)
   : Texture(target) { // May throw.
+}
+
+inline 
+Texture2D::Texture2D(GLenum const target, 
+                     GLsizei const width, 
+                     GLsizei const height, 
+                     GLint const level, 
+                     GLint const internalFormat, 
+                     GLenum const format, 
+                     GLenum const type, 
+                     GLvoid const* data)
+  : Texture(target) {
+  image(
+    level, 
+    internalFormat, 
+    width, 
+    height, 
+    0, // Border. 
+    format, 
+    type, 
+    data);    
 }
 
 //! DTOR.
