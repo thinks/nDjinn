@@ -19,6 +19,7 @@
 #include "nDjinnFramebuffer.hpp"
 #include "nDjinnFunctions.hpp"
 //#include "nDjinnRenderBuffer.hpp"
+#include "nDjinnQuery.hpp"
 #include "nDjinnSampler.hpp"
 #include "nDjinnShader.hpp"
 #include "nDjinnShaderProgram.hpp"
