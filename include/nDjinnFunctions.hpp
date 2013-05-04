@@ -357,6 +357,12 @@ clearColor(GLclampf const r,
   checkError("glClearColor");
 }
 
+//! Convenience, set glClearColor from a 4-element array.
+inline void
+clearColor(GLclampf const color[4]) {
+  clearColor(color[0], color[1], color[2], color[3]);
+}
+
 //! glClearDepth wrapper. May throw.
 inline void 
 clearDepth(GLclampd const d) {

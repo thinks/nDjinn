@@ -168,42 +168,62 @@ deleteQuery(GLuint const& query) {
 
 //------------------------------------------------------------------------------
 
+//! DOCS
 class Query {
 public:
-  Query();
+  Query(GLenum target);
   ~Query();
 
   void
-  begin(GLenum target);
-
-  void
-  beginIndexed(GLenum target, GLuint index);
+  begin();
 
   void 
-  end(GLenum target);
-
-  void
-  endIndexed(GLenum target, GLuint index);
+  end();
 
   template <typename T>
-  void result(T* r);
+  void result(T* r) const;
+
+  bool 
+  resultAvailable() const;
+
+  void
+  wait() const;
+
+private: // Member variables.
+  GLuint const _handle;
+  GLenum const _target;
+};
+
+//! DOCS
+class IndexedQuery {
+public:
+  IndexedQuery(GLenum target, GLuint index);
+  ~IndexedQuery();
+
+  void
+  begin();
+
+  void 
+  end();
+
+  template <typename T>
+  void result(T* r) const;
 
   bool 
   resultAvailable() const;
 
 private: // Member variables.
   GLuint const _handle;
+  GLenum const _target;
+  GLuint const _index;
 };
 
 //------------------------------------------------------------------------------
 
 inline
-Query::Query()
-  : _handle(detail::genQuery()) 
-{
-  if (detail::isQuery(_handle) == GL_FALSE) {
-    NDJINN_THROW("invalid query");
-  }
+Query::Query(GLenum const target)
+  : _handle(detail::genQuery())
+  , _target(target) {
 }
 
 inline
@@ -212,33 +232,67 @@ Query::~Query() {
 }
 
 void
-Query::begin(GLenum const target) {
-  detail::beginQuery(target, _handle);
-}
-
-void
-Query::beginIndexed(GLenum const target, GLuint const index) {
-  detail::beginQueryIndexed(target, index, _handle);
+Query::begin() {
+  detail::beginQuery(_target, _handle);
 }
 
 void 
-Query::end(GLenum const target) {
-  detail::endQuery(target);
-}
-
-void
-Query::endIndexed(GLenum const target, GLuint const index) {
-  detail::endQueryIndexed(target, index);
+Query::end() {
+  detail::endQuery(_target);
 }
 
 template <typename T>
-inline T
-result(T* r) {
+inline void
+Query::result(T* r) const {
   detail::getQueryObjectv<T>(_handle, GL_QUERY_RESULT, r);
 }
 
 inline bool 
 Query::resultAvailable() const {
+  GLint p = 0;
+  detail::getQueryObjectiv(_handle, GL_QUERY_RESULT_AVAILABLE, &p);
+  return p == GL_TRUE;
+}
+
+void
+Query::wait() const {
+  while (!resultAvailable()) {  
+  }
+}
+
+
+//------------------------------------------------------------------------------
+
+inline
+IndexedQuery::IndexedQuery(GLenum const target, GLuint const index)
+  : _handle(detail::genQuery())
+  , _target(target)
+  , _index(index) {
+}
+
+inline
+IndexedQuery::~IndexedQuery() {
+  detail::deleteQuery(_handle);
+}
+
+void
+IndexedQuery::begin() {
+  detail::beginQueryIndexed(_target, _index, _handle);
+}
+
+void 
+IndexedQuery::end() {
+  detail::endQueryIndexed(_target, _index);
+}
+
+template <typename T>
+inline void
+IndexedQuery::result(T* r) const {
+  detail::getQueryObjectv<T>(_handle, GL_QUERY_RESULT, r);
+}
+
+inline bool 
+IndexedQuery::resultAvailable() const {
   GLint p = 0;
   detail::getQueryObjectiv(_handle, GL_QUERY_RESULT_AVAILABLE, &p);
   return p == GL_TRUE;
