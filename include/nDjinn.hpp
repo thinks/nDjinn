@@ -8,8 +8,6 @@
 #ifndef NDJINN_HPP_INCLUDED
 #define NDJINN_HPP_INCLUDED
 
-//------------------------------------------------------------------------------
-
 #include "nDjinnBindor.hpp"
 #include "nDjinnBuffer.hpp"
 #include "nDjinnDisabler.hpp"
@@ -30,7 +28,5 @@
 #include "nDjinnVertexArray.hpp"
 #include "nDjinnVertexAttribArrayEnabler.hpp"
 #include "nDjinnVertexAttribType.hpp"
-
-//------------------------------------------------------------------------------
 
 #endif // NDJINN_HPP_INCLUDED

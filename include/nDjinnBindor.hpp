@@ -8,10 +8,9 @@
 #ifndef NDJINN_BINDOR_HPP_INCLUDED
 #define NDJINN_BINDOR_HPP_INCLUDED
 
+#include "nDjinnGL.hpp"
 #include "nDjinnNamespace.hpp"
 #include "nDjinnSampler.hpp"
-
-//------------------------------------------------------------------------------
 
 NDJINN_BEGIN_NAMESPACE
 
@@ -21,9 +20,8 @@ class Bindor {
 public:
   typedef R Resource;
 
-  explicit
-  Bindor(R const& resource) 
-    : _resource(resource) {
+  explicit Bindor(R const& resource)
+      : _resource(resource) {
     _resource.bind();
   }
 
@@ -35,15 +33,13 @@ private: // Member variables.
   R const& _resource;
 };
 
-
-//! Specialization.
+//! Specialization for Sampler.
 template <>
 class Bindor<Sampler> {
 public:
-  explicit
-  Bindor(Sampler const& sampler, GLuint const unit = 0) 
-    : _sampler(sampler)
-    , _unit(unit) {
+  explicit Bindor(Sampler const& sampler, GLuint const unit = 0)
+      : _sampler(sampler)
+      , _unit(unit) {
     _sampler.bind(_unit);
   }
 

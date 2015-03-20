@@ -8,59 +8,31 @@
 #ifndef NDJINN_EXCEPTION_HPP_INCLUDED
 #define NDJINN_EXCEPTION_HPP_INCLUDED
 
-#include "nDjinnNamespace.hpp"
 #include <sstream>
 #include <string>
 #include <exception>
 
-//------------------------------------------------------------------------------
+#include "nDjinnNamespace.hpp"
 
 // Useful macro for throwing.
 #define NDJINN_THROW(MSG) \
-{std::stringstream ss; ss << "nDjinn: "; ss << MSG; throw ndj::base(ss.str());}
-
-//------------------------------------------------------------------------------
+{std::stringstream ss; ss << "nDjinn: "; ss << MSG; throw ndj::Exception(ss.str());}
 
 NDJINN_BEGIN_NAMESPACE
 
-class base : public std::exception
-{
+class Exception {
 public:
-
   //! CTOR.
-  explicit
-  base(const std::string &msg)
-      : std::exception()
-      , _msg(msg) {
-  }
-
-  //! Copy CTOR.
-  base(const base &rhs)
-      : std::exception(rhs)
-      , _msg(rhs._msg) { // TODO: May throw?
-  }
-
-  //! Assign.
-  base&
-  operator=(const base &rhs) {
-    std::exception::operator=(rhs);
-    _msg = rhs._msg;    // TODO: May throw?
-    return *this;
-  }
-
-  //! DTOR.
-  virtual 
-  ~base() {
+  explicit Exception(std::string const& msg)
+      : _msg(msg) {
   }
 
   //! Exception message.
-  virtual const char* 
-  what() const { 
+  virtual char const* what() const {
     return _msg.c_str(); 
   }
 
-private:    // Member variables.
-
+private: // Member variables.
   std::string _msg;
 };
 
