@@ -172,7 +172,7 @@ public:
   {
     bind(); // Make sure sampler gets created.
     if (detail::isSampler(_handle) == GL_FALSE) {
-      NDJINN_THROW("invalid sampler");
+      NDJINN_THROW("invalid sampler handle: " << _handle);
     }
     release();
   }
