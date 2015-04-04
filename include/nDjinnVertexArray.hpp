@@ -8,113 +8,100 @@
 #ifndef NDJINN_VERTEX_ARRAY_HPP_INCLUDED
 #define NDJINN_VERTEX_ARRAY_HPP_INCLUDED
 
-#include "nDjinnNamespace.hpp"
-#include "nDjinnError.hpp"
-#include <gl/glew.h>
+#include <iostream>
 
-// -----------------------------------------------------------------------------
+#include "nDjinnError.hpp"
+#include "nDjinnNamespace.hpp"
 
 NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
-inline void 
-genVertexArrays(GLsizei const n, GLuint *vertexArrays) {
+//! glGenVertexArrays wrapper. May throw.
+inline void genVertexArrays(GLsizei const n, GLuint *vertexArrays) {
   glGenVertexArrays(n, vertexArrays);
   checkError("glGenVertexArrays");
 }
 
-inline void 
-deleteVertexArrays(GLsizei const n, const GLuint *vertexArrays) {
+//! glDeleteVertexArrays wrapper. May throw.
+inline void deleteVertexArrays(GLsizei const n, const GLuint *vertexArrays) {
   glDeleteVertexArrays(n, vertexArrays);
   checkError("glDeleteVertexArrays");
 }
 
-inline void 
-bindVertexArray(GLuint const vertexArray) {
-  glBindVertexArray(vertexArray);
-  checkError("glBindVertexArray");
-}
-
-inline GLboolean 
-isVertexArray(GLuint const vertexArray) {
+//! glIsArray wrapper. May throw.
+inline GLboolean isVertexArray(GLuint const vertexArray) {
   GLboolean const isVertexArray = glIsVertexArray(vertexArray);
   checkError("glIsVertexArray");
   return isVertexArray;
 }
 
-//! Convenience, generate a single buffer handle and return it. May throw.
-inline GLuint
-genVertexArray() {
+//! glBindVertexArray wrapper. May throw.
+inline void bindVertexArray(GLuint const vertexArray) {
+  glBindVertexArray(vertexArray);
+  checkError("glBindVertexArray");
+}
+
+//! Convenience.
+inline GLuint genVertexArray() {
   GLuint handle = 0;
   genVertexArrays(1, &handle);
   return handle;
 }
 
 //! Convenience.
-inline void 
-deleteVertexArray(GLuint const handle) {
+inline void deleteVertexArray(GLuint const handle) {
   deleteVertexArrays(1, &handle);
 }
 
 } // Namespace: detail
 
-// -----------------------------------------------------------------------------
-
 //! DOCS
 class VertexArray {
 public:
-  explicit 
-  VertexArray();
+  VertexArray()
+    : _handle(detail::genVertexArray())
+  {
+    if (detail::isVertexArray(_handle) == GL_FALSE) {
+      NDJINN_THROW("invalid vertex array handle: " << _handle);
+    }
+  }
 
-  ~VertexArray();
+  ~VertexArray() {
+    detail::deleteVertexArray(_handle);
+  }
 
-public:
-  GLuint 
-  handle() const;  
+  GLuint handle() const {
+    return _handle;
+  }
 
-  void 
-  bind() const;
+  void bind() const {
+    detail::bindVertexArray(_handle);
+  }
 
-  void 
-  release() const;
+  void release() const {
+    detail::bindVertexArray(0);
+  }
 
 private: // Member variables.
+  VertexArray(VertexArray const&); //!< Disabled copy.
+  VertexArray& operator=(VertexArray const&); //!< Disabled assign.
+
   GLuint const _handle;
 };
 
-// -----------------------------------------------------------------------------
-
-inline
-VertexArray::VertexArray()
-  : _handle(detail::genVertexArray()) // May throw. 
-{
-  bind(); // Make sure vertex array gets created.
-  if (detail::isVertexArray(_handle) == GL_FALSE) {
-    NDJINN_THROW("invalid vertex array");
-  }
-  release();
-}
-
-inline
-VertexArray::~VertexArray() { 
-  detail::deleteVertexArray(_handle); 
-}
-
-// -----------------------------------------------------------------------------
-
-inline void 
-VertexArray::bind() const {
-  detail::bindVertexArray(_handle);
-}
-
-inline void 
-VertexArray::release() const {
-  detail::bindVertexArray(0);
-}
-
-// -----------------------------------------------------------------------------
-
 NDJINN_END_NAMESPACE
+
+namespace std {
+
+inline
+ostream& operator<<(ostream& os, ndj::VertexArray const& va)
+{
+  os << "VertexArray" << endl
+     << "  Handle: " << va.handle() << endl;
+  return os;
+}
+
+} // namespace std
 
 #endif // NDJINN_VERTEX_ARRAY_HPP_INCLUDED
