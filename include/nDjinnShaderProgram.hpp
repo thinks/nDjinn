@@ -37,10 +37,11 @@ inline void deleteProgram(GLuint const program) {
   checkError("glDeleteProgram"); 
 }
 
-//! glUseProgram wrapper. May throw.
-inline void useProgram(GLuint const program) {
-  glUseProgram(program); 
-  checkError("glUseProgram");
+//! glIsProgram wrapper. May throw.
+inline GLboolean isProgram(GLuint const program) {
+  const GLboolean isProgram = glIsProgram(program);
+  checkError("glIsProgram");
+  return isProgram;
 }
 
 //! glAttachShader wrapper. May throw.
@@ -67,13 +68,6 @@ inline void validateProgram(GLuint const program) {
   checkError("glValidateProgram"); 
 }
 
-//! glIsProgram wrapper. May throw.
-inline GLboolean isProgram(GLuint const program) {
-  const GLboolean isProgram = glIsProgram(program);
-  checkError("glIsProgram"); 
-  return isProgram;
-}
-
 //! glGetProgramInfoLog wrapper. May throw.
 inline void getProgramInfoLog(GLuint const program,
                               GLsizei const bufSize,
@@ -81,6 +75,20 @@ inline void getProgramInfoLog(GLuint const program,
                               GLchar* infoLog) {
   glGetProgramInfoLog(program, bufSize, length, infoLog);
   checkError("glGetProgramInfoLog");
+}
+
+//! glUseProgram wrapper. May throw.
+inline void useProgram(GLuint const program) {
+  glUseProgram(program);
+  checkError("glUseProgram");
+}
+
+//! glGetProgramiv wrapper. May throw.
+inline void getProgramiv(GLuint const program,
+                         GLenum const pname,
+                         GLint* params) {
+  glGetProgramiv(program, pname, params);
+  checkError("glGetProgramiv");
 }
 
 //! glGetActiveAttrib wrapper. May throw.
@@ -119,14 +127,6 @@ inline GLint getUniformLocation(GLuint const program, GLchar const* name) {
   GLint const loc = glGetUniformLocation(program, name);
   checkError("glGetUniformLocation"); 
   return loc; 
-}
-
-//! glGetProgramiv wrapper. May throw.
-inline void getProgramiv(GLuint const program,
-                         GLenum const pname,
-                         GLint* params) {
-  glGetProgramiv(program, pname, params); 
-  checkError("glGetProgramiv");
 }
 
 //! glGetActiveUniformsiv wrapper. May throw.
@@ -514,8 +514,8 @@ void programUniformMatrixfv<4,3>(GLuint const program,
   checkError("glProgramUniformMatrix4x3fv");
 }
 
-inline
-std::string uniformTypeToString(GLenum const type) {
+//! Convenience.
+inline std::string uniformTypeToString(GLenum const type) {
   using std::string;
 
   switch (type) {
@@ -546,12 +546,12 @@ std::string uniformTypeToString(GLenum const type) {
   case GL_SAMPLER_CUBE:       return string("GL_SAMPLER_CUBE");
   case GL_SAMPLER_1D_SHADOW:  return string("GL_SAMPLER_1D_SHADOW");
   case GL_SAMPLER_2D_SHADOW:  return string("GL_SAMPLER_2D_SHADOW");
-  default: NDJINN_THROW("unrecognized uniform type: " << type);
   }
+  NDJINN_THROW("unrecognized uniform type: " << type);
 }
 
-inline
-std::string attribTypeToString(GLenum const type) {
+//! Convenience.
+inline std::string attribTypeToString(GLenum const type) {
   using std::string;
 
   switch (type) {
@@ -580,164 +580,193 @@ std::string attribTypeToString(GLenum const type) {
   NDJINN_THROW("unrecognized attrib type: " << type);
 }
 
+//! Convenience.
+inline GLint elementCount(GLenum const type) {
+  // TODO: Add more types if needed!
+  switch (type) {
+  case GL_FLOAT:
+  case GL_INT:
+  case GL_UNSIGNED_INT:
+    return 1;
+  case GL_FLOAT_VEC2:
+  case GL_INT_VEC2:
+  case GL_UNSIGNED_INT_VEC2:
+    return 2;
+  case GL_FLOAT_VEC3:
+  case GL_INT_VEC3:
+  case GL_UNSIGNED_INT_VEC3:
+    return 3;
+  case GL_FLOAT_VEC4:
+  case GL_INT_VEC4:
+  case GL_UNSIGNED_INT_VEC4:
+  case GL_FLOAT_MAT2:
+    return 4;
+  case GL_FLOAT_MAT3x2:
+  case GL_FLOAT_MAT2x3:
+    return 6;
+  case GL_FLOAT_MAT2x4:
+  case GL_FLOAT_MAT4x2:
+    return 8;
+  case GL_FLOAT_MAT3:
+    return 9;
+  case GL_FLOAT_MAT3x4:
+  case GL_FLOAT_MAT4x3:
+    return 12;
+  case GL_FLOAT_MAT4:
+    return 16;
+  }
+  NDJINN_THROW("unrecognized type: " << type);
+}
+
 } // Namespace: detail.
+
+//! POD
+struct Attrib {
+  GLenum type;
+  GLint size;
+  GLint location;
+};
+
+//! POD
+struct Uniform {
+  GLenum type;
+  GLint size;
+  GLint location;
+};
+
+//! DOCS
+class UniformBlock {
+public:
+  //! Represents an active uniform within a block.
+  struct Field {
+    std::string name;
+    GLint offset;
+    GLuint blockIndex;
+    GLint size;
+    GLenum type;
+  };
+
+  typedef std::vector<Field> FieldContainer;
+  typedef FieldContainer::const_iterator FieldIterator;
+
+  //! CTOR
+  UniformBlock(GLuint const index, GLuint const program)
+    : _index(index)
+    , _program(program)
+  {
+    // Get the number of active uniforms, i.e. fields, in this block.
+    GLint fieldCount = -1;
+    detail::getActiveUniformBlockiv(
+      _program,
+      _index,
+      GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS,
+      &fieldCount);
+
+    // Get the indices of the active uniforms in this block.
+    std::vector<GLint> fieldIndices(fieldCount, -1);
+    detail::getActiveUniformBlockiv(
+      _program,
+      _index,
+      GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES,
+      &fieldIndices[0]);
+
+    // Get the offsets of the active uniforms in this block.
+    std::vector<GLint> fieldOffsets(fieldIndices.size(), -1);
+    detail::getActiveUniformsiv(
+      _program,
+      static_cast<GLsizei>(fieldIndices.size()),
+      reinterpret_cast<GLuint*>(&fieldIndices[0]),
+      GL_UNIFORM_OFFSET,
+      &fieldOffsets[0]);
+
+    // Get the maximum length of a uniform for the whole program.
+    GLint activeUniformMaxLength = -1;
+    ndj::detail::getProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH,
+                              &activeUniformMaxLength);
+
+    for (std::size_t i = 0; i < fieldIndices.size(); ++i) {
+      Field field;
+      field.name.resize(activeUniformMaxLength);
+      field.blockIndex = fieldIndices[i];
+      field.offset = fieldOffsets[i];
+      GLsizei length = 0;
+      detail::getActiveUniform(
+          program,
+          static_cast<GLuint>(fieldIndices[i]),
+          activeUniformMaxLength,
+          &length, // Exluding null-termination!
+          &field.size,
+          &field.type,
+          &field.name[0]);
+      field.name.resize(length);
+      _fields.push_back(field);
+    }
+
+    // Sort in increasing offset order.
+    std::sort(_fields.begin(), _fields.end(),
+              [](Field const& lhs, Field const& rhs) {
+                return lhs.offset < rhs.offset;
+              });
+  }
+
+  GLuint program() const {
+    return _program;
+  }
+
+  GLuint index() const {
+    return _index;
+  }
+
+  //! Returns size of block in bytes.
+  GLint size() const {
+    GLint size = -1;
+    detail::getActiveUniformBlockiv(
+      _program,
+      _index,
+      GL_UNIFORM_BLOCK_DATA_SIZE,
+      &size);
+    return size;
+  }
+
+  void setBinding(GLuint const uniformBlockBinding) {
+    detail::uniformBlockBinding(_program, _index, uniformBlockBinding);
+  }
+
+  GLuint binding() const {
+    GLint binding = -1;
+    detail::getActiveUniformBlockiv(
+      _program,
+      _index,
+      GL_UNIFORM_BLOCK_BINDING,
+      &binding);
+    return static_cast<GLuint>(binding);
+  }
+
+  FieldIterator fieldsBegin() const {
+    return _fields.begin();
+  }
+
+  FieldIterator fieldsEnd() const {
+    return _fields.end();
+  }
+
+private:
+  GLuint _index;
+  GLuint _program;
+  FieldContainer _fields;
+};
+
 
 //! DOCS
 class ShaderProgram {
 public:
-  //! POD
-  struct Attrib {
-    GLenum type;
-    GLint size;
-    GLint location;
-  };
+  typedef std::map<std::string, Attrib> AttribContainer;
+  typedef std::map<std::string, Uniform> UniformContainer;
+  typedef std::map<std::string, UniformBlock> UniformBlockContainer;
+  typedef AttribContainer::const_iterator AttribIterator;
+  typedef UniformContainer::const_iterator UniformIterator;
+  typedef UniformBlockContainer::const_iterator UniformBlockIterator;
 
-  //! POD
-  struct Uniform {
-    GLenum type;
-    GLint size;
-    GLint location;
-  };
-
-  class UniformBlock {
-  public:
-    struct Field {
-      std::string name;
-      GLint offset;
-      GLuint blockIndex;
-      GLint size;
-      GLenum type;
-    };
-
-    typedef std::vector<Field> FieldContainer;
-    typedef FieldContainer::const_iterator FieldIterator;
-
-    UniformBlock(GLuint const index, GLuint const program)
-      : _index(index)
-      , _program(program)
-    {
-      GLint fieldCount = -1;
-      detail::getActiveUniformBlockiv(
-        _program,
-        _index,
-        GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS,
-        &fieldCount);
-
-      std::vector<GLuint> fieldIndices(fieldCount, -1);
-      detail::getActiveUniformBlockiv(
-        _program,
-        _index,
-        GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES,
-        reinterpret_cast<GLint*>(&fieldIndices[0]));
-
-      std::vector<GLint> fieldOffsets(fieldIndices.size(), -1);
-      detail::getActiveUniformsiv(
-        _program,
-        static_cast<GLsizei>(fieldIndices.size()),
-        &fieldIndices[0],
-        GL_UNIFORM_OFFSET,
-        &fieldOffsets[0]);
-
-      std::vector<GLint> fieldBlockIndices(fieldIndices.size(), -1);
-      detail::getActiveUniformsiv(
-        _program,
-        static_cast<GLsizei>(fieldIndices.size()),
-        &fieldIndices[0],
-        GL_UNIFORM_BLOCK_INDEX,
-        &fieldBlockIndices[0]);
-
-      GLint activeUniformMaxLength = -1;
-      ndj::detail::getProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH,
-                                &activeUniformMaxLength);
-
-      for (std::size_t i = 0; i < fieldIndices.size(); ++i) {
-        Field field;
-        field.name.resize(activeUniformMaxLength);
-        field.blockIndex = fieldIndices[i];
-        field.offset = fieldOffsets[i];
-        GLsizei length = 0;
-        detail::getActiveUniform(
-            program,
-            fieldIndices[i],
-            activeUniformMaxLength,
-            &length, // Exluding null-termination!
-            &field.size,
-            &field.type,
-            &field.name[0]);
-        field.name.resize(length);
-        _fields.push_back(field);
-      }
-
-      // Sort in increasing offset order.
-      std::sort(_fields.begin(), _fields.end(),
-                [](Field const& lhs, Field const& rhs) {
-                  return lhs.offset < rhs.offset;
-                });
-    }
-
-    GLuint program() const {
-      return _program;
-    }
-
-    GLuint index() const {
-      return _index;
-    }
-
-    //! Returns size of block in bytes.
-    GLint size() const {
-      GLint size = -1;
-      detail::getActiveUniformBlockiv(
-        _program, 
-        _index, 
-        GL_UNIFORM_BLOCK_DATA_SIZE,
-        &size);
-      return size;
-    }
-
-    void setBinding(GLuint const uniformBlockBinding) {
-      detail::uniformBlockBinding(_program, _index, uniformBlockBinding);
-    }
-
-    GLuint binding() const {
-      GLint binding = -1;
-      detail::getActiveUniformBlockiv(
-        _program,
-        _index,
-        GL_UNIFORM_BLOCK_BINDING,
-        &binding);
-      return static_cast<GLuint>(binding);
-    }
-
-    FieldIterator fieldsBegin() const {
-      return _fields.begin();
-    }
-
-    FieldIterator fieldsEnd() const {
-      return _fields.end();
-    }
-
-  private:
-    GLuint _index;
-    GLuint _program;
-    FieldContainer _fields;
-  };
-
-  typedef std::map<std::string, Attrib> AttribMap;
-  typedef std::map<std::string, Uniform> UniformMap;
-  typedef std::map<std::string, UniformBlock> UniformBlockMap;
-  typedef AttribMap::const_iterator AttribIterator;
-  typedef UniformMap::const_iterator UniformIterator;
-  typedef UniformBlockMap::const_iterator UniformBlockIterator;
-
-
-
-  static GLint
-  componentCount(const Attrib& attrib);
-
-  static GLenum
-  dataType(const Attrib& attrib);
-
-public:
   //! CTOR.
   ShaderProgram()
     : _handle(detail::createProgram())
@@ -830,12 +859,12 @@ public:
   }
 
   Uniform const* queryActiveUniform(std::string const& name) const {
-    UniformMap::const_iterator const iter = _uniforms.find(name);
+    UniformIterator const iter = _uniforms.find(name);
     return (iter != _uniforms.end()) ? &iter->second : nullptr;
   }
 
   Uniform const& activeUniform(std::string const& name) const {
-    UniformMap::const_iterator const iter = _uniforms.find(name);
+    UniformIterator const iter = _uniforms.find(name);
     if (iter == _uniforms.end()) {
       NDJINN_THROW("unknown uniform: '" << name << "'");
     }
@@ -853,12 +882,12 @@ public:
   }
 
   UniformBlock const* queryActiveUniformBlock(std::string const& name) const {
-    UniformBlockMap::const_iterator const iter = _uniformBlocks.find(name);
+    UniformBlockIterator const iter = _uniformBlocks.find(name);
     return (iter != _uniformBlocks.end()) ? &iter->second : nullptr;
   }
 
   UniformBlock const& activeUniformBlock(std::string const& name) const {
-    UniformBlockMap::const_iterator const iter = _uniformBlocks.find(name);
+    UniformBlockIterator const iter = _uniformBlocks.find(name);
     if (iter == _uniformBlocks.end()) {
       NDJINN_THROW("unknown uniform block: '" << name << "'");
     }
@@ -876,17 +905,19 @@ public:
   }
 
   Attrib const* queryActiveAttrib(std::string const& name) const {
-    AttribMap::const_iterator const iter = _attribs.find(name);
+    AttribIterator const iter = _attribs.find(name);
     return (iter != _attribs.end()) ? &iter->second : nullptr;
   }
 
   Attrib const& activeAttrib(std::string const& name) const {
-    AttribMap::const_iterator const iter = _attribs.find(name);
+    AttribIterator const iter = _attribs.find(name);
     if (iter == _attribs.end()) {
       NDJINN_THROW("unknown attrib: '" << name << "'");
     }
     return iter->second;
   }
+
+  // Uniforms.
 
   template <class T>
   void uniformValue(Uniform const& uni, T* params) const {
@@ -960,7 +991,7 @@ private:
 
       // Don't store uniform that are part of a block.
       if (uni.location != -1) {
-        _uniforms.insert(UniformMap::value_type(name, uni));
+        _uniforms.insert(UniformContainer::value_type(name, uni));
       }
     }
   }
@@ -995,7 +1026,7 @@ private:
         detail::getUniformBlockIndex(_handle, &uniformBlockName[0]);
 
       _uniformBlocks.insert(
-        UniformBlockMap::value_type(
+        UniformBlockContainer::value_type(
           uniformBlockName, UniformBlock(uniformBlockIndex, _handle)));
     }
   }
@@ -1022,74 +1053,15 @@ private:
           &name[0]);
       name.resize(length);
       attr.location = detail::getAttribLocation(_handle, name.c_str());
-      _attribs.insert(AttribMap::value_type(name, attr));
+      _attribs.insert(AttribContainer::value_type(name, attr));
     }
   }
 
   GLuint _handle; //!< Resource handle.
-  AttribMap _attribs;
-  UniformMap _uniforms;    
-  UniformBlockMap _uniformBlocks;
+  AttribContainer _attribs;
+  UniformContainer _uniforms;
+  UniformBlockContainer _uniformBlocks;
 };
-
-
-//! DOCS [static]
-inline GLint
-ShaderProgram::componentCount(const ShaderProgram::Attrib& attrib) {
-  switch (attrib.type) {
-  case GL_FLOAT:
-  case GL_INT:  
-  case GL_UNSIGNED_INT:
-    return 1;
-  case GL_FLOAT_VEC2:       
-  case GL_INT_VEC2:         
-  case GL_UNSIGNED_INT_VEC2:
-    return 2;
-  case GL_FLOAT_VEC3:         
-  case GL_INT_VEC3:           
-  case GL_UNSIGNED_INT_VEC3:  
-    return 3;
-  case GL_FLOAT_VEC4:
-  case GL_INT_VEC4:  
-  case GL_UNSIGNED_INT_VEC4:
-    return 4;
-  default: NDJINN_THROW("Unrecognized attrib type: " << attrib.type);
-
-  // TODO: Not sure about these...
-  //case GL_FLOAT_MAT2:         return std::string("GL_FLOAT_MAT2");
-  //case GL_FLOAT_MAT3:         return std::string("GL_FLOAT_MAT3");
-  //case GL_FLOAT_MAT4:         return std::string("GL_FLOAT_MAT4");
-  //case GL_FLOAT_MAT2x3:       return std::string("GL_FLOAT_MAT2x3");
-  //case GL_FLOAT_MAT2x4:       return std::string("GL_FLOAT_MAT2x4"); 
-  //case GL_FLOAT_MAT3x2:       return std::string("GL_FLOAT_MAT3x2");
-  //case GL_FLOAT_MAT3x4:       return std::string("GL_FLOAT_MAT3x4");
-  //case GL_FLOAT_MAT4x2:       return std::string("GL_FLOAT_MAT4x2");
-  //case GL_FLOAT_MAT4x3:       return std::string("GL_FLOAT_MAT4x3");
-  }
-}
-
-//! DOCS [static]
-inline GLenum
-ShaderProgram::dataType(const ShaderProgram::Attrib& attrib) {
-  switch (attrib.type) {
-  case GL_FLOAT:
-  case GL_FLOAT_VEC2:       
-  case GL_FLOAT_VEC3:         
-  case GL_FLOAT_VEC4:
-    return GL_FLOAT;
-  case GL_INT:  
-  case GL_INT_VEC2:         
-  case GL_INT_VEC3:           
-  case GL_INT_VEC4:  
-    return GL_INT;
-  case GL_UNSIGNED_INT:
-  case GL_UNSIGNED_INT_VEC2:
-  case GL_UNSIGNED_INT_VEC3:  
-  case GL_UNSIGNED_INT_VEC4:
-    return GL_UNSIGNED_INT;
-  default: NDJINN_THROW("Unrecognized attrib type: " << attrib.type);
-  }
-}
 
 NDJINN_END_NAMESPACE
 
@@ -1104,7 +1076,7 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
   os << "  Uniforms: " << endl;
   for (auto iter = sp.activeUniformsBegin();
        iter != sp.activeUniformsEnd(); ++iter) {
-    ndj::ShaderProgram::Uniform const& uni = iter->second;
+    ndj::Uniform const& uni = iter->second;
     os << "  Location: " << uni.location
        << ", Name: '" << iter->first
        << "', Type: " << ndj::detail::uniformTypeToString(uni.type)
@@ -1114,7 +1086,7 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
   os << "  Uniform blocks: " << endl;
   for (auto iter = sp.activeUniformBlocksBegin();
        iter != sp.activeUniformBlocksEnd(); ++iter) {
-    ndj::ShaderProgram::UniformBlock const& ub = iter->second;
+    ndj::UniformBlock const& ub = iter->second;
     os << "    Block: "
        << "Index: " << ub.index()
        << ", Name: '" << iter->first << "'"
@@ -1123,7 +1095,7 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
 
     for (auto iter = ub.fieldsBegin();
          iter != ub.fieldsEnd(); ++iter) {
-      ndj::ShaderProgram::UniformBlock::Field const& field = *iter;
+      ndj::UniformBlock::Field const& field = *iter;
       os << "      Field: "
          << "Offset: " << field.offset
          << ", Type: " << ndj::detail::uniformTypeToString(field.type)
@@ -1136,7 +1108,7 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
   os << "Attributes: " << endl;
   for (auto iter = sp.activeAttribsBegin();
        iter != sp.activeAttribsEnd(); ++iter) {
-    ndj::ShaderProgram::Attrib const& attrib = iter->second;
+    ndj::Attrib const& attrib = iter->second;
     os << "  Attribute: "
        << "Location: " << attrib.location
        << ", Name: '" << iter->first

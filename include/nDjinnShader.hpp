@@ -43,7 +43,7 @@ inline GLboolean isShader(GLuint const shader) {
 //! glShaderSource wrapper. May throw.
 inline void shaderSource(GLuint const shader,
                          GLsizei const count,
-                         GLchar const**string,
+                         GLchar const** string,
                          GLint const* length) {
   glShaderSource(shader, count, string, length); 
   checkError("glShaderSource");
@@ -117,12 +117,13 @@ inline std::string readShaderFile(const std::string& filename) {
 //! DOCS
 class Shader {
 public:
-  explicit Shader(GLenum const type)
+/*  explicit Shader(GLenum const type)
     : _handle(detail::createShader(type))
   {
     throwIfInvalidHandle();
-  }
+  }*/
 
+  //! CTOR
   Shader(GLenum const type, std::string const& filename)
     : _handle(detail::createShader(type))
     , _filename(filename)
@@ -132,6 +133,7 @@ public:
     compile();
   }
 
+  //! DTOR
   ~Shader() {
     detail::deleteShader(_handle);
   }
@@ -148,22 +150,6 @@ public:
     GLint params = 0;
     detail::getShaderiv(_handle, GL_SHADER_TYPE, &params);
     return static_cast<GLenum>(params); // TODO: Ugly static_cast to enum...
-  }
-
-  void setSource(GLsizei count, GLchar const **string, GLint const* length) {
-    detail::shaderSource(_handle, count, string, length);
-  }
-
-  void setSourceFromString(std::string const& source) {
-    GLchar const* src = static_cast<const GLchar*>(source.c_str());
-    GLint const length = static_cast<GLint>(source.size());
-    detail::shaderSource(_handle, 1, &src, &length);
-  }
-
-  void setSourceFromFile(std::string const& filename) {
-    std::string const src = detail::readShaderFile(filename);
-    setSourceFromString(src);
-    _filename = filename;
   }
 
   void compile() {
@@ -223,7 +209,23 @@ private:
     }
   }
 
-  GLuint _handle; //!< Resource handle.
+  void setSourceFromFile(std::string const& filename) {
+    std::string const src = detail::readShaderFile(filename);
+    setSourceFromString(src);
+    _filename = filename;
+  }
+
+  void setSourceFromString(std::string const& source) {
+    GLchar const* src = static_cast<const GLchar*>(source.c_str());
+    GLint const length = static_cast<GLint>(source.size());
+    detail::shaderSource(_handle, 1, &src, &length);
+  }
+
+  void setSource(GLsizei count, GLchar const **string, GLint const* length) {
+    detail::shaderSource(_handle, count, string, length);
+  }
+
+  GLuint const _handle; //!< Resource handle.
   std::string _filename;
 };
 
@@ -234,10 +236,11 @@ namespace std {
 inline
 ostream& operator<<(ostream& os, ndj::Shader const& sh)
 {
-  os << "Shader[" << sh.handle() << "]" << endl
-     << "Filename: '" << sh.filename() << "'" << endl
-     << "Type: " << ndj::detail::shaderTypeToString(sh.type()) << endl
-     << "Compiled: " << sh.isCompiled() << endl;
+  os << "Shader" << endl
+     << "  Handle: " << sh.handle() << endl
+     << "  Filename: '" << sh.filename() << "'" << endl
+     << "  Type: " << ndj::detail::shaderTypeToString(sh.type()) << endl
+     << "  Compiled: " << sh.isCompiled() << endl;
 
   return os;
 }

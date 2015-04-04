@@ -1,111 +1,141 @@
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
-// Copyright (C) Tommy Hinks              
-// tommy[dot]hinks[at]gmail[dot]com                       
-//
-// Contributors: 
+// Contributors:
 //             1) Tommy Hinks
 //
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #ifndef NDJINN_BUFFER_HPP_INCLUDED
 #define NDJINN_BUFFER_HPP_INCLUDED
 
-#include "nDjinnNamespace.hpp"
-#include "nDjinnException.hpp"
-#include "nDjinnError.hpp"
-#include <gl/glew.h>
+#include <iostream>
+#include <string>
 
-//------------------------------------------------------------------------------
+#include "nDjinnError.hpp"
+#include "nDjinnException.hpp"
+#include "nDjinnNamespace.hpp"
 
 NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
-//! Generate n buffer handles. May throw.
-inline void 
-genBuffers(GLsizei const n, GLuint *buffers) { 
+//! Generate @a n buffer handles. May throw.
+inline void genBuffers(GLsizei const n, GLuint *buffers) { 
   glGenBuffers(n, buffers); 
   checkError("glGenBuffers"); 
 }
 
 //! Free handle resources. May throw.
-inline void
-deleteBuffers(GLsizei const n, GLuint const* buffers) { 
+inline void deleteBuffers(GLsizei const n, GLuint const* buffers) {
   glDeleteBuffers(n, buffers); 
   checkError("glDeleteBuffers");
 }
 
 //! Make buffer the currently bound buffer. May throw.
-inline void
-bindBuffer(GLenum const target, GLuint const buffer) { 
+inline void bindBuffer(GLenum const target, GLuint const buffer) {
   glBindBuffer(target, buffer); 
   checkError("glBindBuffer"); 
 }
 
 //! glBindBufferBase wrapper. May throw.
-inline void
-bindBufferBase(GLenum const target, GLuint const index, GLuint const buffer) {
+inline void bindBufferBase(GLenum const target,
+                           GLuint const index,
+                           GLuint const buffer) {
   glBindBufferBase(target, index, buffer);
   checkError("glBindBufferBase");
 }
 
-inline void 
-bindBufferRange(GLenum const target, 
-                GLuint const index, 
-                GLuint const buffer, 
-                GLintptr const offset, 
-                GLsizeiptr const size) {
+//! glBindBufferRange wrapper. May throw.
+inline void bindBufferRange(GLenum const target, 
+                            GLuint const index,
+                            GLuint const buffer,
+                            GLintptr const offset,
+                            GLsizeiptr const size) {
   glBindBufferRange(target, index, buffer, offset, size);
   checkError("glBindBufferRange");
 }
 
-//! Reserve 'size' bytes in buffer. If 'data' is non-null also copy 
-//! data into buffer. May throw.
-inline void
-bufferData(GLenum const target, 
-           GLsizeiptr const size,
-           GLvoid const* data, 
-           GLenum const usage) { 
-  glBufferData(target, size, data, usage); 
-  checkError("glBufferData"); 
-}
-
-//! Copy data to buffer. May throw.
-inline void
-bufferSubData(GLenum const target, 
-              GLintptr const offset, 
-              GLsizeiptr const size, 
-              GLvoid const* data) {
-  glBufferSubData(target, offset, size, data);
-  checkError("glBufferSubData"); 
-}
-
-//! Read data from buffer. May throw.
-inline void
-getBufferSubData(GLenum const target, 
-                 GLintptr const offset, 
-                 GLsizeiptr const size, 
-                 GLvoid *data) {
-  glGetBufferSubData(target, offset, size, data);
-  checkError("glGetBufferSubData"); 
-}
-
-//! Retrieve (currently bound) buffer parameters from OpenGL. May throw.
-inline void
-getBufferParameteriv(GLenum const target, GLenum const pname, GLint *data) { 
-  glGetBufferParameteriv(target, pname, data); 
-  checkError("glGetBufferParameteriv"); 
-}
-
 //! glIsBuffer wrapper. May throw.
-inline GLboolean
-isBuffer(GLuint const buffer) {
+inline GLboolean isBuffer(GLuint const buffer) {
   GLboolean const isBuffer = glIsBuffer(buffer);
   checkError("glIsBuffer"); 
   return isBuffer;
 }
 
+// Named version of buffer operations. These version avoid
+// having to bind/release a certain buffer every time it is used.
+
+//! glNamedBufferData wrapper. May throw.
+void namedBufferData(GLuint const buffer,
+                     GLsizeiptr const size,
+                     GLvoid const* data,
+                     GLenum const usage) {
+  glNamedBufferDataEXT(buffer, size, data, usage);
+  checkError("glNamedBufferDataEXT");
+}
+
+//! glNamedBufferSubData wrapper. May throw.
+void namedBufferSubData(GLuint const buffer,
+                        GLintptr const offset,
+                        GLsizeiptr const size,
+                        GLvoid const* data) {
+  glNamedBufferSubDataEXT(buffer, offset, size, data);
+  checkError("glNamedBufferSubDataEXT");
+}
+
+//! glGetNamedBuffersSubData wrapper. May throw.
+void getNamedBufferSubData(GLuint const buffer,
+                           GLintptr const offset,
+                           GLsizeiptr const size,
+                           GLvoid* data) {
+  glGetNamedBufferSubDataEXT(buffer, offset, size, data);
+  checkError("glGetNamedBufferSubDataEXT");
+}
+
+//! glMapNamedBuffer wrapper. May throw.
+GLvoid* mapNamedBuffer(GLuint const buffer,
+                       GLenum const access) {
+  GLvoid* ptr = glMapNamedBufferEXT(buffer, access);
+  checkError("glMapNamedBufferEXT");
+  return ptr;
+}
+
+//! glUnmapNamedBuffer wrapper. May throw.
+GLboolean unmapNamedBuffer(GLuint const buffer) {
+  GLboolean const mapped = glUnmapNamedBufferEXT(buffer);
+  checkError("glUnmapNamedBufferEXT");
+  return mapped;
+}
+
+//! glGetNamedBufferParameteriv wrapper. May throw.
+void getNamedBufferParameteriv(GLuint const buffer,
+                               GLenum const pname,
+                               GLint* params) {
+  glGetNamedBufferParameterivEXT(buffer, pname, params);
+  checkError("glGetNamedBufferParameterivEXT");
+}
+
+//! glGetNamedBufferPointerv wrapper. May throw.
+void getNamedBufferPointerv(GLuint const buffer,
+                            GLenum const pname,
+                            GLvoid** params) {
+  glGetNamedBufferPointervEXT(buffer, pname, params);
+  checkError("glGetNamedBufferPointervEXT");
+}
+
+//! Convenience, generate a single buffer handle and return it. May throw.
+inline GLuint genBuffer() {
+  GLuint handle = 0;
+  genBuffers(1, &handle);
+  return handle;
+}
+
+//! Convenience.
+inline void deleteBuffer(GLuint const handle) {
+  deleteBuffers(1, &handle);
+}
+
+#if 0 // Where to put this stuff?
 template<GLenum T>
 struct BufferBinding;
 
@@ -125,92 +155,55 @@ struct BufferBinding<GL_UNIFORM_BUFFER> {
 };
 
 template<GLenum T> inline
-GLuint
-bufferBinding() {
+GLuint bufferBinding() {
   GLint binding = 0;
   getIntegerv(BufferBinding<T>::value, &binding);
   return binding;
 }
+#endif
 
-//! Convenience, generate a single buffer handle and return it. May throw.
-inline GLuint
-genBuffer() {
-  GLuint handle = 0;
-  genBuffers(1, &handle);
-  return handle;
+//! DOCS
+inline std::string bufferTargetToString(GLenum const target) {
+  using std::string;
+
+  switch (target) {
+  case GL_ARRAY_BUFFER:               return string("GL_ARRAY_BUFFER");
+  case GL_ATOMIC_COUNTER_BUFFER:      return string("GL_ATOMIC_COUNTER_BUFFER");
+  case GL_COPY_READ_BUFFER:           return string("GL_COPY_READ_BUFFER");
+  case GL_COPY_WRITE_BUFFER:          return string("GL_COPY_WRITE_BUFFER");
+  //case GL_DISPATCH_INDIRECT_BUFFER:   return string("GL_DISPATCH_INDIRECT_BUFFER");
+  case GL_DRAW_INDIRECT_BUFFER:       return string("GL_DRAW_INDIRECT_BUFFER");
+  case GL_ELEMENT_ARRAY_BUFFER:       return string("GL_ELEMENT_ARRAY_BUFFER");
+  case GL_PIXEL_PACK_BUFFER:          return string("GL_PIXEL_PACK_BUFFER");
+  case GL_PIXEL_UNPACK_BUFFER:        return string("GL_PIXEL_UNPACK_BUFFER");
+  //case GL_QUERY_BUFFER:               return string("GL_QUERY_BUFFER");
+  //case GL_SHADER_STORAGE_BUFFER:      return string("GL_SHADER_STORAGE_BUFFER");
+  case GL_TEXTURE_BUFFER:             return string("GL_TEXTURE_BUFFER");
+  case GL_TRANSFORM_FEEDBACK_BUFFER:  return string("GL_TRANSFORM_FEEDBACK_BUFFER");
+  case GL_UNIFORM_BUFFER:             return string("GL_UNIFORM_BUFFER");
+  }
+  NDJINN_THROW("unrecognized buffer target: " << target);
 }
 
-//! Convenience.
-inline void 
-deleteBuffer(GLuint const& handle) {
-  deleteBuffers(1, &handle);
-}
+//! DOCS
+inline std::string bufferUsageToString(GLenum const usage) {
+  using std::string;
 
-
-// Named version of buffer operations. These version avoid 
-// having to bind/release a certain buffer every time it is used.
-
-void 
-namedBufferData(GLuint const buffer, 
-                GLsizeiptr const size,
-                GLvoid const* data, 
-                GLenum const usage) {
-  glNamedBufferDataEXT(buffer, size, data, usage);
-  checkError("glNamedBufferDataEXT"); 
-}
-
-void 
-namedBufferSubData(GLuint const buffer, 
-                   GLintptr const offset,
-                   GLsizeiptr const size, 
-                   GLvoid const* data) {
-  glNamedBufferSubDataEXT(buffer, offset, size, data);
-  checkError("glNamedBufferSubDataEXT"); 
-}
-
-GLvoid* 
-mapNamedBuffer(GLuint const buffer, 
-               GLenum const access) {
-  GLvoid* ptr = glMapNamedBufferEXT(buffer, access);
-  checkError("glMapNamedBufferEXT"); 
-  return ptr;
-}
-
-GLboolean 
-unmapNamedBuffer(GLuint const buffer) {
-  GLboolean const mapped = glUnmapNamedBufferEXT(buffer);
-  checkError("glUnmapNamedBufferEXT"); 
-  return mapped;
-}
-
-void 
-getNamedBufferParameteriv(GLuint const buffer,
-                          GLenum const pname, 
-                          GLint *params) {
-  glGetNamedBufferParameterivEXT(buffer, pname, params);
-  checkError("glGetNamedBufferParameterivEXT"); 
-}
-
-void 
-getNamedBufferPointerv(GLuint const buffer,
-                       GLenum const pname, 
-                       GLvoid** params) {
-  glGetNamedBufferPointervEXT(buffer, pname, params);
-  checkError("glGetNamedBufferPointervEXT"); 
-}
-
-void 
-getNamedBufferSubData(GLuint const buffer,
-                      GLintptr const offset, 
-                      GLsizeiptr const size, 
-                      GLvoid *data) {
-  glGetNamedBufferSubDataEXT(buffer, offset, size, data);
-  checkError("glGetNamedBufferSubDataEXT"); 
+  switch (usage) {
+  case GL_STREAM_DRAW:  return string("GL_STREAM_DRAW");
+  case GL_STREAM_READ:  return string("GL_STREAM_READ");
+  case GL_STREAM_COPY:  return string("GL_STREAM_COPY");
+  case GL_STATIC_DRAW:  return string("GL_STATIC_DRAW");
+  case GL_STATIC_READ:  return string("GL_STATIC_READ");
+  case GL_STATIC_COPY:  return string("GL_STATIC_COPY");
+  case GL_DYNAMIC_DRAW: return string("GL_DYNAMIC_DRAW");
+  case GL_DYNAMIC_READ: return string("GL_DYNAMIC_READ");
+  case GL_DYNAMIC_COPY: return string("GL_DYNAMIC_COPY");
+  }
+  NDJINN_THROW("unrecognized buffer usage: " << usage);
 }
 
 } // Namespace: detail.
-
-//------------------------------------------------------------------------------
 
 //! DOCS
 template<GLenum TargetT>
@@ -218,236 +211,158 @@ class Buffer {
 public:
   static GLenum const TARGET = TargetT;
 
-  explicit
-  Buffer();
+  //! CTOR. Construct an empty buffer, no resources (except the handle)
+  //! are allocated.
+  Buffer()
+    : _handle(detail::genBuffer())
+  {
+    throwIfInvalidHandle();
+  }
 
-  explicit
-  Buffer(GLsizeiptr size,   
+  //! CTOR. Construct a VBO from a single chunk of memory. Note that
+  //! if data is null the buffer will be allocated but nothing copied.
+  Buffer(GLsizeiptr const size,
          GLvoid const* ptr,
-         GLenum usage = GL_STATIC_DRAW);
+         GLenum const usage = GL_STATIC_DRAW)
+  {
+    throwIfInvalidHandle();
+    setData(size, ptr, usage);
+  }
 
-  ~Buffer();
+  //! DTOR
+  ~Buffer() {
+    detail::deleteBuffer(_handle);
+  }
 
-public:
   //! Expose resource handle.
-  GLuint
-  handle() const;
+  GLuint handle() const {
+    return _handle;
+  }
 
-  void 
-  bind() const;
+  //! Bind buffer.
+  void bind() const {
+    detail::bindBuffer(TARGET, _handle);
+  }
 
-  void
-  bindBase(GLuint index) const;
+  //! DOCS
+  void bindBase(GLuint const index) const {
+    detail::bindBufferBase(TARGET, index, _handle);
+  }
 
-  void
-  bindRange(GLuint index, GLintptr offset, GLsizeiptr size) const;
+  //! DOCS
+  void bindRange(GLuint const index,
+                 GLintptr const offset,
+                 GLsizeiptr const size) const {
+    detail::bindBufferRange(TARGET, index, _handle, offset, size);
+  }
 
-  void 
-  release() const;
+  //! Release buffer.
+  void release() const {
+    detail::bindBuffer(TARGET, 0);
+  }
 
-  void 
-  data(GLsizeiptr size, 
-       GLvoid const* ptr = 0, 
-       GLenum usage = GL_STATIC_DRAW);
+  //! Copy data from the buffer in the provided memory.
+  template <typename E>
+  void getSubData(GLintptr const offsetInBytes,
+                  GLsizeiptr const sizeInBytes,
+                  E* ptr) const {
+    detail::getNamedBufferSubData(_handle,
+                                  offsetInBytes,
+                                  sizeInBytes,
+                                  reinterpret_cast<GLvoid*>(ptr));
+  }
 
-  void 
-  subData(GLintptr offset, GLsizeiptr size, GLvoid const* ptr);
+  //! Upload data to GPU memory. If data is null, memory gets allocated but
+  //! nothing gets transferred. This is useful for populating a VBO from
+  //! several sub-buffers.
+  void setData(GLsizeiptr const sizeInBytes,
+               GLvoid const* ptr = 0,
+               GLenum const usage = GL_STATIC_DRAW) {
+    detail::namedBufferData(_handle, sizeInBytes, ptr, usage);
+  }
 
-  void 
-  getSubData(GLintptr offset, GLsizeiptr size, GLvoid* ptr) const;
+  //! Upload data to GPU memory. Size of buffer remains constant.
+  void setSubData(GLintptr const offset,
+                  GLsizeiptr const size,
+                  GLvoid const* ptr) {
+    detail::namedBufferSubData(_handle, offset, size, ptr);
+  }
 
-  // TODO: map
-  // TODO: unmap
+  //! DOCS
+  template <typename E>
+  E* map(GLenum const access) {
+    return reinterpret_cast<E*>(detail::mapNamedBuffer(_handle, access));
+  }
 
-public:
+  //! DOCS
+  bool unmap() {
+    return detail::unmapNamedBuffer() == GL_TRUE;
+  }
 
   // The following functions retrieve buffer parameters from the driver.
   // There may be a performance penalty involved, so use with caution.
 
-  GLint 
-  size() const;
+  //! Return buffer size in bytes. May throw.
+  GLint sizeInBytes() const {
+    GLint size = -1;
+    detail::getNamedBufferParameteriv(_handle, GL_BUFFER_SIZE, &size);
+    return size;
+  }
 
-  GLint 
-  access() const;
+  //! Return buffer usage mode.
+  GLint usage() const {
+    GLint usage = -1;
+    detail::getNamedBufferParameteriv(TARGET, GL_BUFFER_USAGE, &usage);
+    return usage;
+  }
 
-  GLint  
-  mapped() const;
-
-  GLint 
-  usage() const;
+  //! Return true if this buffer is currently mapped, otherwise false.
+  bool mapped() const {
+    GLint mapped = -1;
+    detail::getNamedBufferParameteriv(TARGET, GL_BUFFER_MAPPED, &mapped);
+    return mapped == GL_TRUE;
+  }
 
 private:
-  Buffer(Buffer<TARGET> const&);            //!< Disabled copy.
-  Buffer& operator=(Buffer<TARGET> const&); //!< Disabled assign.
+  Buffer(Buffer<TargetT> const&); //!< Disabled copy.
+  Buffer& operator=(Buffer<TargetT> const&); //!< Disabled assign.
 
-private: // Member variables.
+  void throwIfInvalidHandle() {
+    if (detail::isBuffer(_handle) == GL_FALSE) {
+      NDJINN_THROW("invalid buffer handle: " << _handle);
+    }
+  }
+
   GLuint const _handle; //!< Resource handle.
-  mutable GLuint _savedHandle;
 };
 
 typedef Buffer<GL_ARRAY_BUFFER> ArrayBuffer;
 typedef Buffer<GL_ELEMENT_ARRAY_BUFFER> ElementArrayBuffer;
 typedef Buffer<GL_UNIFORM_BUFFER> UniformBuffer;
 
-// -----------------------------------------------------------------------------
-
-//! CTOR. Construct an empty buffer, no resources (except the handle)
-//! are allocated.
-template<GLenum Target> inline
-Buffer<Target>::Buffer()
-  : _handle(detail::genBuffer()) // May throw. 
-{
-  bind(); // Make sure buffer gets created.
-  if (detail::isBuffer(_handle) == GL_FALSE) {
-    NDJINN_THROW("invalid buffer");
-  }
-  release();
-}
-
-//! CTOR. Construct a VBO from a single chunk of memory. Note that
-//! if data is null the buffer will be allocated but nothing copied.
-template<GLenum Target> inline
-Buffer<Target>::Buffer(GLsizeiptr const size, // [bytes]
-                       GLvoid const* ptr,
-                       GLenum const usage)
-  : _handle(detail::genBuffer()) // May throw.
-{
-  bind(); // Make sure buffer gets created.
-  if (detail::isBuffer(_handle) == GL_FALSE) {
-    NDJINN_THROW("invalid buffer");
-  }
-  data(size, ptr, usage);
-  release();
-}
-
-//! DTOR. Free handle resource.
-template<GLenum Target> inline
-Buffer<Target>::~Buffer() { 
-  detail::deleteBuffer(_handle); 
-}
-
-// -----------------------------------------------------------------------------
-
-//! DOCS
-template<GLenum Target> inline 
-GLuint
-Buffer<Target>::handle() const { 
-  return _handle; 
-}
-
-//! Bind buffer. May throw.
-template<GLenum Target> inline 
-void 
-Buffer<Target>::bind() const { 
-  _savedHandle = detail::bufferBinding<TARGET>();
-  if (_savedHandle != _handle) {
-    detail::bindBuffer(TARGET, _handle);
-  }  
-}
-
-//! DOCS
-template<GLenum Target> inline 
-void
-Buffer<Target>::bindBase(GLuint const index) const {
-  detail::bindBufferBase(TARGET, index, _handle);
-}
-
-//! DOCS
-template<GLenum Target> inline 
-void
-Buffer<Target>::bindRange(GLuint const index, 
-                          GLintptr const offset, 
-                          GLsizeiptr const size) const {
-  detail::bindBufferRange(TARGET, index, _handle, offset, size);
-}
-
-//! Release buffer. May throw.
-template<GLenum Target> inline 
-void 
-Buffer<Target>::release() const { 
-  if (_savedHandle != _handle) {
-    detail::bindBuffer(TARGET, _savedHandle); // May throw.
-  }  
-}
-
-//! Upload data to GPU memory. If data is null, memory gets allocated but
-//! nothing gets transferred. This is useful for populating a VBO from
-//! several sub-buffers. May throw.
-template<GLenum Target> inline 
-void 
-Buffer<Target>::data(GLsizeiptr const size, // [bytes]
-                     GLvoid const* ptr,
-                     GLenum const usage) {
-  detail::namedBufferData(_handle, size, ptr, usage);
-}
-
-//! Upload data to GPU memory. Size of buffer remains constant. May throw.
-template<GLenum Target> inline 
-void 
-Buffer<Target>::subData(GLintptr const offset, // [bytes]
-                        GLsizeiptr const size, // [bytes]
-                        GLvoid const* ptr) {
-  detail::namedBufferSubData(_handle, offset, size, ptr); 
-}
-
-//! Copy data from the buffer in the provided memory. May throw.
-template<GLenum Target> inline 
-void 
-Buffer<Target>::getSubData(GLintptr const offset, // [bytes]
-                           GLsizeiptr const size, // [bytes]
-                           GLvoid* ptr) const {
-  detail::getNamedBufferSubData(_handle, offset, size, ptr); 
-}
-
-// -----------------------------------------------------------------------------
-
-//! Return buffer size in bytes. May throw.
-template<GLenum Target> inline 
-GLint 
-Buffer<Target>::size() const { 
-  GLint size = 0; // Initial value.
-  detail::getNamedBufferParameteriv(_handle, GL_BUFFER_SIZE, &size); 
-  return size;
-} 
-
-//! Return buffer access mode. May throw.
-template<GLenum Target> inline 
-GLint 
-Buffer<Target>::access() const {
-  GLint access = GL_READ_WRITE; // Initial value.
-  detail::getNamedBufferParameteriv(_handle, GL_BUFFER_ACCESS, &access); 
-  return access;
-}
-
-//! Return GL_TRUE if this buffer is currently mapped, otherwise
-//! GL_FALSE. May throw.
-template<GLenum Target> inline 
-GLint  
-Buffer<Target>::mapped() const {
-  GLint mapped = GL_FALSE; // Initial value.
-  detail::getNamedBufferParameteriv(TARGET, GL_BUFFER_MAPPED, &mapped); 
-  return mapped;
-}
-
-//! Return buffer usage mode. May throw.
-template<GLenum Target> inline 
-GLint 
-Buffer<Target>::usage() const {
-  GLint usage = GL_STATIC_DRAW; // Initial value.
-  detail::getNamedBufferParameteriv(TARGET, GL_BUFFER_USAGE, &usage);
-  return usage;
-}
-
-// -----------------------------------------------------------------------------
-
 template<typename E, typename Size, GLenum Target> inline
-Size 
-elementCount(Buffer<Target> const& buffer) {
+Size elementCount(Buffer<Target> const& buffer) {
   return static_cast<Size>(buffer.size()/sizeof(E));
 }
 
-// -----------------------------------------------------------------------------
-
 NDJINN_END_NAMESPACE
+
+namespace std {
+
+template<GLenum TargetT> inline
+ostream& operator<<(ostream& os, ndj::Buffer<TargetT> const& buf)
+{
+  os << "Buffer<"
+       << ndj::detail::bufferTargetToString(ndj::Buffer<TargetT>::TARGET)
+       << ">" << endl
+     << "  Handle: " << buf.handle() << endl
+     << "  Size: " << buf.sizeInBytes() << " [bytes]" << endl
+     << "  Usage: " << ndj::detail::bufferUsageToString(buf.usage()) << endl
+     << "  Mapped: " << buf.mapped() << endl
+     << "  " << endl;
+  return os;
+}
+
+} // namespace std
 
 #endif // NDJINN_BUFFER_HPP_INCLUDED
