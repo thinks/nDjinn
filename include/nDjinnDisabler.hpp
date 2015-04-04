@@ -16,7 +16,8 @@ NDJINN_BEGIN_NAMESPACE
 class Disabler {
 public:
   explicit Disabler(GLenum const flag)
-      : _flag(flag) {
+    : _flag(flag)
+  {
     disable(_flag);
   }
 
@@ -24,7 +25,10 @@ public:
     enable(_flag);
   }
 
-private: // Member variables.
+private:
+  Disabler(Disabler const&); //!< Disabled copy.
+  Disabler& operator=(Disabler const&); //!< Disabled assign.
+
   GLenum const _flag;
 };
 

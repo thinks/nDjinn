@@ -21,7 +21,8 @@ public:
   typedef R Resource;
 
   explicit Bindor(R const& resource)
-      : _resource(resource) {
+      : _resource(resource)
+  {
     _resource.bind();
   }
 
@@ -29,7 +30,10 @@ public:
     _resource.release();
   }
 
-private: // Member variables.
+private:
+  Bindor(Bindor const&); //!< Disabled copy.
+  Bindor& operator=(Bindor const&); //!< Disabled assign.
+
   R const& _resource;
 };
 
@@ -37,9 +41,10 @@ private: // Member variables.
 template <>
 class Bindor<Sampler> {
 public:
-  explicit Bindor(Sampler const& sampler, GLuint const unit = 0)
-      : _sampler(sampler)
-      , _unit(unit) {
+  Bindor(Sampler const& sampler, GLuint const unit = 0)
+    : _sampler(sampler)
+    , _unit(unit)
+  {
     _sampler.bind(_unit);
   }
 
@@ -47,12 +52,13 @@ public:
     _sampler.release(_unit);
   }
 
-private: // Member variables.
+private:
+  Bindor(Bindor<Sampler> const&); //!< Disabled copy.
+  Bindor& operator=(Bindor<Sampler> const&); //!< Disabled assign.
+
   Sampler const& _sampler;
   GLuint const _unit;
 };
-
-//------------------------------------------------------------------------------
 
 NDJINN_END_NAMESPACE
 

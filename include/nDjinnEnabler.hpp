@@ -16,7 +16,8 @@ NDJINN_BEGIN_NAMESPACE
 class Enabler {
 public:
   explicit Enabler(GLenum const flag)
-      : _flag(flag) {
+    : _flag(flag)
+  {
     enable(_flag);
   }
 
@@ -24,7 +25,10 @@ public:
     disable(_flag);
   }
 
-private: // Member variables.
+private:
+  Enabler(Enabler const&); //!< Disabled copy.
+  Enabler& operator=(Enabler const&); //!< Disabled assign.
+
   GLenum const _flag;
 };
 

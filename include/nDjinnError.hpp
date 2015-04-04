@@ -8,21 +8,18 @@
 #ifndef NDJINN_ERROR_HPP_INCLUDED
 #define NDJINN_ERROR_HPP_INCLUDED
 
-#include "nDjinnNamespace.hpp"
-#include "nDjinnException.hpp"
-#include <gl/glew.h>
 #include <sstream>
 #include <string>
 
-//------------------------------------------------------------------------------
+#include "nDjinnNamespace.hpp"
+#include "nDjinnException.hpp"
 
 NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
 //! Convert OpenGL error type into a string.
-inline std::string
-errorString(const GLenum err) {
+inline std::string errorString(GLenum const err) {
   switch (err) {
   //case 0:                    return std::string(); // No error - empty.
   case GL_NO_ERROR:          return std::string("GL_NO_ERROR"); 
@@ -37,27 +34,21 @@ errorString(const GLenum err) {
   }
 }
 
-//! Returns true if the provided OpenGL error type is actually an 
-//! error.
-inline bool
-isError(const GLenum err) { 
+//! Returns true if the provided OpenGL error type is actually an error.
+inline bool isError(const GLenum err) {
   return (err != GL_NO_ERROR); 
 }
 
 //! Get error type from OpenGL.
-inline GLenum
-getError() { 
-  const GLenum err = glGetError(); // TODO: Caused an error?
+inline GLenum getError() {
+  GLenum const err = glGetError(); // TODO: Caused an error?
   return err; 
 }
 
 } // Namespace: detail.
 
-//------------------------------------------------------------------------------
-
 //! Throws if one or more errors are found.
-inline void
-checkError(const std::string &caller)
+inline void checkError(std::string const& caller)
 {
   std::stringstream ss;
   GLenum err = detail::getError();      // May throw.
@@ -66,7 +57,7 @@ checkError(const std::string &caller)
     err = detail::getError();         // May throw!?
   }
 
-  const std::string errStr = ss.str();
+  std::string const errStr = ss.str();
   if (!errStr.empty()) {
     NDJINN_THROW(
       "OpenGL error(s): " 
