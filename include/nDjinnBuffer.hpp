@@ -66,59 +66,59 @@ inline GLboolean isBuffer(GLuint const buffer) {
 // having to bind/release a certain buffer every time it is used.
 
 //! glNamedBufferData wrapper. May throw.
-void namedBufferData(GLuint const buffer,
-                     GLsizeiptr const size,
-                     GLvoid const* data,
-                     GLenum const usage) {
+inline void namedBufferData(GLuint const buffer,
+                            GLsizeiptr const size,
+                            GLvoid const* data,
+                            GLenum const usage) {
   glNamedBufferDataEXT(buffer, size, data, usage);
   checkError("glNamedBufferDataEXT");
 }
 
 //! glNamedBufferSubData wrapper. May throw.
-void namedBufferSubData(GLuint const buffer,
-                        GLintptr const offset,
-                        GLsizeiptr const size,
-                        GLvoid const* data) {
+inline void namedBufferSubData(GLuint const buffer,
+                               GLintptr const offset,
+                               GLsizeiptr const size,
+                               GLvoid const* data) {
   glNamedBufferSubDataEXT(buffer, offset, size, data);
   checkError("glNamedBufferSubDataEXT");
 }
 
 //! glGetNamedBuffersSubData wrapper. May throw.
-void getNamedBufferSubData(GLuint const buffer,
-                           GLintptr const offset,
-                           GLsizeiptr const size,
-                           GLvoid* data) {
+inline void getNamedBufferSubData(GLuint const buffer,
+                                  GLintptr const offset,
+                                  GLsizeiptr const size,
+                                  GLvoid* data) {
   glGetNamedBufferSubDataEXT(buffer, offset, size, data);
   checkError("glGetNamedBufferSubDataEXT");
 }
 
 //! glMapNamedBuffer wrapper. May throw.
-GLvoid* mapNamedBuffer(GLuint const buffer,
-                       GLenum const access) {
+inline GLvoid* mapNamedBuffer(GLuint const buffer,
+                              GLenum const access) {
   GLvoid* ptr = glMapNamedBufferEXT(buffer, access);
   checkError("glMapNamedBufferEXT");
   return ptr;
 }
 
 //! glUnmapNamedBuffer wrapper. May throw.
-GLboolean unmapNamedBuffer(GLuint const buffer) {
+inline GLboolean unmapNamedBuffer(GLuint const buffer) {
   GLboolean const mapped = glUnmapNamedBufferEXT(buffer);
   checkError("glUnmapNamedBufferEXT");
   return mapped;
 }
 
 //! glGetNamedBufferParameteriv wrapper. May throw.
-void getNamedBufferParameteriv(GLuint const buffer,
-                               GLenum const pname,
-                               GLint* params) {
+inline void getNamedBufferParameteriv(GLuint const buffer,
+                                      GLenum const pname,
+                                      GLint* params) {
   glGetNamedBufferParameterivEXT(buffer, pname, params);
   checkError("glGetNamedBufferParameterivEXT");
 }
 
 //! glGetNamedBufferPointerv wrapper. May throw.
-void getNamedBufferPointerv(GLuint const buffer,
-                            GLenum const pname,
-                            GLvoid** params) {
+inline void getNamedBufferPointerv(GLuint const buffer,
+                                   GLenum const pname,
+                                   GLvoid** params) {
   glGetNamedBufferPointervEXT(buffer, pname, params);
   checkError("glGetNamedBufferPointervEXT");
 }
