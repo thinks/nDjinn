@@ -8,9 +8,9 @@
 #ifndef NDJINN_EXCEPTION_HPP_INCLUDED
 #define NDJINN_EXCEPTION_HPP_INCLUDED
 
+#include <exception>
 #include <sstream>
 #include <string>
-#include <exception>
 
 #include "nDjinnNamespace.hpp"
 
