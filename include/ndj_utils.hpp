@@ -8,13 +8,14 @@
 #ifndef NDJ_UTILS_HPP_INCLUDED
 #define NDJ_UTILS_HPP_INCLUDED
 
-#include "ndj_exception.hpp"
+
 #include <algorithm>
 #include <iostream>
 
-//------------------------------------------------------------------------------
+#include "ndj_exception.hpp"
+#include "nDjinnNamespace.hpp"
 
-namespace ndj {
+NDJINN_BEGIN_NAMESPACE
 
 //! Pi, you know what this number is already!
 //! NB: Use floating point type!
@@ -49,10 +50,10 @@ clamp(const T lower, const T upper, const T val)
 //------------------------------------------------------------------------------
 
 //! Simple memcpy wrapper.
-template<typename T, int N>
-void
-copy_vec(const T src[N], T dst[N])
-{ std::copy(src, src + N, dst); }
+template<typename T, int N> inline
+void copy_vec(const T src[N], T dst[N]) {
+  std::copy(src, src + N, dst);
+}
 
 //! Simple memcpy wrapper.
 template<typename T>
@@ -371,71 +372,6 @@ cam_view_lookat(const T t[3], const T c[3], const T u[3], T view[16])
     cam_view(right, up, back, t, view);
 }
 
-//! Camera local +X axis. First row of view rotation. Points right
-//! with respect to forward direction.
-//! [in]   view: camera view matrix.
-//! [out] right: camera local right vector.
-template<typename T>
-void
-view_right(const T view[16], T right[3])
-{
-    right[0] = view[0];
-    right[1] = view[4];
-    right[2] = view[8];
-}
-
-//! Camera local +Y axis. Second row of modelview rotation.
-//! [in]  view: camera view matrix.
-//! [out]   up: camera local up vector.
-template<typename T>
-static void
-view_up(const T view[16], T up[3])
-{
-    up[0] = view[1];
-    up[1] = view[5];
-    up[2] = view[9];
-}
-
-//! Camera local +Z axis. Note that this is not the view direction.
-//! In fact, the view direction is exactly opposite this vector (i.e.
-//! all components sign-flipped). Third row of modelview rotation.
-//! [in]  view: camera view matrix.
-//! [out] back: camera local back vector.
-template<typename T>
-void
-view_back(const T view[16], T back[3])
-{
-    back[0] = view[2];
-    back[1] = view[6];
-    back[2] = view[10];
-}
-
-//! Camera local -Z axis. Corresponds to view direction.
-//! view: camera view matrix.
-//! [in]  view: camera view matrix.
-//! [out]  fwd: camera local forward vector.
-template<typename T>
-void
-view_fwd(const T view[16], T fwd[3])
-{ 
-    fwd[0] = -view[2];
-    fwd[1] = -view[6];
-    fwd[2] = -view[10];
-}        
-
-//! Extract camera local coordinate system.
-//! [in] view: camera view matrix.
-//! [out] r: camera local right vector.
-//! [out] u: camera local up vector.
-//! [out] b: camera local back vector.
-template<typename T>
-void
-view_axes(const T view[16], T r[3], T u[3], T b[3])
-{
-    r[0] = view[0]; r[1] = view[4]; r[2] = view[8];
-    u[0] = view[1]; u[1] = view[5]; u[2] = view[9];
-    b[0] = view[2]; b[1] = view[6]; b[2] = view[10];
-}
 
 //! Compute normal matrix from view matrix.
 //! [in]  view: camera view matrix.

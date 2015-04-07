@@ -18,14 +18,14 @@ public:
   template <typename V> static /*constexpr*/
   V const* vertices() {
     static V const v[] = {
-      V(1),  V(1),  V(1),
-      V(-1), V(1),  V(1),
-      V(-1), V(-1), V(1),
-      V(1),  V(-1), V(1),
-      V(1),  V(-1), V(-1),
+      V(+1), V(+1), V(+1),
+      V(-1), V(+1), V(+1),
+      V(-1), V(-1), V(+1),
+      V(+1), V(-1), V(+1),
+      V(+1), V(-1), V(-1),
       V(-1), V(-1), V(-1),
-      V(-1), V(1),  V(-1),
-      V(1),  V(1),  V(-1)
+      V(-1), V(+1), V(-1),
+      V(+1), V(+1), V(-1)
     };
     return v;
   }

@@ -5,8 +5,8 @@
 //
 //------------------------------------------------------------------------------
 
-#ifndef NDJINN_VERTEX_ARRAY_HPP_INCLUDED
-#define NDJINN_VERTEX_ARRAY_HPP_INCLUDED
+#ifndef NDJINN_VERTEXARRAY_HPP_INCLUDED
+#define NDJINN_VERTEXARRAY_HPP_INCLUDED
 
 #include <iostream>
 
@@ -104,4 +104,4 @@ ostream& operator<<(ostream& os, ndj::VertexArray const& va)
 
 } // namespace std
 
-#endif // NDJINN_VERTEX_ARRAY_HPP_INCLUDED
+#endif // NDJINN_VERTEXARRAY_HPP_INCLUDED

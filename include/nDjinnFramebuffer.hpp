@@ -277,12 +277,8 @@ public:
   explicit Framebuffer(GLenum target = GL_FRAMEBUFFER);
   ~Framebuffer();
 
-public:
-  void
-  bind() const;
-
-  void
-  release() const;
+  void bind() const;
+  void release() const;
 
   bool
   bound();

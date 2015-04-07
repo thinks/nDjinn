@@ -8,17 +8,210 @@
 #ifndef NDJINN_CAMERA_HPP_INCLUDED
 #define NDJINN_CAMERA_HPP_INCLUDED
 
-#include "nDjinnNamespace.hpp"
-#include "nDjinnException.hpp"
-#include "nDjinnError.hpp"
-#include <gl/glew.h>
-//#include "ndj_utils.hpp"
 #include <algorithm>
 #include <cmath>
+#include <type_traits>
 
-// -----------------------------------------------------------------------------
+#include "nDjinnAlgebra.hpp"
+#include "nDjinnError.hpp"
+#include "nDjinnException.hpp"
+#include "nDjinnNamespace.hpp"
 
-BEGIN_NDJINN_NAMESPACE
+NDJINN_BEGIN_NAMESPACE
+
+//! Create camera view matrix from right, up, back, and world space position.
+//! [in]  r: right direction.
+//! [in]  u: up direction.
+//! [in]  b: back direction.
+//! [in]  t: world space position.
+//! [out] v: camera view matrix.
+template <typename T> inline
+void makeViewMatrix(T const r[3], T const u[3], T const b[3], T const t[3],
+                    T v[16])
+{
+    v[0] = r[0];
+    v[1] = u[0];
+    v[2] = b[0];
+    v[3] = T(0);
+    v[4] = r[1];
+    v[5] = u[1];
+    v[6] = b[1];
+    v[7] = T(0);
+    v[8]  = r[2];
+    v[9]  = u[2];
+    v[10] = b[2];
+    v[11] = T(0);
+    v[12] = -dot_vec<T,3>(t, r);
+    v[13] = -dot_vec<T,3>(t, u);
+    v[14] = -dot_vec<T,3>(t, b);
+    v[15] = T(1);
+}
+
+//! Camera local +X axis. First row of view rotation. Points right
+//! with respect to forward direction.
+//! [in]   view: camera view matrix.
+//! [out] right: camera local right vector.
+template<typename T> inline
+void viewMatrixRight(T const view[16], T right[3]) {
+    right[0] = view[0];
+    right[1] = view[4];
+    right[2] = view[8];
+}
+
+//! Camera local +Y axis. Second row of modelview rotation.
+//! [in]  view: camera view matrix.
+//! [out]   up: camera local up vector.
+template<typename T> inline
+void viewMatrixUp(T const view[16], T up[3]) {
+    up[0] = view[1];
+    up[1] = view[5];
+    up[2] = view[9];
+}
+
+//! Camera local +Z axis. Note that this is not the view direction.
+//! In fact, the view direction is exactly opposite this vector (i.e.
+//! all components sign-flipped). Third row of modelview rotation.
+//! [in]  view: camera view matrix.
+//! [out] back: camera local back vector.
+template<typename T> inline
+void viewMatrixBack(T const view[16], T back[3]) {
+    back[0] = view[2];
+    back[1] = view[6];
+    back[2] = view[10];
+}
+
+//! Camera local -Z axis. Corresponds to view direction.
+//! view: camera view matrix.
+//! [in]  view: camera view matrix.
+//! [out]  fwd: camera local forward vector.
+template<typename T> inline
+void viewMatrixForward(T const view[16], T fwd[3]) {
+    fwd[0] = -view[2];
+    fwd[1] = -view[6];
+    fwd[2] = -view[10];
+}
+
+//! Extract camera local coordinate system.
+//! [in] view: camera view matrix.
+//! [out] r: camera local right vector.
+//! [out] u: camera local up vector.
+//! [out] b: camera local back vector.
+template<typename T> inline
+void viewMatrixAxes(T const view[16], T r[3], T u[3], T b[3]) {
+    r[0] = view[0];
+    r[1] = view[4];
+    r[2] = view[8];
+    u[0] = view[1];
+    u[1] = view[5];
+    u[2] = view[9];
+    b[0] = view[2];
+    b[1] = view[6];
+    b[2] = view[10];
+}
+
+//! Compute normal matrix from view matrix.
+//! [in]  view: camera view matrix.
+//! [out]   nm: normal matrix.
+template<typename T>
+void
+makeNormalMatrix(T const view[16], T nm[9])
+{
+  static_assert(false, "not implemented");
+  // TODO!!
+}
+
+//! Make a perspective projection matrix. Taken from Eric Lengyel's
+//! excellent GDC 2007 presentation entitled "Projection Matrix Tricks".
+//!
+//! T should be a floating point type.
+//! Note: Does not check input validity, n < f, a != 0, e > 0,  etc.
+//! [in]  e: focal length. [unit?]
+//! [in]  a: viewport aspect. (height/width)
+//! [in]  n: near clip plane distance.
+//! [in]  f: far clip plane distance.
+//! [out] p: projection matrix.
+template<typename T> inline
+void makePerspectiveProjectionMatrix(T const e, T const a, T const n, T const f,
+                                     T p[16]) {
+  static_assert(std::is_floating_point<T>, "T must be floating point type");
+
+  T const inv_fmn = T(1) / (f - n);
+  p[0] = e;
+  p[1] = T(0);
+  p[2] = T(0);
+  p[3] = T(0);
+  p[4] = T(0);
+  p[5] = e / a;
+  p[6] = T(0);
+  p[7] = T(0);
+  p[8]  = T(0);
+  p[9]  = T(0);
+  p[10] = -(f + n) * inv_fmn;
+  p[11] = T(-1);
+  p[12] = T(0);
+  p[13] = T(0);
+  p[14] = -(T(2) * f * n) * inv_fmn;
+  p[15] = T(0);
+}
+
+//! Make a perspective projection matrix, see documentation for glFrustum.
+//! NB: T should be a floating point type.
+//! TODO: Check input validity, left < right, bottom < top, etc.
+template<typename T> inline
+void makePerspectiveProjectionMatrix(T const left, T const right,
+                                     T const bottom, T const top,
+                                     T const near_val, T const far_val,
+                                     T p[16])
+{
+  static_assert(std::is_floating_point<T>, "T must be floating point type");
+
+  const T inv_rml = 1/(right - left);
+  const T inv_tmb = 1/(top - bottom);
+  const T inv_fmn = 1/(far_val - near_val);
+  const T a =  (right + left)*inv_rml;
+  const T b =  (top + bottom)*inv_tmb;
+  const T c = -(far_val + near_val)*inv_fmn;
+  const T d = -(2*far_val*near_val)*inv_fmn;
+  p[0] = 2*near_val*inv_rml; p[4] = 0;                  p[8]  =  a; p[12] = 0;
+  p[1] = 0;                  p[5] = 2*near_val*inv_tmb; p[9]  =  b; p[13] = 0;
+  p[2] = 0;                  p[6] = 0;                  p[10] =  c; p[14] = d;
+  p[3] = 0;                  p[7] = 0;                  p[11] = -1; p[15] = 0;
+}
+
+//! Make an orthographics projection matrix, see documentation for glOrtho.
+//! NB: T should be a floating point type.
+//! TODO: Check input validity, left < right, bottom < top, etc.
+template<typename T>
+static void
+orthographic_projection(const T left,
+                        const T right,
+                        const T bottom,
+                        const T top,
+                        const T near_val,
+                        const T far_val,
+                        T       p[16])
+{
+    const T inv_rml = 1/(right - left);
+    const T inv_tmb = 1/(top - bottom);
+    const T inv_fmn = 1/(far_val - near_val);
+    const T tx = -(right + left)*inv_rml;
+    const T ty = -(top + bottom)*inv_tmb;
+    const T tz = -(far_val + near_val)*inv_fmn;
+    p[0] = 2*inv_rml; p[4] = 0;         p[8]  = 0;           p[12] = tx;
+    p[1] = 0;         p[5] = 2*inv_tmb; p[9]  = 0;           p[13] = ty;
+    p[2] = 0;         p[6] = 0;         p[10] = -2*inv_fmn;  p[14] = tz;
+    p[3] = 0;         p[7] = 0;         p[11] = 0;           p[15] = 1;
+}
+
+
+
+NDJINN_END_NAMESPACE
+
+
+
+
+
+
 
 //! Camera class.
 template<typename T>
