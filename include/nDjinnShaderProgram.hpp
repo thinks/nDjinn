@@ -717,6 +717,10 @@ public:
     return _index;
   }
 
+  void bind(GLuint const uniformBlockBinding) const {
+    detail::uniformBlockBinding(_program, _index, uniformBlockBinding);
+  }
+
   //! Returns size of block in bytes.
   GLint size() const {
     GLint size = -1;

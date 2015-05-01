@@ -10,6 +10,7 @@
 
 #include "nDjinnBindor.hpp"
 #include "nDjinnBuffer.hpp"
+#include "nDjinnCamera.hpp"
 #include "nDjinnDisabler.hpp"
 #include "nDjinnEnabler.hpp"
 #include "nDjinnError.hpp"

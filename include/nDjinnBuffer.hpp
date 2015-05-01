@@ -224,6 +224,7 @@ public:
   Buffer(GLsizeiptr const size,
          GLvoid const* ptr,
          GLenum const usage = GL_STATIC_DRAW)
+    : _handle(detail::genBuffer())
   {
     throwIfInvalidHandle();
     setData(size, ptr, usage);
