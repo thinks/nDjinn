@@ -174,18 +174,6 @@ inline void vertexAttribLPointer(GLuint const index,
   checkError("glVertexAttribLPointer");
 }
 
-//! glEnableVertexAttribArray wrapper. May throw.
-inline void enableVertexAttribArray(GLuint const index) {
-  glEnableVertexAttribArray(index);
-  checkError("glEnableVertexAttribArray");
-}
-
-//! glDisableVertexAttribArray wrapper. May throw.
-inline void disableVertexAttribArray(GLuint const index) {
-  glDisableVertexAttribArray(index);
-  checkError("glDisableVertexAttribArray");
-}
-
 //! glVertexAttribDivisor wrapper. May throw.
 inline void vertexAttribDivisor(GLuint const index, GLuint const divisor) {
   glVertexAttribDivisor(index, divisor);

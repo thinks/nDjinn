@@ -1,20 +1,32 @@
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //
-// Copyright (C) Tommy Hinks              
-// tommy[dot]hinks[at]gmail[dot]com                       
-//
-// Contributors: 
+// Contributors:
 //             1) Tommy Hinks
 //
-// -----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #ifndef NDJINN_VERTEX_ARRAY_ATTRIB_ENABLER_HPP_INCLUDED
 #define NDJINN_VERTEX_ARRAY_ATTRIB_ENABLER_HPP_INCLUDED
 
-#include "nDjinnFunctions.hpp"
 #include "nDjinnNamespace.hpp"
 
 NDJINN_BEGIN_NAMESPACE
+
+namespace detail {
+
+//! glEnableVertexAttribArray wrapper. May throw.
+inline void enableVertexAttribArray(GLuint const index) {
+  glEnableVertexAttribArray(index);
+  checkError("glEnableVertexAttribArray");
+}
+
+//! glDisableVertexAttribArray wrapper. May throw.
+inline void disableVertexAttribArray(GLuint const index) {
+  glDisableVertexAttribArray(index);
+  checkError("glDisableVertexAttribArray");
+}
+
+} // namespace detail
 
 //! DOCS
 class VertexAttribArrayEnabler {
@@ -22,11 +34,11 @@ public:
   explicit VertexAttribArrayEnabler(GLuint const index)
     : _index(index)
   {
-    enableVertexAttribArray(_index);
+    detail::enableVertexAttribArray(_index);
   }
 
   ~VertexAttribArrayEnabler() {
-    disableVertexAttribArray(_index);
+    detail::disableVertexAttribArray(_index);
   }
 
 private:

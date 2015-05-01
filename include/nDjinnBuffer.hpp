@@ -343,7 +343,7 @@ typedef Buffer<GL_UNIFORM_BUFFER> UniformBuffer;
 
 template<typename E, typename Size, GLenum Target> inline
 Size elementCount(Buffer<Target> const& buffer) {
-  return static_cast<Size>(buffer.size()/sizeof(E));
+  return static_cast<Size>(buffer.size() / sizeof(E));
 }
 
 NDJINN_END_NAMESPACE

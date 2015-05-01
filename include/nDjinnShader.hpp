@@ -82,54 +82,38 @@ inline void getShaderSource(GLuint const shader,
 }
 
 inline std::string shaderTypeToString(GLenum const type) {
-  using namespace std;
-
   switch (type) {
-  case GL_VERTEX_SHADER:    return string("GL_VERTEX_SHADER");
-  case GL_GEOMETRY_SHADER:  return string("GL_GEOMETRY_SHADER");
-  case GL_FRAGMENT_SHADER:  return string("GL_FRAGMENT_SHADER");
+  case GL_VERTEX_SHADER:    return std::string("GL_VERTEX_SHADER");
+  case GL_GEOMETRY_SHADER:  return std::string("GL_GEOMETRY_SHADER");
+  case GL_FRAGMENT_SHADER:  return std::string("GL_FRAGMENT_SHADER");
   }
   NDJINN_THROW("unrecognized shader type: " << type);
-}
-
-//! Read shader source from file.
-inline std::string readShaderFile(const std::string& filename) {
-  using namespace std;
-
-  string src;
-  FILE *file = fopen(filename.c_str(), "rb");
-  if (file == nullptr) {
-    NDJINN_THROW("cannot open file: " << filename);
-  }
-
-  fseek(file, 0, SEEK_END);
-  long const size = ftell(file); // [bytes].
-  src.resize(size + 1);
-  fseek(file, 0, SEEK_SET);
-  fread(&src[0], size, 1, file);
-  fclose(file);
-  src[size] = '\0'; // Null-termination
-  return src;
 }
 
 } // Namespace: detail.
 
 //! DOCS
+template<GLenum Type>
 class Shader {
 public:
-/*  explicit Shader(GLenum const type)
-    : _handle(detail::createShader(type))
-  {
-    throwIfInvalidHandle();
-  }*/
+  static GLenum const TYPE = Type;
 
   //! CTOR
-  Shader(GLenum const type, std::string const& filename)
-    : _handle(detail::createShader(type))
-    , _filename(filename)
+  Shader(std::string const& source)
+    : _handle(detail::createShader(Type))
   {
     throwIfInvalidHandle();
-    setSourceFromFile(filename);
+    GLint shader_type = 0;
+    detail::getShaderiv(_handle, GL_SHADER_TYPE, &shader_type);
+    if (TYPE != static_cast<GLenum>(shader_type)) {
+        NDJINN_THROW("invalid shader type: " << shader_type <<
+                     " (should be " << TYPE << ")");
+    }
+
+    GLchar const* src = static_cast<const GLchar*>(source.c_str());
+    GLint const length = static_cast<GLint>(source.size());
+    detail::shaderSource(_handle, 1, &src, &length);
+
     compile();
   }
 
@@ -140,24 +124,6 @@ public:
 
   GLuint handle() const {
     return _handle;
-  }
-
-  std::string filename() const {
-    return _filename;
-  }
-
-  GLenum type() const {
-    GLint params = 0;
-    detail::getShaderiv(_handle, GL_SHADER_TYPE, &params);
-    return static_cast<GLenum>(params); // TODO: Ugly static_cast to enum...
-  }
-
-  void compile() {
-    detail::compileShader(_handle);
-    if (!isCompiled()) {
-      NDJINN_THROW("shader compile error: " << _handle << ", '" << _filename
-                   << "': " << infoLog());
-    }
   }
 
   bool isCompiled() const {
@@ -204,42 +170,56 @@ private:
 
   void throwIfInvalidHandle() {
     if (detail::isShader(_handle) == GL_FALSE) {
-      NDJINN_THROW("invalid shader handle: "
-                   << _handle << ", '" << _filename << "'");
+      NDJINN_THROW("invalid shader handle: " << _handle);
     }
   }
 
-  void setSourceFromFile(std::string const& filename) {
-    std::string const src = detail::readShaderFile(filename);
-    setSourceFromString(src);
-    _filename = filename;
-  }
-
-  void setSourceFromString(std::string const& source) {
-    GLchar const* src = static_cast<const GLchar*>(source.c_str());
-    GLint const length = static_cast<GLint>(source.size());
-    detail::shaderSource(_handle, 1, &src, &length);
-  }
-
-  void setSource(GLsizei count, GLchar const **string, GLint const* length) {
-    detail::shaderSource(_handle, count, string, length);
+  void compile() {
+    detail::compileShader(_handle);
+    if (!isCompiled()) {
+      NDJINN_THROW("shader compile error: " << _handle << ": " << infoLog());
+    }
   }
 
   GLuint const _handle; //!< Resource handle.
-  std::string _filename;
 };
+
+// Convenient types.
+typedef Shader<GL_VERTEX_SHADER> VertexShader;
+typedef Shader<GL_GEOMETRY_SHADER> GeometryShader;
+typedef Shader<GL_FRAGMENT_SHADER> FragmentShader;
+
+//! Read shader source from file.
+inline std::string readShaderFile(const std::string& filename) {
+  using namespace std;
+
+  string src;
+  FILE *file = fopen(filename.c_str(), "rb");
+  if (file == nullptr) {
+    NDJINN_THROW("cannot open file: " << filename);
+  }
+
+  fseek(file, 0, SEEK_END);
+  long const size = ftell(file); // [bytes].
+  src.resize(size + 1);
+  fseek(file, 0, SEEK_SET);
+  fread(&src[0], size, 1, file);
+  fclose(file);
+  src[size] = '\0'; // Null-termination
+  return src;
+}
 
 NDJINN_END_NAMESPACE
 
 namespace std {
 
-inline
-ostream& operator<<(ostream& os, ndj::Shader const& sh)
+template<GLenum Type> inline
+ostream& operator<<(ostream& os, ndj::Shader<Type> const& sh)
 {
-  os << "Shader" << endl
+  os << "Shader<"
+     << ndj::detail::shaderTypeToString(ndj::Shader<Type>::TYPE) << ">" << endl
      << "  Handle: " << sh.handle() << endl
      << "  Filename: '" << sh.filename() << "'" << endl
-     << "  Type: " << ndj::detail::shaderTypeToString(sh.type()) << endl
      << "  Compiled: " << sh.isCompiled() << endl;
 
   return os;

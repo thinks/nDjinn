@@ -18,6 +18,7 @@
 #include "nDjinnFramebuffer.hpp"
 #include "nDjinnFunctions.hpp"
 //#include "nDjinnRenderBuffer.hpp"
+#include "nDjinnGLTypeEnum.hpp"
 #include "nDjinnQuery.hpp"
 #include "nDjinnSampler.hpp"
 #include "nDjinnShader.hpp"

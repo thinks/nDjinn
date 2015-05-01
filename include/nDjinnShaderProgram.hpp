@@ -732,10 +732,6 @@ public:
     return size;
   }
 
-  void setBinding(GLuint const uniformBlockBinding) {
-    detail::uniformBlockBinding(_program, _index, uniformBlockBinding);
-  }
-
   GLuint binding() const {
     GLint binding = -1;
     detail::getActiveUniformBlockiv(
@@ -772,12 +768,31 @@ public:
   typedef UniformBlockContainer::const_iterator UniformBlockIterator;
 
   //! CTOR.
-  ShaderProgram()
+  ShaderProgram(VertexShader const& vs, FragmentShader const& fs)
     : _handle(detail::createProgram())
   {
-    if (detail::isProgram(_handle) == GL_FALSE) {
-      NDJINN_THROW("invalid shader program handle: " << _handle);
-    }
+    throwIfInvalidHandle();
+    attachShader(vs);
+    attachShader(fs);
+    link();
+    detachShader(vs);
+    detachShader(fs);
+  }
+
+  //! CTOR.
+  ShaderProgram(VertexShader const& vs,
+                GeometryShader const& gs,
+                FragmentShader const& fs)
+    : _handle(detail::createProgram())
+  {
+    throwIfInvalidHandle();
+    attachShader(vs);
+    attachShader(gs);
+    attachShader(fs);
+    link();
+    detachShader(vs);
+    detachShader(gs);
+    detachShader(fs);
   }
 
   //! DTOR.
@@ -797,37 +812,6 @@ public:
   //! Disabled shader program.
   void release() const {
     detail::useProgram(0);
-  }
-
-  //! Attach a shader to this shader program.
-  void attachShader(Shader const& sh) {
-    detail::attachShader(_handle, sh.handle());
-  }
-
-  //! Detach a shader from this shader program.
-  void detachShader(Shader const& sh) {
-    detail::detachShader(_handle, sh.handle());
-  }
-
-  void link() {
-    detail::linkProgram(_handle);
-    if (!isLinked()) {
-      NDJINN_THROW("shader program link error: "
-                   << _handle << ": " << infoLog());
-    }
-
-    detail::validateProgram(_handle);
-    GLint validateStatus = GL_FALSE;
-    detail::getProgramiv(_handle, GL_VALIDATE_STATUS, &validateStatus);
-    if (validateStatus == GL_FALSE) {
-      NDJINN_THROW("shader program validation error: "
-                   << _handle << ": " << infoLog());
-    }
-
-    // Successful link and validation. Now get some info about the shader.
-    updateActiveUniforms();
-    updateActiveUniformBlocks();
-    updateActiveAttribs();
   }
 
   bool isLinked() const {
@@ -970,6 +954,45 @@ private:
   ShaderProgram(ShaderProgram const&); //!< Disable copy CTOR.
   ShaderProgram& operator=(ShaderProgram const&); //!< Disable assign.
 
+  void throwIfInvalidHandle() {
+    if (detail::isProgram(_handle) == GL_FALSE) {
+      NDJINN_THROW("invalid shader program handle: " << _handle);
+    }
+  }
+
+  //! Attach a shader to this shader program.
+  template<GLenum Type>
+  void attachShader(Shader<Type> const& sh) {
+    detail::attachShader(_handle, sh.handle());
+  }
+
+  //! Detach a shader from this shader program.
+  template<GLenum Type>
+  void detachShader(Shader<Type> const& sh) {
+    detail::detachShader(_handle, sh.handle());
+  }
+
+  void link() {
+    detail::linkProgram(_handle);
+    if (!isLinked()) {
+      NDJINN_THROW("shader program link error: "
+                   << _handle << ": " << infoLog());
+    }
+
+    detail::validateProgram(_handle);
+    GLint validateStatus = GL_FALSE;
+    detail::getProgramiv(_handle, GL_VALIDATE_STATUS, &validateStatus);
+    if (validateStatus == GL_FALSE) {
+      NDJINN_THROW("shader program validation error: "
+                   << _handle << ": " << infoLog());
+    }
+
+    // Successful link and validation. Now get some info about the shader.
+    updateActiveUniforms();
+    updateActiveUniformBlocks();
+    updateActiveAttribs();
+  }
+
   void updateActiveUniforms() {
     _uniforms.clear();
     GLint activeUniforms = 0;
@@ -1073,24 +1096,31 @@ namespace std {
 
 ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
 {
+  using namespace ndj;
+
   os << "ShaderProgram" << endl
      << "  Handle: " << sp.handle() << endl
      << "  Linked: " << sp.isLinked() << endl;
 
   os << "  Uniforms: " << endl;
-  for (auto iter = sp.activeUniformsBegin();
-       iter != sp.activeUniformsEnd(); ++iter) {
-    ndj::Uniform const& uni = iter->second;
-    os << "  Location: " << uni.location
-       << ", Name: '" << iter->first
-       << "', Type: " << ndj::detail::uniformTypeToString(uni.type)
-         << "[" << uni.size << "]" << endl;
+  if (sp.activeUniformsBegin() != sp.activeUniformsEnd()) {
+      for (auto iter = sp.activeUniformsBegin();
+           iter != sp.activeUniformsEnd(); ++iter) {
+        Uniform const& uni = iter->second;
+        os << "  Location: " << uni.location
+           << ", Name: '" << iter->first
+           << "', Type: " << detail::uniformTypeToString(uni.type)
+             << "[" << uni.size << "]" << endl;
+      }
+  }
+  else {
+    os << "    <empty>" << endl;
   }
 
   os << "  Uniform blocks: " << endl;
   for (auto iter = sp.activeUniformBlocksBegin();
        iter != sp.activeUniformBlocksEnd(); ++iter) {
-    ndj::UniformBlock const& ub = iter->second;
+    UniformBlock const& ub = iter->second;
     os << "    Block: "
        << "Index: " << ub.index()
        << ", Name: '" << iter->first << "'"
@@ -1099,10 +1129,10 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
 
     for (auto iter = ub.fieldsBegin();
          iter != ub.fieldsEnd(); ++iter) {
-      ndj::UniformBlock::Field const& field = *iter;
+      UniformBlock::Field const& field = *iter;
       os << "      Field: "
          << "Offset: " << field.offset
-         << ", Type: " << ndj::detail::uniformTypeToString(field.type)
+         << ", Type: " << detail::uniformTypeToString(field.type)
            << "[" << field.size << "]"
          << ", Index: " << field.blockIndex
          << ", Name: '" << field.name << "'" << endl;
@@ -1112,11 +1142,11 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
   os << "Attributes: " << endl;
   for (auto iter = sp.activeAttribsBegin();
        iter != sp.activeAttribsEnd(); ++iter) {
-    ndj::Attrib const& attrib = iter->second;
+    Attrib const& attrib = iter->second;
     os << "  Attribute: "
        << "Location: " << attrib.location
        << ", Name: '" << iter->first
-       << "', Type: " << ndj::detail::attribTypeToString(attrib.type)
+       << "', Type: " << detail::attribTypeToString(attrib.type)
          << "[" << attrib.size << "]" << endl;
   }
 
