@@ -41,9 +41,9 @@ void makeViewMatrix(T const r[3], T const u[3], T const b[3], T const t[3],
   v[9] = u[2];
   v[10] = b[2];
   v[11] = T(0);
-  v[12] = -innerProduct<T,3>(t, r);
-  v[13] = -innerProduct<T,3>(t, u);
-  v[14] = -innerProduct<T,3>(t, b);
+  v[12] = -innerProduct<T, 3>(t, r);
+  v[13] = -innerProduct<T, 3>(t, u);
+  v[14] = -innerProduct<T, 3>(t, b);
   v[15] = T(1);
 }
 

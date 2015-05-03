@@ -1118,36 +1118,46 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
   }
 
   os << "  Uniform blocks: " << endl;
-  for (auto iter = sp.activeUniformBlocksBegin();
-       iter != sp.activeUniformBlocksEnd(); ++iter) {
-    UniformBlock const& ub = iter->second;
-    os << "    Block: "
-       << "Index: " << ub.index()
-       << ", Name: '" << iter->first << "'"
-       << ", Binding: " << ub.binding()
-       << ", Size: " << ub.size() << " [bytes]" << endl;
+  if (sp.activeUniformBlocksBegin() != sp.activeUniformBlocksEnd()) {
+    for (auto iter = sp.activeUniformBlocksBegin();
+         iter != sp.activeUniformBlocksEnd(); ++iter) {
+      UniformBlock const& ub = iter->second;
+      os << "    Block: "
+         << "Index: " << ub.index()
+         << ", Name: '" << iter->first << "'"
+         << ", Binding: " << ub.binding()
+         << ", Size: " << ub.size() << " [bytes]" << endl;
 
-    for (auto iter = ub.fieldsBegin();
-         iter != ub.fieldsEnd(); ++iter) {
-      UniformBlock::Field const& field = *iter;
-      os << "      Field: "
-         << "Offset: " << field.offset
-         << ", Type: " << detail::uniformTypeToString(field.type)
-           << "[" << field.size << "]"
-         << ", Index: " << field.blockIndex
-         << ", Name: '" << field.name << "'" << endl;
+      for (auto iter = ub.fieldsBegin();
+           iter != ub.fieldsEnd(); ++iter) {
+        UniformBlock::Field const& field = *iter;
+        os << "      Field: "
+           << "Offset: " << field.offset
+           << ", Type: " << detail::uniformTypeToString(field.type)
+             << "[" << field.size << "]"
+           << ", Index: " << field.blockIndex
+           << ", Name: '" << field.name << "'" << endl;
+      }
     }
   }
+  else {
+    os << "    <empty>" << endl;
+  }
 
-  os << "Attributes: " << endl;
-  for (auto iter = sp.activeAttribsBegin();
-       iter != sp.activeAttribsEnd(); ++iter) {
-    Attrib const& attrib = iter->second;
-    os << "  Attribute: "
-       << "Location: " << attrib.location
-       << ", Name: '" << iter->first
-       << "', Type: " << detail::attribTypeToString(attrib.type)
-         << "[" << attrib.size << "]" << endl;
+  os << "  Attributes: " << endl;
+  if (sp.activeAttribsBegin() != sp.activeAttribsEnd()) {
+    for (auto iter = sp.activeAttribsBegin();
+         iter != sp.activeAttribsEnd(); ++iter) {
+      Attrib const& attrib = iter->second;
+      os << "    Attribute: "
+         << "Location: " << attrib.location
+         << ", Name: '" << iter->first
+         << "', Type: " << detail::attribTypeToString(attrib.type)
+           << "[" << attrib.size << "]" << endl;
+    }
+  }
+  else {
+    os << "    <empty>" << endl;
   }
 
   return os;
