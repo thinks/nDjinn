@@ -8,6 +8,8 @@
 #ifndef NDJINN_FUNCTIONS_HPP_INCLUDED
 #define NDJINN_FUNCTIONS_HPP_INCLUDED
 
+#include <array>
+
 #include "nDjinnError.hpp"
 #include "nDjinnGL.hpp"
 #include "nDjinnNamespace.hpp"
@@ -104,9 +106,27 @@ inline void getBooleanv(GLenum const pname, GLboolean* data) {
 }
 
 //! glGetIntegerv wrapper. May throw. 
-inline void getIntegerv(GLenum const pname, GLint* data) {
+inline void getIntegerv(GLenum const pname, GLint* data)
+{
   glGetIntegerv(pname, data);
   checkError("glGetIntegerv");
+}
+
+//! Convenience.
+inline GLint getInteger(GLenum const pname)
+{
+  GLint param = 0;
+  getIntegerv(pname, &param);
+  return param;
+}
+
+//! Convenience.
+template <std::size_t N>
+inline std::array<GLint, N> getIntegers(GLenum const pname)
+{
+  std::array<GLint, N> params;
+  getIntegerv(pname, params.data());
+  return params;
 }
 
 //! glGetInteger64v wrapper. May throw.
@@ -243,16 +263,25 @@ inline void viewport(GLint const x,
 // Buffer
 
 //! glDrawBuffer wrapper. May throw.
-inline void drawBuffer(GLenum const buf) {
+inline void drawBuffer(GLenum const buf)
+{
   glDrawBuffer(buf);
   checkError("glDrawBuffer");
 } 
 
 //! glDrawBuffers wrapper. May throw.
-inline void drawBuffers(GLsizei const n, GLenum const* bufs) {
+inline void drawBuffers(GLsizei const n, GLenum const* bufs)
+{
   glDrawBuffers(n, bufs);
   checkError("glDrawBuffers");
-} 
+}
+
+//! Convenience.
+template <std::size_t N> inline
+void drawBuffers(std::array<GLenum, N> const& bufs)
+{
+  drawBuffers(static_cast<GLsizei>(bufs.size()), bufs.data());
+}
 
 //! glColorMask wrapper. May throw.
 inline void colorMask(GLboolean const r, 

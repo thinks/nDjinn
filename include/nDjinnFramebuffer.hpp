@@ -276,9 +276,7 @@ public:
   //! CTOR.
   Framebuffer()
     : _handle(detail::genFramebuffer())
-  {
-    throwIfInvalidHandle();
-  }
+  {}
 
   //! DTOR.
   ~Framebuffer()
@@ -339,37 +337,18 @@ public:
                                       texture, level, zoffset);
   }
 
-  void detachTexture1D(GLenum const attachment)
-  {
-    detail::namedFramebufferTexture1D(_handle, attachment, GL_TEXTURE_1D, 0, 0);
-  }
-
-  void detachTexture2D(GLenum const attachment,
-                       GLenum const textarget = GL_TEXTURE_2D)
-  {
-    detail::namedFramebufferTexture2D(_handle, attachment, textarget, 0, 0);
-  }
-
-  void detachTexture3D(GLenum const attachment)
-  {
-    detail::namedFramebufferTexture3D(_handle, attachment, GL_TEXTURE_3D,
-                                      0, 0, 0);
-  }
-
   void attachRenderbuffer(GLenum const attachment, GLuint const renderbuffer)
   {
     detail::namedFramebufferRenderbuffer(
       _handle, attachment, GL_RENDERBUFFER, renderbuffer);
   }
 
-  void
-  detachRenderbuffer();
-
-
 private:
   Framebuffer(const Framebuffer&); //!< Disabled copy.
   Framebuffer& operator=(const Framebuffer&); //!< Disabled assign.
 
+#if 0
+  // NOTE: Too awkward having to bind to check, could cause very nasty bugs!
   void throwIfInvalidHandle()
   {
     GLenum const kTarget = GL_FRAMEBUFFER;
@@ -379,6 +358,7 @@ private:
     }
     release(kTarget);
   }
+#endif
 
   void throwIfInvalidStatus(GLenum const target) const
   {
