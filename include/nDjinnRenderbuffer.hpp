@@ -8,133 +8,189 @@
 #ifndef NDJINN_RENDERBUFFER_HPP_INCLUDED
 #define NDJINN_RENDERBUFFER_HPP_INCLUDED
 
-#include "nDjinnException.hpp"
-#include "nDjinnError.hpp"
+#include <iostream>
 
-//------------------------------------------------------------------------------
+#include "nDjinnError.hpp"
+#include "nDjinnException.hpp"
+#include "nDjinnNamespace.hpp"
 
 NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
+//! glGenRenderbuffers wrapper. May throw.
+inline void genRenderbuffers(GLsizei const n, GLuint* renderbuffers)
+{
+  glGenRenderbuffers(n, renderbuffers);
+  checkError("glGenRenderbuffers");
 }
 
-//------------------------------------------------------------------------------
+//! glDeleteRenderbuffers wrapper. May throw.
+inline void deleteRenderbuffers(GLsizei const n, GLuint const* renderbuffers)
+{
+  glDeleteRenderbuffers(n, renderbuffers);
+  checkError("glDeleteRenderbuffers");
+}
 
-class framebuffer
+//! glIsRenderbuffer wrapper. May throw.
+inline GLboolean isRenderbuffer(GLuint const renderbuffer)
+{
+  GLboolean const result = glIsRenderbuffer(renderbuffer);
+  checkError("glIsRenderbuffer");
+  return result;
+}
+
+//! glBindRenderbuffer wrapper. May throw.
+inline GLboolean bindRenderbuffer(GLenum const target,
+                                  GLuint const renderbuffer)
+{
+  glBindRenderbuffer(target, renderbuffer);
+  checkError("glBindRenderbuffer");
+}
+
+//! glNamedRenderbufferStorageMultisampleEXT wrapper. May throw.
+inline void namedRenderbufferStorageMultisample(GLuint const renderbuffer,
+                                                GLsizei const samples,
+                                                GLenum const internalformat,
+                                                GLsizei const width,
+                                                GLsizei const height)
+{
+  glNamedRenderbufferStorageMultisampleEXT(renderbuffer, samples,
+                                           internalformat, width, height);
+  checkError("glNamedRenderbufferStorageMultisampleEXT");
+}
+
+//! glGetNamedRenderbufferParameterivEXT wrapper. May throw.
+inline void getNamedRenderbufferParameteriv(GLuint const renderbuffer,
+                                            GLenum const pname, GLint* params)
+{
+  glGetNamedRenderbufferParameterivEXT(renderbuffer, pname, params);
+  checkError("glGetNamedRenderbufferParameterivEXT");
+}
+
+//! Convenience.
+inline GLuint genRenderbuffer() {
+  GLuint handle = 0;
+  genFramebuffers(1, &handle);
+  return handle;
+}
+
+//! Convenience.
+inline void deleteRenderbuffer(GLuint const handle) {
+  deleteFramebuffers(1, &handle);
+}
+
+//! Convenience.
+inline GLint getNamedRenderbufferParameteri(GLuint const renderbuffer,
+                                            GLenum const pname)
+{
+  GLint params = 0;
+  getNamedRenderbufferParameteriv(renderbuffer, pname, &params);
+  return params;
+}
+
+} // namespace detail
+
+//! DOCS
+class Renderbuffer
 {
 public:
+  Renderbuffer(GLenum const internal_format, GLsizei const width,
+               GLsizei const height, GLsizei const samples = 0)
+    : _handle(detail::genRenderbuffer())
+  {
+    //throwIfInvalidHandle();
+    detail::namedRenderbufferStorageMultisample(_handle, samples,
+                                                internal_format, width, height);
+  }
 
-    static const GLenum target = GL_RENDERBUFFER;
+  ~Renderbuffer()
+  {
+    detail::deleteRenderbuffer(_handle);
+  }
 
-public:
+  GLuint handle() const
+  {
+    return _handle;
+  }
 
-    //! CTOR.
-    renderbuffer()
-        : _handle(0)
-    {
-        try {
-            _gen_renderbuffers(1, &_handle);
-        }
-        catch (...) {
-            _delete_renderbuffers(1, &_handle);  // Clean up.
-            throw;                               // Rethrow.
-        }    
-    }
+  void bind() const
+  {
+    detail::bindRenderbuffer(GL_RENDERBUFFER, _handle);
+  }
 
-    //! DTOR.
-    ~renderbuffer()
-    {
-        try {
-            // TODO: release(); ?
-            _delete_framebuffers(1, &_handle);  // May throw.
-        }
-        catch (...) {
-        }    
-    }
-
-private:    // Renderbuffer Objects.
-
-    //! glBindRenderBuffer wrapper. May throw.
-    static void
-    _bind_renderbuffer(const GLenum target, const GLuint renderbuffer)
-    {
-        glBindRenderbuffer(target, renderbuffer);
-        error::check("glBindRenderbuffer"); // May throw.
-    }
-
-    //! glDeleteRenderBuffers wrapper. May throw.
-    static void
-    _delete_renderbuffers(const GLsizei n, const GLuint *renderbuffers)
-    {
-        glDeleteRenderbuffers(n, renderbuffers);
-        error::check("glDeleteRenderbuffers"); // May throw.
-    }
-
-    //! glGenRenderBuffers wrapper. May throw.
-    static void
-    _gen_renderbuffers(const GLsizei n, GLuint *renderbuffers)
-    {
-        glGenRenderBuffers(n, renderbuffers);
-        error::check("glGenRenderbuffers"); // May throw.
-    }
-
-    //! glRenderbufferStorageMultisample wrapper. May throw.
-    static void 
-    _renderbuffer_storage_multisample(
-        const GLenum target, const GLsizei samples,
-        const GLenum internalformat, const GLsizei width, const GLsizei height)
-    {
-        glRenderbufferStorageMultisample(
-            target, samples, internalformat, width, height);
-        error::check("glRenderbufferStorageMultisample"); // May throw.
-    }
-
-    //! glRenderbufferStorageMultisample wrapper. May throw.
-    static void 
-    _renderbuffer_storage(const GLenum target, const GLenum internalformat, 
-                          const GLsizei width, const GLsizei height)
-    {
-        glRenderbufferStorage(
-            target, internalformat, width, height);
-        error::check("glRenderbufferStorage"); // May throw.
-    }
-
-private:    // Renderbuffer Object Queries.
-
-    //! glIsRenderbuffer wrapper. May throw.
-    static GLboolean
-    _is_renderbuffer(const GLuint renderbuffer)
-    {
-        const GLboolean result = glIsRenderbuffer(renderbuffer);
-        error::check("glIsRenderbuffer"); // May throw.
-        return result;
-    }
-
-    //! glGetRenderbufferAttachmentParameteriv wrapper. May throw.
-    static void
-    _get_renderbuffer_attachment_parameter_iv(const GLenum  target, 
-                                              const GLenum  pname, 
-                                              GLint        *params)
-    {
-        glGetRenderbufferAttachmentParameteriv(target, pname, params);
-        error::check("glGetRenderbufferAttachmentParameteriv"); // May throw.
-    }
+  void release() const
+  {
+    detail::bindRenderbuffer(GL_RENDERBUFFER, 0);
+  }
 
 private:
+  Renderbuffer(const Renderbuffer&); //!< Disabled copy.
+  Renderbuffer& operator=(const Renderbuffer&); //!< Disabled assign.
 
-    renderbuffer(const renderbuffer&);            //!< Disabled copy.
-    renderbuffer& operator=(const renderbuffer&); //!< Disabled assign.
+  void throwIfInvalidHandle()
+  {
+    if (detail::isRenderbuffer(_handle) == GL_FALSE) {
+      NDJINN_THROW("invalid renderbuffer handle: " << _handle);
+    }
+  }
 
-private:    // Member variables.
-
-    GLuint _handle;     //!< Resource handle.
+  GLuint const _handle;
 };
 
-// -----------------------------------------------------------------------------
+NDJINN_END_NAMESPACE
 
-}   // Namespace: ndj.
+namespace std {
 
-// -----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, ndj::Renderbuffer const& rb)
+{
+  GLint const width =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_WIDTH);
+  GLint const height =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_HEIGHT);
+  GLint const internal_format =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_INTERNAL_FORMAT);
+  GLint const samples =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_SAMPLES);
+  GLint const red_size =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_RED_SIZE);
+  GLint const green_size =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_GREEN_SIZE);
+  GLint const blue_size =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_BLUE_SIZE);
+  GLint const alpha_size =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_ALPHA_SIZE);
+  GLint const depth_size =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_DEPTH_SIZE);
+  GLint const stencil_size =
+    ndj::detail::getNamedRenderbufferParameteri(rb.handle(),
+      GL_RENDERBUFFER_STENCIL_SIZE);
 
-#endif  // NDJ_RENDERBUFFER_HPP_INCLUDED
+  // TODO: internal_format as string!
+  os << "Renderbuffer" << endl
+     << "  Handle: " << rb.handle() << endl
+     << "  Internal format: " << internal_format << endl
+     << "  Samples: " << samples << endl
+     << "  Height: " << height << endl
+     << "  Width:  " << width << endl
+     << "  Red: " << red_size << " [bits]" << endl
+     << "  Green: " << green_size << " [bits]" << endl
+     << "  Blue: " << blue_size << " [bits]" << endl
+     << "  Alpha: " << alpha_size << " [bits]" << endl
+     << "  Depth: " << depth_size << " [bits]" << endl
+     << "  Stencil: " << stencil_size << " [bits]" << endl;
+  return os;
+}
+
+} // namespace std
+
+#endif  // NDJINN_RENDERBUFFER_HPP_INCLUDED

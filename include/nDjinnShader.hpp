@@ -21,36 +21,39 @@ NDJINN_BEGIN_NAMESPACE
 namespace detail {
 
 //! glCreateShader wrapper. May throw. 
-inline GLuint createShader(GLenum const type) {
+inline GLuint createShader(GLenum const type)
+{
   GLuint const shader = glCreateShader(type);
   checkError("glCreateShader");
   return shader; 
 }
 
 //! glDeleteShader wrapper. May throw. 
-inline void deleteShader(GLuint const shader) {
+inline void deleteShader(GLuint const shader)
+{
   glDeleteShader(shader); 
   checkError("glDeleteShader");
 }
 
 //! glIsShader wrapper. May throw.
-inline GLboolean isShader(GLuint const shader) {
+inline GLboolean isShader(GLuint const shader)
+{
   GLboolean const isShader = glIsShader(shader);
   checkError("glIsShader");
   return isShader; 
 }
 
 //! glShaderSource wrapper. May throw.
-inline void shaderSource(GLuint const shader,
-                         GLsizei const count,
-                         GLchar const** string,
-                         GLint const* length) {
+inline void shaderSource(GLuint const shader, GLsizei const count,
+                         GLchar const** string, GLint const* length)
+{
   glShaderSource(shader, count, string, length); 
   checkError("glShaderSource");
 }
 
 //! glCompileShader wrapper. May throw. 
-inline void compileShader(GLuint const shader) {
+inline void compileShader(GLuint const shader)
+{
   glCompileShader(shader); 
   checkError("glCompileShader");
 }
@@ -58,7 +61,8 @@ inline void compileShader(GLuint const shader) {
 //! glGetShaderiv wrapper. May throw.
 inline void getShaderiv(GLuint const shader,
                         GLenum const pname,
-                        GLint *params) {
+                        GLint *params)
+{
   glGetShaderiv(shader, pname, params);
   checkError("glGetShaderiv");
 }
@@ -67,7 +71,8 @@ inline void getShaderiv(GLuint const shader,
 inline void getShaderInfoLog(GLuint const shader,
                              GLsizei const bufSize,
                              GLsizei* length,
-                             GLchar* infoLog) {
+                             GLchar* infoLog)
+{
   glGetShaderInfoLog(shader, bufSize, length, infoLog); 
   checkError("glGetShaderInfoLog");
 }
@@ -76,12 +81,14 @@ inline void getShaderInfoLog(GLuint const shader,
 inline void getShaderSource(GLuint const shader,
                             GLsizei const bufSize,
                             GLsizei* length,
-                            GLchar* source) {
+                            GLchar* source)
+{
   glGetShaderSource(shader, bufSize, length, source);
   checkError("glGetShaderSource"); 
 }
 
-inline std::string shaderTypeToString(GLenum const type) {
+inline std::string shaderTypeToString(GLenum const type)
+{
   switch (type) {
   case GL_VERTEX_SHADER:    return std::string("GL_VERTEX_SHADER");
   case GL_GEOMETRY_SHADER:  return std::string("GL_GEOMETRY_SHADER");
@@ -94,7 +101,8 @@ inline std::string shaderTypeToString(GLenum const type) {
 
 //! DOCS
 template<GLenum Type>
-class Shader {
+class Shader
+{
 public:
   static GLenum const TYPE = Type;
 
@@ -118,21 +126,25 @@ public:
   }
 
   //! DTOR
-  ~Shader() {
+  ~Shader()
+  {
     detail::deleteShader(_handle);
   }
 
-  GLuint handle() const {
+  GLuint handle() const
+  {
     return _handle;
   }
 
-  bool isCompiled() const {
+  bool isCompiled() const
+  {
     GLint compileStatus = GL_FALSE;
     detail::getShaderiv(_handle, GL_COMPILE_STATUS, &compileStatus);
     return compileStatus == GL_TRUE;
   }
 
-  std::string source() const {
+  std::string source() const
+  {
     std::string str;
     GLint maxLength = 0;
     detail::getShaderiv(_handle, GL_SHADER_SOURCE_LENGTH, &maxLength);
@@ -148,7 +160,8 @@ public:
     return str;
   }
 
-  std::string infoLog() const {
+  std::string infoLog() const
+  {
     std::string str;
     GLint maxLength = 0;
     detail::getShaderiv(_handle, GL_INFO_LOG_LENGTH, &maxLength);
@@ -168,13 +181,15 @@ private:
   Shader(Shader const&); //!< Disable copy CTOR.
   Shader& operator=(Shader const&); //!< Disable assign.
 
-  void throwIfInvalidHandle() {
+  void throwIfInvalidHandle()
+  {
     if (detail::isShader(_handle) == GL_FALSE) {
       NDJINN_THROW("invalid shader handle: " << _handle);
     }
   }
 
-  void compile() {
+  void compile()
+  {
     detail::compileShader(_handle);
     if (!isCompiled()) {
       NDJINN_THROW("shader compile error: " << _handle << ": " << infoLog());
@@ -190,7 +205,8 @@ typedef Shader<GL_GEOMETRY_SHADER> GeometryShader;
 typedef Shader<GL_FRAGMENT_SHADER> FragmentShader;
 
 //! Read shader source from file.
-inline std::string readShaderFile(const std::string& filename) {
+inline std::string readShaderFile(const std::string& filename)
+{
   using namespace std;
 
   string src;

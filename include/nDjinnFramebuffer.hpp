@@ -8,39 +8,52 @@
 #ifndef NDJINN_FRAMEBUFFER_HPP_INCLUDED
 #define NDJINN_FRAMEBUFFER_HPP_INCLUDED
 
-#include "nDjinnNamespace.hpp"
-#include "nDjinnException.hpp"
-#include "nDjinnError.hpp"
-#include "nDjinnFunctions.hpp"
-#include <gl/glew.h>
+#include <array>
+#include <iostream>
+#include <iterator>
+#include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
-//------------------------------------------------------------------------------
+#include "nDjinnError.hpp"
+#include "nDjinnException.hpp"
+#include "nDjinnFunctions.hpp"
+#include "nDjinnGL.hpp"
+#include "nDjinnNamespace.hpp"
 
 NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
-//! glBindFramebuffer wrapper. May throw.
-inline void
-bindFramebuffer(const GLenum target, const GLuint framebuffer) {
-  glBindFramebuffer(target, framebuffer);
-  checkError("glBindFramebuffer"); 
+//! glGenFramebuffers wrapper. May throw.
+inline void genFramebuffers(GLsizei const n, GLuint* ids) {
+  glGenFramebuffers(n, ids);
+  checkError("glGenFramebuffers");
 }
 
 //! glDeleteFramebuffers wrapper. May throw.
-inline void
-deleteFramebuffers(const GLsizei n, const GLuint *framebuffers) {
+inline void deleteFramebuffers(GLsizei const n, GLuint const* framebuffers) {
   glDeleteFramebuffers(n, framebuffers);
   checkError("glDeleteFramebuffers");
 }
 
-//! glGenFramebuffers wrapper. May throw.
-inline void
-genFramebuffers(const GLsizei n, GLuint *ids) {
-  glGenFramebuffers(n, ids);
-  checkError("glGenFramebuffers");
+//! glIsFramebuffer wrapper. May throw.
+inline GLboolean isFramebuffer(GLuint const framebuffer) {
+  GLboolean const result = glIsFramebuffer(framebuffer);
+  checkError("glIsFramebuffer");
+  return result;
 }
+
+//! glBindFramebuffer wrapper. May throw.
+inline void bindFramebuffer(GLenum const target, GLuint const framebuffer)
+{
+  glBindFramebuffer(target, framebuffer);
+  checkError("glBindFramebuffer"); 
+}
+
+
+
 
 //! glFramebufferRenderbuffer wrapper. May throw. 
 inline void
@@ -51,51 +64,6 @@ framebufferRenderbuffer(const GLenum target,
   glFramebufferRenderbuffer(target, attachment, 
                             renderbufferTarget, renderbuffer);
   checkError("glFramebufferRenderbuffer");
-}
-
-//! glFramebufferTexture wrapper. May throw. 
-inline void
-framebufferTexture(const GLenum target, 
-                   const GLenum attachment, 
-                   const GLuint texture, 
-                   const GLint  level) {
-  glFramebufferTexture(target, attachment, texture, level);
-  checkError("glFramebufferTexture"); 
-}
-
-//! glFramebufferTexture3D wrapper. May throw.
-inline void
-framebufferTexture3D(const GLenum target, 
-                     const GLenum attachment, 
-                     const GLenum textarget, 
-                     const GLuint texture, 
-                     const GLint level, 
-                     const GLint layer) {
-  glFramebufferTexture3D(target, attachment, 
-                         textarget, texture, level, layer);
-  checkError("glFramebufferTexture3D");
-}
-
-//! glFramebufferTexture2D wrapper. May throw. 
-inline void
-framebufferTexture2D(const GLenum target, 
-                     const GLenum attachment, 
-                     const GLenum textarget, 
-                     const GLuint texture, 
-                     const GLint level) {
-  glFramebufferTexture2D(target, attachment, textarget, texture, level);
-  checkError("glFramebufferTexture2D"); 
-}
-
-//! glFramebufferTexture1D wrapper. May throw. 
-inline void
-framebufferTexture1D(const GLenum target, 
-                     const GLenum attachment, 
-                     const GLenum textarget, 
-                     const GLuint texture, 
-                     const GLint level) {
-  glFramebufferTexture1D(target, attachment, textarget, texture, level);
-  checkError("glFramebufferTexture1D"); // May throw.
 }
 
 //! glFramebufferTextureLayer wrapper. May throw. 
@@ -109,134 +77,59 @@ framebufferTextureLayer(const GLenum target,
   checkError("glFramebufferTextureLayer"); // May throw.
 }
 
-//! glCheckFramebufferStatus wrapper. May throw.
-inline GLenum
-checkFramebufferStatus(const GLenum target) {
-  const GLenum status = glCheckFramebufferStatus(target);
-  checkError("glCheckFramebufferStatus");
-  return status;
-}
-
-//! Convert status enum to a string. TODO: add more enums! 
-inline void
-statusMessage(const GLenum status, std::string &msg) {
-  switch(status) {                                          
-  case GL_FRAMEBUFFER_COMPLETE:
-    msg = std::string("GL_FRAMEBUFFER_COMPLETE");
-    break;
-  case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-    msg = std::string("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-    break;
-  case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-    msg = std::string("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-    break;
-  //case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-  //    msg = std::string("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
-  //    break;
-  //case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
-  //    msg = std::string("GL_FRAMEBUFFER_INCOMPLETE_FORMATS");
-  //    break;
-  case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-    msg = std::string("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-    break;
-  case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-    msg = std::string("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
-    break;
-  case GL_FRAMEBUFFER_UNSUPPORTED:
-    msg = std::string("GL_FRAMEBUFFER_UNSUPPORTED");
-    break;
-  case 0: // Zero is always error.
-  default:
-    msg = std::string("Unknown framebuffer status error");
-    break;
-  }
-}
-
-//! glIsFramebuffer wrapper. May throw.
-inline GLboolean
-isFramebuffer(const GLuint framebuffer) {
-  const GLboolean result = glIsFramebuffer(framebuffer);
-  checkError("glIsFramebuffer"); 
-  return result;
-}
-
-//! glGetFramebufferAttachmentParameteriv wrapper. May throw.
-inline void
-getFramebufferAttachmentParameteriv(const GLenum target, 
-                                    const GLenum attachment, 
-                                    const GLenum pname, 
-                                    GLint *params) {
-  glGetFramebufferAttachmentParameteriv(target, attachment, pname, params);
-  checkError("glGetFramebufferAttachmentParameteriv");
-}
-
-//! Convenience.
-inline GLuint
-genFramebuffer() {
-  GLuint handle = 0;
-  genFramebuffers(1, &handle);
-  return handle;
-}
-
-//! Convenience.
-inline void 
-deleteFramebuffer(GLuint const handle) {
-  deleteFramebuffers(1, &handle);
-}
 
 
 // Named version of framebuffer operations. These version avoid 
-// having to bind/release a certain framebuffer every time it is used.
+// having to bind/release a framebuffer every time it is used.
 
-inline GLenum 
-checkNamedFramebufferStatus(GLuint const framebuffer, GLenum const target) {
+//! glCheckNamedFramebufferStatusEXT wrapper. May throw.
+inline GLenum checkNamedFramebufferStatus(GLuint const framebuffer,
+                                          GLenum const target) {
   GLenum const status = glCheckNamedFramebufferStatusEXT(framebuffer, target);
   checkError("glCheckNamedFramebufferStatusEXT");
   return status;
 }
 
-inline void 
-namedFramebufferTexture(GLuint const framebuffer,
-                        GLenum const attachment,
-                        GLuint const texture,
-                        GLint const level) {
-  glNamedFramebufferTextureEXT(
-    framebuffer, attachment, texture, level);
+//! glNamedFramebufferTexture2DEXT wrapper. May throw.
+inline void namedFramebufferTexture(GLuint const framebuffer,
+                                    GLenum const attachment,
+                                    GLuint const texture, GLint const level)
+{
+  glNamedFramebufferTextureEXT(framebuffer, attachment, texture, level);
   checkError("glNamedFramebufferTextureEXT");
 }
 
-inline void 
-namedFramebufferTexture1D(GLuint const framebuffer,
-                          GLenum const attachment,
-                          GLenum const textarget, 
-                          GLuint const texture,
-                          GLint const level) {
-  glNamedFramebufferTexture1DEXT(
-    framebuffer, attachment, textarget, texture, level);
+//! glNamedFramebufferTexture2DEXT wrapper. May throw.
+inline void namedFramebufferTexture1D(GLuint const framebuffer,
+                                      GLenum const attachment,
+                                      GLenum const textarget,
+                                      GLuint const texture, GLint const level)
+{
+  glNamedFramebufferTexture1DEXT(framebuffer, attachment, textarget, texture,
+                                 level);
   checkError("glNamedFramebufferTexture1DEXT");
 }
 
-inline void 
-namedFramebufferTexture2D(GLuint const framebuffer,
-                          GLenum const attachment,
-                          GLenum const textarget, 
-                          GLuint const texture,
-                          GLint const level) {
-  glNamedFramebufferTexture2DEXT(
-    framebuffer, attachment, textarget, texture, level);
+//! glNamedFramebufferTexture2DEXT wrapper. May throw.
+inline void namedFramebufferTexture2D(GLuint const framebuffer,
+                                      GLenum const attachment,
+                                      GLenum const textarget,
+                                      GLuint const texture, GLint const level)
+{
+  glNamedFramebufferTexture2DEXT(framebuffer, attachment, textarget, texture,
+                                 level);
   checkError("glNamedFramebufferTexture2DEXT");
 }
 
-
-inline void 
-namedFramebufferTexture3D(GLuint const framebuffer,
-                          GLenum const attachment,
-                          GLenum const textarget, 
-                          GLuint const texture,
-                          GLint const level, 
-                          GLint const zoffset) {
-  glNamedFramebufferTexture3DEXT(
-    framebuffer, attachment, textarget, texture, level, zoffset);
+//! glNamedFramebufferTexture3DEXT wrapper. May throw.
+inline void namedFramebufferTexture3D(GLuint const framebuffer,
+                                      GLenum const attachment,
+                                      GLenum const textarget,
+                                      GLuint const texture, GLint const level,
+                                      GLint const zoffset)
+{
+  glNamedFramebufferTexture3DEXT(framebuffer, attachment, textarget, texture,
+                                 level, zoffset);
   checkError("glNamedFramebufferTexture3DEXT");
 }
 
@@ -250,229 +143,363 @@ namedFramebufferRenderbuffer(GLuint const framebuffer,
   checkError("glNamedFramebufferRenderbufferEXT");
 }
 
-inline void 
-getNamedFramebufferAttachmentParameteriv(GLuint const framebuffer,
-                                         GLenum const attachment,
-                                         GLenum const pname,
-                                         GLint* params) {
+//! glGetNamedFramebufferAttachmentParameterivEXT wrapper. May throw.
+inline void getNamedFramebufferAttachmentParameteriv(GLuint const framebuffer,
+                                                     GLenum const attachment,
+                                                     GLenum const pname,
+                                                     GLint* params) {
   glGetNamedFramebufferAttachmentParameterivEXT(
     framebuffer, attachment, pname, params);
   checkError("glGetNamedFramebufferAttachmentParameterivEXT");
 }
 
+//! Convenience.
+inline GLuint genFramebuffer() {
+  GLuint handle = 0;
+  genFramebuffers(1, &handle);
+  return handle;
+}
+
+//! Convenience.
+inline void deleteFramebuffer(GLuint const handle) {
+  deleteFramebuffers(1, &handle);
+}
+
+//! Convenience.
+inline GLint getNamedFramebufferAttachmentParameteri(GLuint const framebuffer,
+                                                     GLenum const attachment,
+                                                     GLenum const pname)
+{
+  GLint param = 0;
+  getNamedFramebufferAttachmentParameteriv(framebuffer, attachment, pname,
+                                           &param);
+  return param;
+}
+
+//! Returns framebuffer status as a string.
+inline std::string statusToString(GLenum const status)
+{
+  using std::string;
+  string str;
+  switch(status) {
+  case GL_FRAMEBUFFER_COMPLETE:
+    str = string("GL_FRAMEBUFFER_COMPLETE");
+    break;
+  case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+    str = string("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+    break;
+  case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+    str = string("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+    break;
+  //case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+  //    str = string("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS");
+  //    break;
+  //case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
+  //    str = string("GL_FRAMEBUFFER_INCOMPLETE_FORMATS");
+  //    break;
+  case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+    str = string("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+    break;
+  case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+    str = string("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+    break;
+  case GL_FRAMEBUFFER_UNSUPPORTED:
+    str = string("GL_FRAMEBUFFER_UNSUPPORTED");
+    break;
+  case 0: // Zero is always error.
+  default:
+    str = string("Unknown framebuffer status error");
+    break;
+  }
+  return str;
+}
+
+//! Returns attachment object type as a string.
+inline std::string objectTypeToString(GLint const object_type)
+{
+  using std::string;
+  string str;
+  switch (object_type)
+  {
+  case GL_TEXTURE:
+    str = string("GL_TEXTURE");
+    break;
+  case GL_RENDERBUFFER:
+    str = string("GL_RENDERBUFFER");
+    break;
+  case GL_NONE:
+    str = string("GL_NONE");
+    break;
+  default:
+    str = string("Unknown object type");
+  }
+  return str;
+}
+
+//! Returns attachment object type as a string.
+inline std::string componentTypeToString(GLint const component_type)
+{
+  using std::string;
+  string str;
+  switch (component_type)
+  {
+  case GL_FLOAT:
+    str = string("GL_FLOAT");
+    break;
+  case GL_INT:
+    str = string("GL_INT");
+    break;
+  case GL_UNSIGNED_INT:
+    str = string("GL_UNSIGNED_INT");
+    break;
+  case GL_SIGNED_NORMALIZED:
+    str = string("GL_NORMALIZED");
+    break;
+  case GL_UNSIGNED_NORMALIZED:
+    str = string("GL_UNSIGNED_NORMALIZED");
+    break;
+  case GL_NONE:
+    str = string("GL_NONE");
+    break;
+  default:
+    str = string("Unknown component type");
+  }
+  return str;
+}
+
 } // Namespace: detail.
 
-//------------------------------------------------------------------------------
-
 //! DOCS
-class Framebuffer {
+class Framebuffer
+{
 public:
-  static GLuint
-  binding();
+  //! CTOR.
+  Framebuffer()
+    : _handle(detail::genFramebuffer())
+  {
+    throwIfInvalidHandle();
+  }
 
-  static void
-  disable(GLenum target = GL_FRAMEBUFFER);
+  //! DTOR.
+  ~Framebuffer()
+  {
+    detail::deleteFramebuffer(_handle);
+  }
 
-public:
-  explicit Framebuffer(GLenum target = GL_FRAMEBUFFER);
-  ~Framebuffer();
+  GLuint handle() const
+  {
+    return _handle;
+  }
 
-  void bind() const;
-  void release() const;
+  void bind(GLenum const target) const
+  {
+    detail::bindFramebuffer(target, _handle);
+    throwIfInvalidStatus(target);
+  }
 
-  bool
-  bound();
+  //! Disable all framebuffer objects and return to rendering to back buffer.
+  void release(GLenum const target) const
+  {
+    detail::bindFramebuffer(target, 0);
+  }
 
-  bool
-  checkStatus(std::string &msg);
+  GLenum status(GLenum const target) const
+  {
+    return detail::checkNamedFramebufferStatus(_handle, target);
+  }
 
-  void
-  attachTexture(GLenum attachment, GLuint texture, GLint level);
+#if 0
+  void attachTexture(GLenum const attachment, GLuint const texture,
+                     GLint const level = 0)
+  {
+    detail::namedFramebufferTexture(_handle, attachment, texture, level);
+  }
+#endif
 
-  void
-  attachTexture3D(GLenum attachment, 
-                  GLuint texture, 
-                  GLint zoffset,
-                  GLenum textarget = GL_TEXTURE_3D,
-                  GLint level = 0);
+  void attachTexture1D(GLenum const attachment, GLuint const texture,
+                       GLint const level = 0)
+  {
+    detail::namedFramebufferTexture1D(_handle, attachment, GL_TEXTURE_1D,
+                                      texture, level);
+  }
 
-  void
-  attachTexture2D(GLenum attachment, 
-                  GLuint texture, 
-                  GLenum textarget = GL_TEXTURE_2D,
-                  GLint  level = 0);
+  void attachTexture2D(GLenum const attachment, GLuint const texture,
+                       GLenum const textarget = GL_TEXTURE_2D,
+                       GLint const level = 0)
+  {
+    detail::namedFramebufferTexture2D(_handle, attachment, textarget, texture,
+                                      level);
+  }
 
-  void
-  attachTexture1D(GLenum attachment, 
-                  GLuint texture, 
-                  GLenum textarget = GL_TEXTURE_1D,
-                  GLint  level = 0);
+  void attachTexture3D(GLenum const attachment, GLuint const texture,
+                       GLint const zoffset,
+                       GLint level = 0)
+  {
+    detail::namedFramebufferTexture3D(_handle, attachment, GL_TEXTURE_3D,
+                                      texture, level, zoffset);
+  }
 
-  void
-  attachRenderbuffer(GLenum attachment,  
-                     GLuint renderbuffer,
-                     GLenum renderbufferTarget = GL_RENDERBUFFER);
+  void detachTexture1D(GLenum const attachment)
+  {
+    detail::namedFramebufferTexture1D(_handle, attachment, GL_TEXTURE_1D, 0, 0);
+  }
 
-  void
-  detachTexture(GLenum textarget, GLenum attachment);
+  void detachTexture2D(GLenum const attachment,
+                       GLenum const textarget = GL_TEXTURE_2D)
+  {
+    detail::namedFramebufferTexture2D(_handle, attachment, textarget, 0, 0);
+  }
+
+  void detachTexture3D(GLenum const attachment)
+  {
+    detail::namedFramebufferTexture3D(_handle, attachment, GL_TEXTURE_3D,
+                                      0, 0, 0);
+  }
+
+  void attachRenderbuffer(GLenum const attachment, GLuint const renderbuffer)
+  {
+    detail::namedFramebufferRenderbuffer(
+      _handle, attachment, GL_RENDERBUFFER, renderbuffer);
+  }
 
   void
   detachRenderbuffer();
 
-  void
-  detachAll();
 
 private:
-  //! DOCS
-  class _Bindor {
-  public:
-    //! CTOR.
-    explicit _Bindor(Framebuffer *fbo) 
-      : _fbo(fbo) { 
-      _fbo->bind(); 
-    }   
-
-    //! DTOR.
-    ~_Bindor() { 
-      _fbo->release(); 
-    } 
-
-  private:  // Member variables.
-    Framebuffer *_fbo;
-  };
-
-  Framebuffer(const Framebuffer&);            //!< Disabled copy.
+  Framebuffer(const Framebuffer&); //!< Disabled copy.
   Framebuffer& operator=(const Framebuffer&); //!< Disabled assign.
 
-private:  // Member variables.
-  const GLenum _target;
-  GLuint _handle;     //!< Resource handle.
-  mutable GLuint _savedHandle;
+  void throwIfInvalidHandle()
+  {
+    GLenum const kTarget = GL_FRAMEBUFFER;
+    detail::bindFramebuffer(kTarget, _handle); // Make sure buffer gets created.
+    if (detail::isFramebuffer(_handle) == GL_FALSE) {
+      NDJINN_THROW("invalid framebuffer handle: " << _handle);
+    }
+    release(kTarget);
+  }
+
+  void throwIfInvalidStatus(GLenum const target) const
+  {
+    GLenum const status = detail::checkNamedFramebufferStatus(_handle, target);
+    if (GL_FRAMEBUFFER_COMPLETE != status)
+    {
+      NDJINN_THROW("invalid framebuffer status, handle: " << _handle
+                   << ", status: " << detail::statusToString(status));
+    }
+  }
+
+  GLuint const _handle; //!< Resource handle.
 };
 
-// -----------------------------------------------------------------------------
-
-//! Returns currently bound framebuffer. May throw. [static]
-inline GLuint
-Framebuffer::binding() {
-  GLint params = 0;
-  getIntegerv(GL_FRAMEBUFFER_BINDING, &params); 
-  return static_cast<GLuint>(params);
-}
-
-//! Disable all framebuffer objects and return to "traditional" 
-//! rendering. May throw. [static]
-inline void
-Framebuffer::disable(const GLenum target) { 
-  detail::bindFramebuffer(target, 0);
-} 
-
-// -----------------------------------------------------------------------------
-
-//! CTOR.
-inline
-Framebuffer::Framebuffer(const GLenum target)
-  : _target(target)
-  , _handle(detail::genFramebuffer())
-  , _savedHandle(0) 
-{
-  bind(); // Make sure buffer gets created.
-  if (detail::isFramebuffer(_handle) == GL_FALSE) {
-    NDJINN_THROW("invalid framebuffer");
-  }
-  release();
-}
-
-//! DTOR.
-inline
-Framebuffer::~Framebuffer() {
-  detail::deleteFramebuffer(_handle); 
-}
-
-// -----------------------------------------------------------------------------
-
-//! Store current FBO and bind this FBO. May throw.
-//! NOTE: Not thread-safe!
-inline void
-Framebuffer::bind() const { 
-  _savedHandle = binding();
-  if (_savedHandle != _handle) {
-    detail::bindFramebuffer(_target, _handle);
-  }
-} 
-
-//! Return to stored FBO, if it is different from this one. May throw.
-//! TODO: Not thread-safe!
-inline void
-Framebuffer::release() const { 
-  if (_savedHandle != _handle) {
-    detail::bindFramebuffer(_target, _savedHandle); // May throw.
-  }
-} 
-
-//! Returns true if this framebuffer is currently bound. May throw.
-inline bool
-Framebuffer::bound() { 
-  return _handle == binding();
-} 
-
-//! Returns true if status is OK. May throw.
-inline bool
-Framebuffer::checkStatus(std::string &msg) {
-  msg.clear();
-  const GLenum status = detail::checkNamedFramebufferStatus(_handle, _target);
-  detail::statusMessage(status, msg);
-  return (GL_FRAMEBUFFER_COMPLETE == status);
-}
-
-//! DOCS. May throw.
-inline void
-Framebuffer::attachTexture(const GLenum attachment, 
-                           const GLuint texture, 
-                           const GLint level) {
-  detail::namedFramebufferTexture(_handle, attachment, texture, level);
-}
-
-//! DOCS. May throw.
-inline void
-Framebuffer::attachTexture3D(const GLenum attachment, 
-                             const GLuint texture,
-                             const GLint zoffset,
-                             const GLenum textarget,
-                             const GLint level) {
-  detail::namedFramebufferTexture3D(
-    _handle, attachment, textarget, texture, level, zoffset);
-}
-
-//! DOCS. May throw.
-inline void
-Framebuffer::attachTexture2D(const GLenum attachment, 
-                             const GLuint texture, 
-                             const GLenum textarget,
-                             const GLint level) {
-  detail::namedFramebufferTexture2D(
-    _handle, attachment, textarget, texture, level); 
-}
-
-//! DOCS. May throw.
-inline void
-Framebuffer::attachTexture1D(const GLenum attachment, 
-                             const GLuint texture, 
-                             const GLenum textarget,
-                             const GLint level) {
-  detail::namedFramebufferTexture1D(
-    _handle, attachment, textarget, texture, level);
-}
-
-//! DOCS. May throw.
-inline void
-Framebuffer::attachRenderbuffer(const GLenum attachment, 
-                                const GLuint renderbuffer,
-                                const GLenum renderbufferTarget) {
-  detail::namedFramebufferRenderbuffer(
-    _handle, attachment, renderbufferTarget, renderbuffer);
-}
-
 NDJINN_END_NAMESPACE
+
+namespace std {
+
+inline ostream& operator<<(ostream& os, ndj::Framebuffer const& fb)
+{
+  os << "Framebuffer" << endl
+     << "  Handle: " << fb.handle() << endl;
+  array<pair<GLenum, string>, 3> kTargets = {
+    make_pair(GL_FRAMEBUFFER, string("GL_FRAMEBUFFER")),
+    make_pair(GL_READ_FRAMEBUFFER, string("GL_READ_FRAMEBUFFER")),
+    make_pair(GL_DRAW_FRAMEBUFFER, string("GL_DRAW_FRAMEBUFFER"))
+  };
+
+  os << "  Status:" << endl;
+  for (auto target = begin(kTargets); target != end(kTargets); ++target)
+  {
+    GLenum const status = fb.status(target->first);
+    string const status_msg = ndj::detail::statusToString(status);
+    os << "    " << target->second << ": " << status_msg << endl;
+  }
+
+  vector<pair<GLenum, string>> attachments;
+  GLint max_color_attachments = 0;
+  ndj::getIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+  for (GLint i = 0; i < max_color_attachments; ++i)
+  {
+    GLenum color_attachment = GL_COLOR_ATTACHMENT0 + i;
+    stringstream ss;
+    ss << "GL_COLOR_ATTACHMENT" << i;
+    attachments.push_back(make_pair(color_attachment, ss.str()));
+  }
+  attachments.push_back(make_pair(GL_DEPTH_ATTACHMENT, "GL_DEPTH_ATTACHMENT"));
+  attachments.push_back(make_pair(GL_STENCIL_ATTACHMENT, "GL_STENCIL_ATTACHMENT"));
+  //attachments.push_back(make_pair(GL_DEPTH_STENCIL_ATTACHMENT, "GL_DEPTH_STENCIL_ATTACHMENT"));
+  os << "  Attachments:" << endl;
+  for (auto attachment = begin(attachments); attachment != end(attachments);
+       ++attachment)
+  {
+    GLint const object_type =
+      ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+        attachment->first, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+    if (object_type != GL_NONE)
+    {
+      string const object_type_str = ndj::detail::objectTypeToString(object_type);
+      GLint const object_name =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+      GLint const red_bits =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE);
+      GLint const green_bits =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE);
+      GLint const blue_bits =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE);
+      GLint const alpha_bits =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE);
+      GLint const depth_bits =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE);
+      GLint const stencil_bits =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE);
+      GLint const component_type =
+        ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+          attachment->first, GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE);
+      string const component_type_str =
+        ndj::detail::componentTypeToString(component_type);
+
+      os << "    " << attachment->second << ":" << endl
+         << "      Type: " << object_type_str << endl
+         << "      Name: " << object_name << endl
+         << "      Red:     " << red_bits << " [bits]" << endl
+         << "      Green:   " << green_bits << " [bits]" << endl
+         << "      Blue:    " << blue_bits << " [bits]" << endl
+         << "      Alpha:   " << alpha_bits << " [bits]" << endl
+         << "      Depth:   " << depth_bits << " [bits]" << endl
+         << "      Stencil: " << stencil_bits << " [bits]" << endl
+         << "      Component type: " << component_type_str << endl;
+      if (object_type == GL_TEXTURE)
+      {
+        GLint const texture_level =
+          ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+            attachment->first, GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL);
+        GLint const texture_cube_map_face =
+          ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+            attachment->first, GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE);
+        GLint const layered =
+          ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+            attachment->first, GL_FRAMEBUFFER_ATTACHMENT_LAYERED);
+        GLint const texture_layer =
+          ndj::detail::getNamedFramebufferAttachmentParameteri(fb.handle(),
+            attachment->first, GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LAYER);
+
+        os << "      Texture level: " << texture_level << endl
+           << "      Texture cube map face: " << texture_cube_map_face << endl
+           << "      Layered: " << layered << endl
+           << "      Texture layer: " << texture_layer << endl;
+       }
+    }
+  }
+  return os;
+}
+
+} // namespace std
 
 #endif  // NDJINN_FRAMEBUFFER_HPP_INCLUDED

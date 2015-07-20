@@ -369,6 +369,16 @@ inline void lineWidth(GLfloat const width) {
   checkError("glLineWidth");
 }
 
+inline void cullFace(GLenum const mode) {
+  glCullFace(mode);
+  checkError("glCullFace");
+}
+
+inline void frontFace(GLenum const mode) {
+  glFrontFace(mode);
+  checkError("glFrontFace");
+}
+
 NDJINN_END_NAMESPACE
 
 #endif // NDJINN_VERTEX_ARRAY_HPP_INCLUDED
