@@ -8,4 +8,5 @@ Basically an OpenGL wrapper library. The design goals for nDjinn are as follows:
 * Resource classes should be RAII and exception safe.
 * Complicated OpenGL state should be easily accessible in a logical way through nDjinn interfaces.
 * nDjinn should focus on correctness over speed and complex optimizations, debugging is more important than performance.
+* nDjinn should target high versions of OpenGL (4+) and use new features such as direct state access whenever possible.
 
