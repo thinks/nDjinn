@@ -19,7 +19,8 @@ NDJINN_BEGIN_NAMESPACE
 // Blending
 
 //! glBlendEquation wrapper. May throw.
-inline void blendEquation(GLenum const mode) {
+inline void blendEquation(GLenum const mode)
+{
   glBlendEquation(mode);
   checkError("glBlendEquation");
 }
@@ -31,17 +32,18 @@ inline void blendEquationi(GLuint const buf, GLenum const mode) {
 }
 
 //! glBlendEquationSeparate wrapper. May throw.
-inline void blendEquationSeparate(GLenum const modeRgb,
-                                  GLenum const modeAlpha) {
-  glBlendEquationSeparate(modeRgb, modeAlpha);
+inline void blendEquationSeparate(GLenum const mode_rgb,
+                                  GLenum const mode_alpha)
+{
+  glBlendEquationSeparate(mode_rgb, mode_alpha);
   checkError("glBlendEquationSeparate");
 }
 
 //! glBlendEquationSeparatei wrapper. May throw.
-inline void blendEquationSeparatei(GLuint const buf,
-                                   GLenum const modeRgb,
-                                   GLenum const modeAlpha) {
-  glBlendEquationSeparatei(buf, modeRgb, modeAlpha);
+inline void blendEquationSeparatei(GLuint const buf, GLenum const mode_rgb,
+                                   GLenum const mode_alpha)
+{
+  glBlendEquationSeparatei(buf, mode_rgb, mode_alpha);
   checkError("glBlendEquationSeparatei");
 }
 
@@ -88,13 +90,15 @@ inline void blendColor(GLclampf const red,
 // State
 
 //! glEnable wrapper. May throw.
-inline void enable(GLenum const cap) {
+inline void enable(GLenum const cap)
+{
   glEnable(cap);
   checkError("glEnable");
 }
 
 //! glDisable wrapper. May throw.
-inline void disable(GLenum const cap) {
+inline void disable(GLenum const cap)
+{
   glDisable(cap);
   checkError("glDisable");
 }
@@ -383,27 +387,56 @@ inline void clearBufferuiv(GLenum const buf,
 }
 
 //! glClearBufferfi wrapper. May throw.
-inline void clearBufferfi(GLenum const buf,
-                          GLint const drawbuffer,
-                          GLfloat const depth,
-                          GLint const stencil) {
+inline void clearBufferfi(GLenum const buf, GLint const drawbuffer,
+                          GLfloat const depth, GLint const stencil) {
   glClearBufferfi(buf, drawbuffer, depth, stencil);
   checkError("glClearBufferfi");
 }
 
+// Reading pixels
+
+//! glReadPixels wrapper. May throw.
+inline void readPixels(GLint const x, GLint const y, GLsizei const width,
+                       GLsizei const height, GLenum const format,
+                       GLenum const type, GLvoid* data)
+{
+  glReadPixels(x, y, width, height, format, type, data);
+  checkError("glReadPixels");
+}
+
+//! glReadBuffer wrapper. May throw.
+inline void readBuffer(GLenum const mode)
+{
+  glReadBuffer(mode);
+  checkError("glReadBuffer");
+}
+
+#if 0 // Not in GLEW yet...
+//! glNamedFramebufferReadBuffer. May throw.
+inline void namedFramebufferReadBuffer(GLuint const framebuffer,
+                                       GLenum const mode)
+{
+  glNamedFramebufferReadBufferEXT(framebuffer, mode);
+  checkError("glNamedFramebufferReadBufferEXT");
+}
+#endif
+
 // Rasterization
 
-inline void lineWidth(GLfloat const width) {
+inline void lineWidth(GLfloat const width)
+{
   glLineWidth(width);
   checkError("glLineWidth");
 }
 
-inline void cullFace(GLenum const mode) {
+inline void cullFace(GLenum const mode)
+{
   glCullFace(mode);
   checkError("glCullFace");
 }
 
-inline void frontFace(GLenum const mode) {
+inline void frontFace(GLenum const mode)
+{
   glFrontFace(mode);
   checkError("glFrontFace");
 }
