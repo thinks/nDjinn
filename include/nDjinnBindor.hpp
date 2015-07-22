@@ -11,12 +11,14 @@
 #include "nDjinnGL.hpp"
 #include "nDjinnNamespace.hpp"
 #include "nDjinnSampler.hpp"
+#include "nDjinnTexture.hpp"
 
 NDJINN_BEGIN_NAMESPACE
 
 //! Resource must not be destroyed during the life-time of a Bindor instance.
 template <class R>
-class Bindor {
+class Bindor
+{
 public:
   typedef R Resource;
 
@@ -26,7 +28,8 @@ public:
     _resource.bind();
   }
 
-  ~Bindor() {
+  ~Bindor()
+  {
     _resource.release();
   }
 
@@ -39,7 +42,8 @@ private:
 
 //! Specialization for Sampler.
 template <>
-class Bindor<Sampler> {
+class Bindor<Sampler>
+{
 public:
   Bindor(Sampler const& sampler, GLuint const unit = 0)
     : _sampler(sampler)
@@ -48,16 +52,41 @@ public:
     _sampler.bind(_unit);
   }
 
-  ~Bindor() {
+  ~Bindor()
+  {
     _sampler.release(_unit);
   }
 
 private:
   Bindor(Bindor<Sampler> const&); //!< Disabled copy.
-  Bindor& operator=(Bindor<Sampler> const&); //!< Disabled assign.
+  Bindor<Sampler>& operator=(Bindor<Sampler> const&); //!< Disabled assign.
 
   Sampler const& _sampler;
   GLuint const _unit;
+};
+
+template <typename T>
+class TextureBindor
+{
+public:
+  TextureBindor(GLenum const target, T const& texture)
+    : _texture(texture)
+    , _target(target)
+  {
+    bindTexture(_target, _texture);
+  }
+
+  ~TextureBindor()
+  {
+    releaseTexture(_target);
+  }
+
+private:
+  TextureBindor(TextureBindor<T> const&); //!< Disabled copy.
+  TextureBindor<T>& operator=(TextureBindor<T> const&); //!< Disabled assign.
+
+  T const& _texture;
+  GLenum const _target;
 };
 
 NDJINN_END_NAMESPACE

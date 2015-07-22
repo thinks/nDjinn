@@ -4,7 +4,7 @@
 //             1) Tommy Hinks
 //
 //------------------------------------------------------------------------------
-
+#if 0
 #ifndef NDJINN_TEXTURE3D_HPP_INCLUDED
 #define NDJINN_TEXTURE3D_HPP_INCLUDED
 
@@ -21,91 +21,6 @@ NDJINN_BEGIN_NAMESPACE
 
 namespace detail {
 
-#if 0 
-// DEPRECATED - use direct state access instead!  
-
-//! glTexImage3D wrapper. May throw.
-inline void
-texImage3D(const GLenum target, 
-           const GLint level, 
-           const GLint intFmt, 
-           const GLsizei w, 
-           const GLsizei h,      
-           const GLsizei d, 
-           const GLint b,      
-           const GLenum fmt, 
-           const GLenum type,   
-           const GLvoid *data) {
-  glTexImage3D(target, level, intFmt, w, h, d, b, fmt, type, data);     
-  checkError("glTexImage3D"); 
-}
-
-//! glCopyTexSubImage3D wrapper. May throw.
-inline void 
-texSubImage3D(const GLenum target, 
-              const GLint level, 
-              const GLint x0,     
-              const GLint y0, 
-              const GLint z0,     
-              const GLsizei w, 
-              const GLsizei h,      
-              const GLsizei d,
-              const GLenum fmt,    
-              const GLenum type, 
-              const GLvoid *data) {
-  glTexSubImage3D(target, level, x0, y0, z0, w, h, d, fmt, type, data);
-  checkError("glTexSubImage3D");
-}
-
-//! glCopyTexSubImage3D wrapper. May throw.
-inline void
-copyTexSubImage3D(const GLenum target, 
-                  const GLint level, 
-                  const GLint x0,     
-                  const GLint y0, 
-                  const GLint z0,     
-                  const GLint x, 
-                  const GLint y,      
-                  const GLsizei w, 
-                  const GLsizei h) {
-  glCopyTexSubImage3D(target, level, x0, y0, z0, x, y, w, h);
-  checkError("glCopyTexSubImage3D"); 
-}
-
-//! glCompressedTexImage3D wrapper. May throw.
-inline void 
-compressedTexImage3D(const GLenum target, 
-                     const GLint level, 
-                     const GLenum intFmt, 
-                     const GLsizei w, 
-                     const GLsizei h,      
-                     const GLsizei d, 
-                     const GLint b,      
-                     const GLsizei size,
-                     const GLvoid *data) {
-  glCompressedTexImage3D(texture, target, level, intFmt, w, h, d, b, size, data);
-  checkError("glCompressedTexImage3D");
-}
-
-//! glCompressedTexSubImage3D wrapper. May throw. 
-inline void 
-compressedTexSubImage3D(const GLenum target, 
-                        const GLint level, 
-                        const GLint x0,     
-                        const GLint y0, 
-                        const GLint z0,     
-                        const GLsizei w, 
-                        const GLsizei h,      
-                        const GLsizei d,
-                        const GLenum fmt,    
-                        const GLsizei size,
-                        const GLvoid *data) {
-  glCompressedTexSubImage3D(target, level, x0, y0, z0, 
-                            w, h, d, fmt, size, data);
-  checkError("glCompressedTexSubImage3D");
-}
-
-#endif
 
 //! glTextureImage3D wrapper. May throw.
 inline void
@@ -358,3 +273,4 @@ Texture3D::compressedSubImage(const GLint level,
 NDJINN_END_NAMESPACE
 
 #endif  // NDJINN_TEXTURE3D_HPP_INCLUDED
+#endif
