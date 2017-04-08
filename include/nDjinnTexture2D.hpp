@@ -8,7 +8,9 @@
 #ifndef NDJINN_TEXTURE2D_HPP_INCLUDED
 #define NDJINN_TEXTURE2D_HPP_INCLUDED
 
+#include <array>
 #include <iostream>
+#include <string>
 
 #include "nDjinnError.hpp"
 #include "nDjinnException.hpp"
@@ -94,6 +96,68 @@ inline void compressedTextureSubImage2D(GLuint const texture,
   glCompressedTextureSubImage2DEXT(texture, target, level, x, y,
                                    width, height, format, size, data);
   checkError("glCompressedTextureSubImage2DEXT");
+}
+
+//!
+inline std::string channelTypeToString(GLint const type)
+{
+  using std::string;
+  string str;
+  switch (type)
+  {
+  case GL_NONE:
+    str = string("GL_NONE");
+    break;
+  case GL_SIGNED_NORMALIZED:
+    str = string("GL_SIGNED_NORMALIZED");
+    break;
+  case GL_UNSIGNED_NORMALIZED:
+    str = string("GL_UNSIGNED_NORMALIZED");
+    break;
+  case GL_FLOAT:
+    str = string("GL_FLOAT");
+    break;
+  case GL_INT:
+    str = string("GL_INT");
+    break;
+  case GL_UNSIGNED_INT:
+    str = string("GL_UNSIGNED_INT");
+    break;
+  default:
+    str = string("Unknown channel type");
+  }
+  return str;
+}
+
+inline std::string internalFormatToString(GLint const internal_format)
+{
+  using std::string;
+  string str;
+  switch (internal_format)
+  {
+  // TODO: Add internal format!
+  default:
+    str = string("Unknown internal format");
+  }
+  return str;
+}
+
+inline std::string booleanToString(GLint const boolean)
+{
+  using std::string;
+  string str;
+  switch (boolean)
+  {
+  case GL_TRUE:
+    str = string("GL_TRUE");
+    break;
+  case GL_FALSE:
+    str = string("GL_FALSE");
+    break;
+  default:
+    str = string("Unknown boolean");
+  }
+  return str;
 }
 
 } // Namespace: detail.
@@ -210,10 +274,87 @@ NDJINN_END_NAMESPACE
 
 namespace std {
 
+inline
 ostream& operator<<(ostream& os, ndj::Texture2D const& tex)
 {
+  using ndj::getTextureParameters;
+  using ndj::getTextureLevelParameters;
+  using ndj::detail::channelTypeToString;
+  using ndj::detail::internalFormatToString;
+  using ndj::detail::booleanToString;
+
+  // Requires OpenGL version 4.5+
+  //array<GLint, 1> const target = getTextureParameters<GLint, 1>(
+  //  tex, GL_TEXTURE_2D, 0, GL_TEXTURE_TARGET);
+
+  GLuint const handle = tex.handle();
+
+  //GLenum const target = tex.target();
+  GLenum const target = GL_TEXTURE_2D;
+  GLint const level = 0;
+
+  GLint const width = tex.width(target);
+  GLint const height = tex.height(target);
+
+  array<GLint, 1> const internal_format = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_INTERNAL_FORMAT);
+  array<GLint, 1> const red_type = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_RED_TYPE);
+  array<GLint, 1> const green_type = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_GREEN_TYPE);
+  array<GLint, 1> const blue_type = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_BLUE_TYPE);
+  array<GLint, 1> const alpha_type = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_ALPHA_TYPE);
+  array<GLint, 1> const depth_type = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_DEPTH_TYPE);
+  array<GLint, 1> const red_size = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_RED_SIZE);
+  array<GLint, 1> const green_size = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_GREEN_SIZE);
+  array<GLint, 1> const blue_size = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_BLUE_SIZE);
+  array<GLint, 1> const alpha_size = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_ALPHA_SIZE);
+  array<GLint, 1> const depth_size = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_DEPTH_SIZE);
+  //array<GLint, 1> const buffer_offset = getTextureLevelParameters<GLint, 1>(
+  //  tex, target, level, GL_TEXTURE_BUFFER_OFFSET);
+  //array<GLint, 1> const buffer_size = getTextureLevelParameters<GLint, 1>(
+  //  tex, target, level, GL_TEXTURE_BUFFER_SIZE);
+
   os << "Texture2D" << endl
-     << "  Handle: " << tex.handle() << endl;
+     << "  Handle: " << handle << endl
+     << "  Target: " << target << endl
+     << "  Width: " << width << endl
+     << "  Height: " << height << endl
+     << "  Internal format: "
+       << internalFormatToString(internal_format[0]) << endl
+     << "  Red type:   " << channelTypeToString(red_type[0]) << endl
+     << "  Green type: " << channelTypeToString(green_type[0]) << endl
+     << "  Blue type:  " << channelTypeToString(blue_type[0]) << endl
+     << "  Alpha type: " << channelTypeToString(alpha_type[0]) << endl
+     << "  Depth type: " << channelTypeToString(depth_type[0]) << endl
+     << "  Red size:   " << red_size[0] << " [bits] " << endl
+     << "  Green size: " << green_size[0] << " [bits] " << endl
+     << "  Blue size:  " << blue_size[0] << " [bits] " << endl
+     << "  Alpha size: " << alpha_size[0] << " [bits] " << endl
+     << "  Depth size: " << depth_size[0] << " [bits] " << endl;
+     //<< "  Buffer offset: " << buffer_offset[0] << endl
+     //<< "  Buffer size: " << buffer_size[0] << endl;
+
+  array<GLint, 1> const is_compressed = getTextureLevelParameters<GLint, 1>(
+    tex, target, level, GL_TEXTURE_COMPRESSED);
+  os << "  Compressed: " << booleanToString(is_compressed[0]) << endl;
+  if (is_compressed[0] == GL_TRUE)
+  {
+    array<GLint, 1> const compressed_size_in_bytes =
+      getTextureLevelParameters<GLint, 1>(
+        tex, target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE);
+    os << "  Compressed size: " << compressed_size_in_bytes[0]
+       << " [bytes]" << endl;
+  }
+
   return os;
 }
 

@@ -226,7 +226,7 @@ public:
          GLenum const usage = GL_STATIC_DRAW)
     : _handle(detail::genBuffer())
   {
-    throwIfInvalidHandle();
+    //throwIfInvalidHandle();
     setData(size, ptr, usage);
   }
 

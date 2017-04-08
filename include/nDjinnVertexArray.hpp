@@ -62,9 +62,9 @@ public:
   VertexArray()
     : _handle(detail::genVertexArray())
   {
-    if (detail::isVertexArray(_handle) == GL_FALSE) {
-      NDJINN_THROW("invalid vertex array handle: " << _handle);
-    }
+    //if (detail::isVertexArray(_handle) == GL_FALSE) {
+    //  NDJINN_THROW("invalid vertex array handle: " << _handle);
+    //}
   }
 
   ~VertexArray() {

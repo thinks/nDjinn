@@ -1094,6 +1094,7 @@ NDJINN_END_NAMESPACE
 
 namespace std {
 
+inline
 ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
 {
   using namespace ndj;
@@ -1107,7 +1108,7 @@ ostream& operator<<(ostream& os, ndj::ShaderProgram const& sp)
       for (auto iter = sp.activeUniformsBegin();
            iter != sp.activeUniformsEnd(); ++iter) {
         Uniform const& uni = iter->second;
-        os << "  Location: " << uni.location
+        os << "    Location: " << uni.location
            << ", Name: '" << iter->first
            << "', Type: " << detail::uniformTypeToString(uni.type)
              << "[" << uni.size << "]" << endl;

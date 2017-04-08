@@ -12,8 +12,6 @@
 
 NDJINN_BEGIN_NAMESPACE
 
-namespace detail {
-
 //! glEnableVertexAttribArray wrapper. May throw.
 inline void enableVertexAttribArray(GLuint const index) {
   glEnableVertexAttribArray(index);
@@ -26,7 +24,6 @@ inline void disableVertexAttribArray(GLuint const index) {
   checkError("glDisableVertexAttribArray");
 }
 
-} // namespace detail
 
 //! DOCS
 class VertexAttribArrayEnabler {
@@ -34,11 +31,11 @@ public:
   explicit VertexAttribArrayEnabler(GLuint const index)
     : _index(index)
   {
-    detail::enableVertexAttribArray(_index);
+    enableVertexAttribArray(_index);
   }
 
   ~VertexAttribArrayEnabler() {
-    detail::disableVertexAttribArray(_index);
+    disableVertexAttribArray(_index);
   }
 
 private:

@@ -142,6 +142,7 @@ NDJINN_END_NAMESPACE
 
 namespace std {
 
+inline
 ostream& operator<<(ostream& os, ndj::Renderbuffer const& rb)
 {
   GLint const width =
